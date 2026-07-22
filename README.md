@@ -35,6 +35,8 @@ python conformance/run_parser.py --impl antlr
 
 ## Local verification
 
+Supported Python versions: **3.12**, **3.13**, and **3.14**.
+
 For linting, type checking, tests (>=90% coverage), and conformance in one step:
 
 ```bash
@@ -46,6 +48,7 @@ Useful flags for faster iteration:
 
 ```bash
 python scripts/verify.py --skip-format --skip-conformance
+python scripts/verify.py --skip-python-versions
 ```
 
 The manual validate steps above remain valid when you only need schema and parser checks.
