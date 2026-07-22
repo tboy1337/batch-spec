@@ -31,6 +31,7 @@ def _parse_antlr(lines: List[str]) -> tuple[object | None, list[str]]:
     if str(GENERATED_DIR) not in sys.path:
         sys.path.insert(0, str(GENERATED_DIR))
     from antlr4 import CommonTokenStream, InputStream  # noqa: PLC0415
+    from antlr4.error.ErrorListener import ErrorListener  # noqa: PLC0415
     from BatchLexer import BatchLexer  # noqa: PLC0415
     from BatchParser import BatchParser  # noqa: PLC0415
 
@@ -40,7 +41,7 @@ def _parse_antlr(lines: List[str]) -> tuple[object | None, list[str]]:
     parser = BatchParser(token_stream)
     errors: list[str] = []
 
-    class _Listener:  # noqa: D106
+    class _Listener(ErrorListener):
         def syntaxError(self, recognizer, offending_symbol, line, column, msg, e) -> None:  # noqa: ANN001
             del recognizer, offending_symbol, e
             errors.append(f"line {line}:{column} {msg}")
