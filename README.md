@@ -21,7 +21,7 @@ define linter rules (E/W/S/SEC/P codes) — those live in Blinter's `spec/` tree
 
 ## Versioning
 
-Releases are tagged with semver (`v0.1.0`, …). Consumers pin a tag via git submodule
+Releases are tagged with semver (`v0.2.0`, …). Consumers pin a tag via git submodule
 or lock file. Do not depend on `main` directly in production CI.
 
 ## Validate
