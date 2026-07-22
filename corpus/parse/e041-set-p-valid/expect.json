@@ -1,0 +1,9 @@
+{
+  "description": "SET /P valid",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "set"
+  ]
+}

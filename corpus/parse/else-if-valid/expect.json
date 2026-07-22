@@ -1,0 +1,9 @@
+{
+  "description": "ELSE IF chain",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if"
+  ]
+}

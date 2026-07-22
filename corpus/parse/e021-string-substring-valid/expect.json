@@ -1,0 +1,9 @@
+{
+  "description": "String substring expansion",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion"
+  ]
+}

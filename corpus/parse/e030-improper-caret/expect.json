@@ -1,0 +1,10 @@
+{
+  "description": "Improper caret escape",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "caret",
+    "negative"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "IF ERRORLEVEL GE comparison",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "errorlevel"
+  ]
+}

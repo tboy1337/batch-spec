@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://batch-spec.dev/schema/commands.schema.json",
+  "title": "Batch command language catalog",
+  "type": "object",
+  "required": [
+    "version"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "builtin_commands": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "deprecated_commands": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "removed_commands": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "older_windows_commands": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "common_command_typos": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "builtin_overlap_deprecated_notes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

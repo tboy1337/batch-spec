@@ -1,0 +1,9 @@
+{
+  "description": "Double percent escaping",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "percent"
+  ]
+}

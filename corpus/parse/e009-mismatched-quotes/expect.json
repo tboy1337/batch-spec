@@ -1,0 +1,10 @@
+{
+  "description": "Mismatched quotes",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "quotes",
+    "negative"
+  ]
+}

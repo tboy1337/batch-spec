@@ -1,0 +1,10 @@
+{
+  "description": "Invalid percent-tilde modifier",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion",
+    "negative"
+  ]
+}

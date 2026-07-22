@@ -1,0 +1,9 @@
+{
+  "description": "CD /D valid",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "cd"
+  ]
+}

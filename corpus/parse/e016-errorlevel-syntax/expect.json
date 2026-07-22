@@ -1,0 +1,10 @@
+{
+  "description": "ERRORLEVEL syntax",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "errorlevel"
+  ]
+}

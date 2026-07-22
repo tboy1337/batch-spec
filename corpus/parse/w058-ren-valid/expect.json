@@ -1,0 +1,9 @@
+{
+  "description": "REN valid",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "ren"
+  ]
+}

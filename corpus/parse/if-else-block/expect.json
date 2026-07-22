@@ -1,0 +1,10 @@
+{
+  "description": "IF block with ELSE",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "blocks"
+  ]
+}

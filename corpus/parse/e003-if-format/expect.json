@@ -1,0 +1,9 @@
+{
+  "description": "IF command format",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if"
+  ]
+}

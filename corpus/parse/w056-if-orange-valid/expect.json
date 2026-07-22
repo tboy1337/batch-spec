@@ -1,0 +1,9 @@
+{
+  "description": "IF OR/AND valid",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if"
+  ]
+}

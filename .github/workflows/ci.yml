@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml jsonschema antlr4-tools antlr4-python3-runtime
+      - name: Validate YAML schemas
+        run: python scripts/validate.py
+      - name: Generate parser
+        run: python scripts/generate_parser.py
+      - name: Parser conformance
+        run: python conformance/run_parser.py --impl antlr

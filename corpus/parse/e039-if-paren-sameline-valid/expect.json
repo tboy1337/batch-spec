@@ -1,0 +1,9 @@
+{
+  "description": "IF paren same line",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if"
+  ]
+}

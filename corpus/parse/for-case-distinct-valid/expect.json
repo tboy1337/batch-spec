@@ -1,0 +1,9 @@
+{
+  "description": "FOR case consistency valid",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

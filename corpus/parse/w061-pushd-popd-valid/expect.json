@@ -1,0 +1,9 @@
+{
+  "description": "PUSHD POPD valid",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "pushd"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "EXIT and SHIFT smoke",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "exit",
+    "shift"
+  ]
+}

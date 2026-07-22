@@ -1,0 +1,9 @@
+{
+  "description": "SET /A spacing valid",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "set"
+  ]
+}

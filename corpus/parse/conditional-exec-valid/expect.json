@@ -1,0 +1,9 @@
+{
+  "description": "Conditional command chaining",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "operators"
+  ]
+}

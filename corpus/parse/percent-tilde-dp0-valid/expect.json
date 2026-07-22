@@ -1,0 +1,9 @@
+{
+  "description": "Percent-tilde dp0 expansion",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion"
+  ]
+}

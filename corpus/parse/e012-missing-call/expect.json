@@ -1,0 +1,9 @@
+{
+  "description": "CALL label",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "call"
+  ]
+}

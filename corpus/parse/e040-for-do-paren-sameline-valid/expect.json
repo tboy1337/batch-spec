@@ -1,0 +1,9 @@
+{
+  "description": "FOR DO paren same line",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

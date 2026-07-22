@@ -1,0 +1,9 @@
+{
+  "description": "FOR IN parenthesized list",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

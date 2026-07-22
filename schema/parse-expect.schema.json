@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://batch-spec.dev/schema/parse-expect.schema.json",
+  "title": "batch-spec parse corpus expect.json",
+  "type": "object",
+  "required": [
+    "description"
+  ],
+  "properties": {
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "parse": {
+      "type": "object",
+      "properties": {
+        "should_parse": {
+          "type": "boolean"
+        },
+        "expect_syntax_errors": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

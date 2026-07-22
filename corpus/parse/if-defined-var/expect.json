@@ -1,0 +1,9 @@
+{
+  "description": "IF DEFINED variable",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if"
+  ]
+}

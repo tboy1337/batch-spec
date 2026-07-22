@@ -1,0 +1,9 @@
+{
+  "description": "Nested parentheses",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "blocks"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "IF EXIST valid",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "exist"
+  ]
+}

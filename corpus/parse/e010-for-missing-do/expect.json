@@ -1,0 +1,10 @@
+{
+  "description": "FOR missing DO",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "for",
+    "negative"
+  ]
+}

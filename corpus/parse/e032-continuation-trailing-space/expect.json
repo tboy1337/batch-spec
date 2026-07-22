@@ -1,0 +1,9 @@
+{
+  "description": "Caret continuation trailing space",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "continuation"
+  ]
+}

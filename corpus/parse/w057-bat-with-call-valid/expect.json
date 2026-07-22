@@ -1,0 +1,9 @@
+{
+  "description": "CALL .bat valid",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "call"
+  ]
+}

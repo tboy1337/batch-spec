@@ -1,0 +1,9 @@
+{
+  "description": "SHIFT valid boundaries",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "shift"
+  ]
+}

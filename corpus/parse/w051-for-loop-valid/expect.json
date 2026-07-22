@@ -1,0 +1,9 @@
+{
+  "description": "FOR loop valid",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

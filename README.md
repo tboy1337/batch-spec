@@ -1,0 +1,44 @@
+# batch-spec
+
+Single source of truth for the Windows batch/cmd.exe **language** structure used by
+[Blinter](https://github.com/tboy1337/Blinter) and other conforming tools.
+
+This repository defines grammar, expansion rules, and command catalogs. It does **not**
+define linter rules (E/W/S/SEC/P codes) — those live in Blinter's `spec/` tree.
+
+## Layout
+
+| Path | Purpose |
+|------|---------|
+| `grammar/` | ANTLR 4 lexer/parser (`.g4`) |
+| `data/commands.yaml` | Builtin, deprecated, removed commands and typos |
+| `data/expansion.yaml` | `%` / `!` / `%~` expansion semantics |
+| `schema/` | JSON Schema for YAML and parse corpus |
+| `audit/cmd-help/` | Captured `cmd.exe /?` reference text |
+| `corpus/parse/` | Parser conformance fixtures (parse-only `expect.json`) |
+| `conformance/` | Implementation-agnostic conformance runner |
+| `scripts/` | Validation and parser generation |
+
+## Versioning
+
+Releases are tagged with semver (`v0.1.0`, …). Consumers pin a tag via git submodule
+or lock file. Do not depend on `main` directly in production CI.
+
+## Validate
+
+```bash
+pip install pyyaml jsonschema antlr4-tools antlr4-python3-runtime
+python scripts/validate.py
+python scripts/generate_parser.py
+python conformance/run_parser.py --impl antlr
+```
+
+## Add a parser implementation
+
+1. Implement parsing for all cases under `corpus/parse/`.
+2. Register the implementation in `conformance/run_parser.py`.
+3. Run `python conformance/run_parser.py --impl <name>` locally and in CI.
+
+## License
+
+AGPL-3.0-or-later — see [COPYING](COPYING).
