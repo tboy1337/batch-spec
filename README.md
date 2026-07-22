@@ -33,6 +33,23 @@ python scripts/generate_parser.py
 python conformance/run_parser.py --impl antlr
 ```
 
+## Local verification
+
+For linting, type checking, tests (>=90% coverage), and conformance in one step:
+
+```bash
+pip install -r requirements-dev.txt
+python scripts/verify.py
+```
+
+Useful flags for faster iteration:
+
+```bash
+python scripts/verify.py --skip-format --skip-conformance
+```
+
+The manual validate steps above remain valid when you only need schema and parser checks.
+
 ## Add a parser implementation
 
 1. Implement parsing for all cases under `corpus/parse/`.

@@ -1,0 +1,12 @@
+[run]
+branch = True
+source =
+    scripts
+    conformance
+omit =
+    generated/*
+
+[report]
+fail_under = 90
+show_missing = True
+skip_covered = False

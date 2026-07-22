@@ -1,0 +1,15 @@
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+src_paths = ["scripts", "conformance", "tests"]
+
+[tool.pip-audit]
+requirement = [
+    "requirements.txt",
+    "requirements-dev.txt",
+]

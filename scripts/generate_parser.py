@@ -42,7 +42,7 @@ def _run_antlr() -> None:
     ] + grammar_paths
     env = os.environ.copy()
     env.setdefault("ANTLR4_TOOLS_ANTLR_VERSION", "4.13.2")
-    subprocess.run(cmd, check=True, cwd=GRAMMAR_DIR, env=env)
+    _ = subprocess.run(cmd, check=True, cwd=GRAMMAR_DIR, env=env)
 
 
 def generate_parser() -> None:
@@ -61,9 +61,19 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generate ANTLR Python parser")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    names = ["BatchLexer.py", "BatchParser.py", "BatchParserVisitor.py", "__init__.py", _STAMP_NAME]
+    names = [
+        "BatchLexer.py",
+        "BatchParser.py",
+        "BatchParserVisitor.py",
+        "__init__.py",
+        _STAMP_NAME,
+    ]
     if args.check:
-        missing = [GENERATED_DIR / name for name in names if not (GENERATED_DIR / name).is_file()]
+        missing = [
+            GENERATED_DIR / name
+            for name in names
+            if not (GENERATED_DIR / name).is_file()
+        ]
         if missing:
             for path in missing:
                 print(f"Missing {path}", file=sys.stderr)

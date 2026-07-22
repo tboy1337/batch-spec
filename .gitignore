@@ -5,4 +5,6 @@ __pycache__/
 .generated/
 generated/python/*.interp
 generated/python/*.tokens
-.grammar-stamp
+htmlcov/
+.coverage
+coverage.xml

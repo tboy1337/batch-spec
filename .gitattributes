@@ -1,0 +1,46 @@
+# Normalize text files to LF in the repository for cross-platform consistency.
+* text=auto eol=lf
+
+# Source and config
+*.py text eol=lf
+*.pyi text eol=lf
+*.g4 text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+*.toml text eol=lf
+*.rc text eol=lf
+.pylintrc text eol=lf
+.coveragerc text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+
+# Batch corpus fixtures (stored as LF; parser joins lines with \n)
+*.cmd text eol=lf
+*.bat text eol=lf
+
+# GitHub Actions
+.github/** text eol=lf
+
+# Version marker
+VERSION text eol=lf
+
+# ANTLR auxiliary output (gitignored; mark binary if present)
+*.interp binary
+*.tokens binary
+
+# Mark committed generated parser output for GitHub linguist
+generated/python/** linguist-generated
+
+# Common binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
