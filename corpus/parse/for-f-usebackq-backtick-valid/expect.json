@@ -1,0 +1,10 @@
+{
+  "description": "FOR /F usebackq with backtick command form (documented spelling)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for"
+  ]
+}

@@ -105,6 +105,8 @@
         },
         "useback_synonym": { "type": "string" },
         "consecutive_delims": { "type": "string" },
+        "default_first_token": { "type": "string" },
+        "variables_are_global": { "type": "string" },
         "input_forms": { "type": "string" }
       },
       "additionalProperties": false
@@ -114,7 +116,8 @@
       "required": ["description"],
       "properties": {
         "description": { "type": "string", "minLength": 1 },
-        "call_doubling": { "type": "string", "minLength": 1 }
+        "call_doubling": { "type": "string", "minLength": 1 },
+        "line_continuation": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -138,6 +141,8 @@
         "omit_length": { "type": "string" },
         "missing_or_empty_substring_batveat": { "type": "string" },
         "case_insensitive_search": { "type": "string" },
+        "replace_all_occurrences": { "type": "string" },
+        "empty_replacement_deletes": { "type": "string" },
         "star_prefix_replace": { "type": "string" }
       },
       "additionalProperties": false
@@ -157,7 +162,8 @@
       "properties": {
         "bare_quote_strip": { "type": "string" },
         "multi_digit_parameter": { "type": "string" },
-        "modifier_order_independent": { "type": "string" }
+        "modifier_order_independent": { "type": "string" },
+        "modifier_case_insensitive": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -188,7 +194,11 @@
         "integer_range": { "type": "string" },
         "spaces_around_assignment": { "type": "string" },
         "interactive_display": { "type": "string" },
-        "unary_bang_vs_delayed": { "type": "string" }
+        "unary_bang_vs_delayed": { "type": "string" },
+        "operator_precedence": { "type": "string" },
+        "overflow_wraps": { "type": "string" },
+        "divide_by_zero_errorlevel": { "type": "string" },
+        "assignment_requires_name": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -199,7 +209,8 @@
         "description": { "type": "string", "minLength": 1 },
         "prefix_query": { "type": "string" },
         "missing_name_errorlevel": { "type": "string" },
-        "unset_with_empty_value": { "type": "string" }
+        "unset_with_empty_value": { "type": "string" },
+        "bat_vs_cmd_errorlevel": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -216,7 +227,8 @@
     "percent_expansion": {
       "type": "object",
       "properties": {
-        "undefined_is_empty": { "type": "string" }
+        "undefined_is_empty": { "type": "string" },
+        "interactive_undefined_literal": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -244,7 +256,8 @@
           "items": { "type": "string", "minLength": 1 }
         },
         "blank_line_tokenizer_note": { "type": "string" },
-        "echo_on_off": { "type": "string" }
+        "echo_on_off": { "type": "string" },
+        "bare_or_whitespace_status": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -255,6 +268,7 @@
         "description": { "type": "string", "minLength": 1 },
         "delayed_expansion": { "type": "string" },
         "extensions": { "type": "string" },
+        "defaults": { "type": "string" },
         "c_k_s_quoting": { "type": "string" }
       },
       "additionalProperties": false
@@ -269,7 +283,9 @@
         "nesting_limit": { "type": "string" },
         "implied_endlocal": { "type": "string" },
         "argument_errorlevel": { "type": "string" },
-        "survive_via_percent_on_same_line": { "type": "string" }
+        "survive_via_percent_on_same_line": { "type": "string" },
+        "precedence_over_cmd_switches": { "type": "string" },
+        "endlocal_restores_state": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -335,7 +351,8 @@
         },
         "compare_ops_notes": { "type": "string" },
         "defined_notes": { "type": "string" },
-        "else_same_line": { "type": "string" }
+        "else_same_line": { "type": "string" },
+        "exist_files_and_directories": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -370,7 +387,9 @@
         "percent_star": { "type": "string" },
         "percent_star_and_shift": { "type": "string" },
         "shift_n": { "type": "string" },
-        "percent_zero": { "type": "string" }
+        "shift_default": { "type": "string" },
+        "percent_zero": { "type": "string" },
+        "argument_delimiters": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -380,8 +399,13 @@
       "properties": {
         "description": { "type": "string", "minLength": 1 },
         "call_label": { "type": "string" },
+        "call_requires_colon_for_label": { "type": "string" },
+        "call_missing_label": { "type": "string" },
+        "call_script_returns": { "type": "string" },
         "goto_eof": { "type": "string" },
-        "goto_eof_vs_label": { "type": "string" }
+        "goto_eof_vs_label": { "type": "string" },
+        "goto_label_matching": { "type": "string" },
+        "label_line_form": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -430,7 +454,8 @@
       "properties": {
         "description": { "type": "string", "minLength": 1 },
         "percent_at_parse": { "type": "string" },
-        "delayed_at_execution": { "type": "string" }
+        "delayed_at_execution": { "type": "string" },
+        "dual_value_swap": { "type": "string" }
       },
       "additionalProperties": false
     }

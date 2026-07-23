@@ -1,0 +1,11 @@
+{
+  "description": "Naked paren block with percent expansion for dual pre-block values",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "groupStmt"
+  },
+  "tags": [
+    "group",
+    "expansion"
+  ]
+}

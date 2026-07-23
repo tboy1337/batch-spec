@@ -1,0 +1,10 @@
+{
+  "description": "SET /A operator precedence (* before +) parses as one expression",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set"
+  ]
+}

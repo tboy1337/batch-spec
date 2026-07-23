@@ -1,0 +1,11 @@
+{
+  "description": "CALL arguments split on comma semicolon and equals when unquoted",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "callStmt"
+  },
+  "tags": [
+    "call",
+    "parameters"
+  ]
+}

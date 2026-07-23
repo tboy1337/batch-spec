@@ -69,6 +69,7 @@ COLON          : ':' ;
 SLASH          : '/' ;
 EQUALS         : '=' ;
 COMMA          : ',' ;
+SEMICOLON      : ';' ;
 DOT            : '.' ;
 BACKSLASH      : '\\' ;
 PLUS           : '+' ;

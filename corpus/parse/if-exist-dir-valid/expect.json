@@ -1,0 +1,10 @@
+{
+  "description": "IF EXIST accepts a directory path with trailing backslash",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if"
+  ]
+}

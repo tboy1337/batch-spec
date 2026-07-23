@@ -1,0 +1,10 @@
+{
+  "description": "FOR /F usebackq with double-quoted filename in the file-set",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for"
+  ]
+}

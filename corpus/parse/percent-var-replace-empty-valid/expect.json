@@ -1,0 +1,11 @@
+{
+  "description": "Empty replacement deletes all occurrences of the search text",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "set"
+  ]
+}

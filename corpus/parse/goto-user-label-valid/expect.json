@@ -1,0 +1,11 @@
+{
+  "description": "Ordinary GOTO to a user label with leading colon",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "goto",
+    "label"
+  ]
+}

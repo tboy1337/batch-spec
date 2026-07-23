@@ -1,0 +1,10 @@
+{
+  "description": "Bare ECHO with no arguments (runtime prints on/off status)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "echo"
+  ]
+}

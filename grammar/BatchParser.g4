@@ -359,6 +359,7 @@ token
     | PLUS
     | MINUS
     | COMMA
+    | SEMICOLON
     | EQUALS
     | EQ
     | SLASH

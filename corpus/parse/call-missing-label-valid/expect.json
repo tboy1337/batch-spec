@@ -1,0 +1,10 @@
+{
+  "description": "CALL to a missing label parses; runtime sets ERRORLEVEL 1 and continues",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "callStmt"
+  },
+  "tags": [
+    "call"
+  ]
+}

@@ -1,4 +1,4 @@
-version: 3
+version: 4
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -61,12 +61,18 @@ percent_tilde_notes:
   modifier_order_independent: >-
     Letter modifiers may be combined in any order (%~dpnx0 and %~nxdp0 are
     equivalent).
+  modifier_case_insensitive: >-
+    Letter modifiers are not case-sensitive (%~DPNX0 and %~dpnx0 are equivalent;
+    FOR /?).
 
 percent_expansion:
   undefined_is_empty: >-
-    An undefined name expands to an empty string for both %name% and (when
-    delayed expansion is enabled) !name!. Incomplete forms without a closing
-    % are not treated as successful expansions.
+    Inside a .cmd/.bat script, an undefined name expands to an empty string for
+    both %name% and (when delayed expansion is enabled) !name!. Incomplete forms
+    without a closing % are not treated as successful expansions.
+  interactive_undefined_literal: >-
+    On the interactive command line, an undefined %name% often remains as the
+    literal text %name% rather than expanding to empty (script behavior differs).
 
 delayed_expansion:
   pattern: "!VAR!"
@@ -145,11 +151,16 @@ for_f:
     delims: >-
       delims=xxx replaces the default delimiter set (space and tab). An empty
       delims= means no delimiters (whole line is one token); confirmed for forms
-      such as FOR /F "delims=" %%a IN ("a b c").
+      such as FOR /F "delims=" %%a IN ("a b c"). When a space is included among
+      delimiters it must be the last character of the delims= value; otherwise
+      the options string can misparse. Delimiter characters are case-sensitive
+      (delims=D does not treat lowercase d as a delimiter).
     tokens: >-
       tokens=x,y,m-n selects token indexes; a trailing * assigns the remainder
       of the line to one variable. Up to 26 tokens may be requested. Additional
-      FOR variables are implied alphabetically from the declared letter.
+      FOR variables are implied alphabetically from the declared letter. The
+      implied chain must not attempt to declare a variable past z or Z
+      (FOR /?).
     usebackq: >-
       usebackq switches quoting: backtick `command` for command output, single
       quotes for literal strings, and double quotes for filenames. Without
@@ -160,6 +171,12 @@ for_f:
   consecutive_delims: >-
     Consecutive delimiter characters collapse to one delimiter; empty fields
     between repeated delimiters are not preserved by default.
+  default_first_token: >-
+    By default, /F passes the first blank-separated token from each line
+    (FOR /?).
+  variables_are_global: >-
+    FOR variables are global for the cmd session (FOR /?): nested or sequential
+    FOR loops that reuse the same letter share that replaceable parameter.
   input_forms: >-
     file-set; "string" (or 'string' with usebackq); 'command' (or `command`
     with usebackq). Blank lines are skipped.
@@ -175,6 +192,10 @@ caret_escape:
   call_doubling: >-
     CALL doubles all carets once on its arguments before the line is parsed
     again; quoted carets are doubled even though quotes suppress escaping.
+  line_continuation: >-
+    A caret as the last character of a physical line continues onto the next
+    line (the CRLF is escaped). A trailing space after ^ escapes the space
+    instead, so the next line is not a continuation.
 
 double_percent:
   for_body_rule: "FOR loop variables use %% in batch files"
@@ -209,6 +230,12 @@ string_operations:
     In %var:old=new%, the search for old is case-insensitive; the replacement
     text new is inserted literally. The same case rule applies to delayed
     !var:old=new! forms.
+  replace_all_occurrences: >-
+    %var:old=new% substitutes every occurrence of old in the value (SET /?),
+    not only the first match.
+  empty_replacement_deletes: >-
+    When new is empty (%var:old=%), each matched occurrence of old is deleted
+    (SET /?).
   star_prefix_replace: >-
     In %var:*old=new%, a leading asterisk on the search text replaces from the
     beginning of the value through the first match of old.
@@ -270,6 +297,18 @@ set_a:
     is consumed as delayed syntax first unless carefully quoted/escaped. Prefer
     testing unary ! with delayed expansion disabled, or quote the expression
     and avoid adjacent !name! forms.
+  operator_precedence: >-
+    Operators apply in decreasing precedence (SET /?): grouping (); unary
+    ! ~ -; * / %; + -; << >>; &; ^; |; assignment operators; comma.
+  overflow_wraps: >-
+    Signed 32-bit overflow wraps (for example 2147483647+1 becomes
+    -2147483648) rather than failing the expression.
+  divide_by_zero_errorlevel: >-
+    Division by zero and other failed SET /A expressions leave a non-zero
+    ERRORLEVEL (exact code is implementation-defined).
+  assignment_requires_name: >-
+    Assignment operators require an environment variable name on the left
+    (SET /?).
 
 set_assignment:
   description: >-
@@ -288,6 +327,11 @@ set_assignment:
   unset_with_empty_value: >-
     SET name= or SET "name=" removes the variable (IF DEFINED name is false).
     A value that is only spaces (SET "name= ") remains defined.
+  bat_vs_cmd_errorlevel: >-
+    After a successful plain SET (also PATH/PROMPT), a .cmd script typically
+    clears ERRORLEVEL to 0, while the same statement in a .bat script often
+    preserves the prior ERRORLEVEL. Prefer EXIT /B or cmd /C exit N when the
+    exit code must be set explicitly.
 
 set_p:
   description: >-
@@ -343,12 +387,18 @@ echo_forms:
   echo_on_off: >-
     ECHO ON and ECHO OFF toggle command echoing. A leading @ suppresses
     echoing for that single statement (@echo off).
+  bare_or_whitespace_status: >-
+    ECHO with no arguments, or with only whitespace arguments, prints the
+    current ECHO is on/off status rather than a blank line.
 
 cmd_processor_switches:
   description: >-
     CMD.EXE command-line switches that affect language behavior (CMD /?).
   delayed_expansion: "cmd /V:ON enables delayed expansion; /V:OFF disables it"
   extensions: "cmd /E:ON enables Command Extensions; /E:OFF disables them"
+  defaults: >-
+    Command Extensions are enabled by default; delayed expansion is disabled
+    by default (CMD /?, SET /?).
   c_k_s_quoting: >-
     /C runs string then terminates; /K runs string and remains. /S modifies
     quote handling after /C or /K. When /C or /K is used, quotes are preserved
@@ -374,6 +424,13 @@ setlocal_options:
     Percent expansion happens before ENDLOCAL runs on a chained line, so
     endlocal & set "out=%in%" can export in into out after the local scope
     ends.
+  precedence_over_cmd_switches: >-
+    SETLOCAL Enable/Disable Extensions or DelayedExpansion takes precedence
+    over CMD /E and /V for the duration of that local scope (SETLOCAL /?).
+  endlocal_restores_state: >-
+    ENDLOCAL restores the prior environment and the prior enabled/disabled
+    state of Extensions and DelayedExpansion from the matching SETLOCAL
+    (ENDLOCAL /?).
 
 errorlevel:
   if_form: >-
@@ -393,6 +450,8 @@ cmdextversion:
   description: >-
     IF CMDEXTVERSION n is true when the Command Extensions version is >= n.
     Never true when extensions are disabled. %CMDEXTVERSION% exposes the version.
+    The first extensions version is 1 and increments when significant enhancements
+    are added (IF /?).
 
 dynamic_environment_variables:
   description: >-
@@ -441,12 +500,18 @@ if_forms:
     - GEQ
   compare_ops_notes: >-
     If both sides are all decimal digits, compare-ops perform a numeric
-    comparison; otherwise a string comparison. /I forces case-insensitive
-    string compares and also applies to the string1==string2 form.
+    comparison; otherwise a string comparison. Quoting a side (for example
+    "000" EQU "0") forces string comparison even when the text looks numeric.
+    String ordering is not raw ASCII byte order (for example a LSS A can be
+    true). /I forces case-insensitive string compares and also applies to the
+    string1==string2 form and to compare-ops.
   defined_notes: "DEFINED takes a variable name without % percent signs"
   else_same_line: >-
     ELSE must appear on the same physical line as the end of the IF command
     (after the THEN command or the closing ')' of a parenthesized block).
+  exist_files_and_directories: >-
+    IF EXIST tests whether a file or directory path exists (trailing backslash
+    forms commonly target directories).
 
 if_block_parentheses:
   description: >-
@@ -479,10 +544,18 @@ batch_parameters:
     the original full argument list).
   shift_n: >-
     With extensions, SHIFT /n starts shifting at argument n where n is 0..8
-    (SHIFT /?).
+    (SHIFT /?). SHIFT /9 is invalid.
+  shift_default: >-
+    Bare SHIFT (no /n) shifts starting at %0: the former %1 becomes the new %0,
+    former %2 becomes %1, and so on.
   percent_zero: >-
     %0 / %~0 is the script path or, inside CALL :label, the :label identity —
-    not a user-supplied argument. Path modifiers such as %~dp0 apply.
+    not a user-supplied argument. Path modifiers such as %~dp0 apply. The text
+    of %0 mirrors the spelling/casing/quoting used to invoke the script or
+    CALL :label (for example CALL :MiXeD yields %0=':MiXeD').
+  argument_delimiters: >-
+    Unquoted argument tokens are split on space, tab, comma, semicolon, and
+    equals. Quotes preserve those characters inside a single argument.
 
 call_goto:
   description: "CALL :label and GOTO :EOF (CALL /?, GOTO /?)"
@@ -490,6 +563,17 @@ call_goto:
     CALL :label arguments creates a new batch context at the label. Control
     returns to the statement after CALL when the called context reaches EOF
     (or GOTO :EOF). Reaching EOF a second time exits the script.
+  call_requires_colon_for_label: >-
+    CALL :label requires the colon for an internal label. CALL name without a
+    colon searches PATH/PATHEXT for an external program or script instead of
+    jumping to :name.
+  call_missing_label: >-
+    CALL :missinglabel sets ERRORLEVEL to 1 and continues with the next
+    statement (it does not abort the script).
+  call_script_returns: >-
+    CALL other.cmd (or other.bat) runs the script and returns to the caller.
+    Invoking other.cmd as a bare command transfers control permanently and does
+    not return to the caller when the child ends.
   goto_eof: >-
     GOTO :EOF transfers control to the end of the current batch script file
     without requiring a user-defined label. A user label named :eof does not
@@ -498,6 +582,13 @@ call_goto:
     With the colon (GOTO :EOF), Command Extensions treat EOF as the end-of-file
     target and ignore a user label :EOF. Without the colon (GOTO EOF), cmd
     performs an ordinary label search and jumps to :EOF if present.
+  goto_label_matching: >-
+    Ordinary GOTO targets are matched case-insensitively. A leading colon on
+    the GOTO operand is optional for user labels (goto foo and goto :foo both
+    match :Foo). A missing label aborts with an error and does not continue.
+  label_line_form: >-
+    A label is a line beginning with a colon (GOTO /?). Indented labels are
+    accepted by cmd; prefer a colon in column 0 for portable scripts.
 
 exit_semantics:
   description: "EXIT [/B] [exitCode] (EXIT /?)"
@@ -568,3 +659,8 @@ paren_block_expansion:
   delayed_at_execution: >-
     !var! inside ( ) expands when that line runs, seeing SET updates from
     earlier lines in the same block.
+  dual_value_swap: >-
+    Because %var% is captured when the block is parsed and !var! updates at
+    execution, a naked parenthesized block can observe both the pre-block and
+    in-block values (for example swapping two variables with percent expansion
+    inside one block).

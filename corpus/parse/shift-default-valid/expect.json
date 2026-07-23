@@ -1,0 +1,10 @@
+{
+  "description": "Bare SHIFT without /n shifts starting at percent-0",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "shiftStmt"
+  },
+  "tags": [
+    "shift"
+  ]
+}
