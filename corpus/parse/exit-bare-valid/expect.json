@@ -1,0 +1,10 @@
+{
+  "description": "EXIT /B ends script context; bare EXIT would end the process",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "exit"
+  ]
+}

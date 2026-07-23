@@ -228,7 +228,8 @@
       "type": "object",
       "properties": {
         "undefined_is_empty": { "type": "string" },
-        "interactive_undefined_literal": { "type": "string" }
+        "interactive_undefined_literal": { "type": "string" },
+        "incomplete_unclosed": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -269,6 +270,7 @@
         "delayed_expansion": { "type": "string" },
         "extensions": { "type": "string" },
         "defaults": { "type": "string" },
+        "compatibility_aliases": { "type": "string" },
         "c_k_s_quoting": { "type": "string" }
       },
       "additionalProperties": false
@@ -352,7 +354,8 @@
         "compare_ops_notes": { "type": "string" },
         "defined_notes": { "type": "string" },
         "else_same_line": { "type": "string" },
-        "exist_files_and_directories": { "type": "string" }
+        "exist_files_and_directories": { "type": "string" },
+        "no_and_or_keywords": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -375,7 +378,9 @@
           "minProperties": 1
         },
         "grouping": { "type": "string" },
-        "pipe_child_process": { "type": "string" }
+        "pipe_child_process": { "type": "string" },
+        "pipe_delayed_expansion_default": { "type": "string" },
+        "and_or_chain_trap": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -414,6 +419,7 @@
       "required": ["description"],
       "properties": {
         "description": { "type": "string", "minLength": 1 },
+        "bare_exit": { "type": "string" },
         "exit_b": { "type": "string" }
       },
       "additionalProperties": false

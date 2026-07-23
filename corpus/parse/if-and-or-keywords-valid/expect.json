@@ -1,0 +1,11 @@
+{
+  "description": "IF has no native and/or keywords; and/or become separate commands",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "negative"
+  ]
+}

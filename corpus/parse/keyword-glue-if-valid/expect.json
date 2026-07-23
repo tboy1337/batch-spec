@@ -1,0 +1,11 @@
+{
+  "description": "Glued IF%1 is not recognized as IF; spaced IF %1 is",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "keyword"
+  ]
+}

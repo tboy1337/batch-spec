@@ -1,0 +1,10 @@
+{
+  "description": "A && (failing B) || C still runs C after successful A",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "chaining"
+  ]
+}

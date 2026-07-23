@@ -1,0 +1,11 @@
+{
+  "description": "CMD /V:ON enables delayed expansion for a child processor",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cmd",
+    "delayed"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "CMD /E:OFF disables Command Extensions for a child processor",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cmd",
+    "extensions"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Unclosed percent forms are not successful expansions",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "percent"
+  ]
+}

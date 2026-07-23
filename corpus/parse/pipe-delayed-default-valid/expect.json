@@ -1,0 +1,11 @@
+{
+  "description": "Pipe children start with delayed expansion off by default",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "pipe",
+    "delayed"
+  ]
+}

@@ -73,6 +73,11 @@ percent_expansion:
   interactive_undefined_literal: >-
     On the interactive command line, an undefined %name% often remains as the
     literal text %name% rather than expanding to empty (script behavior differs).
+  incomplete_unclosed: >-
+    An unclosed %name form (no matching closing %) is not a successful expansion.
+    In scripts, cmd typically strips the leading % and leaves the following text
+    as literals (for example %NOSUCH becomes NOSUCH; a lone % may yield empty).
+    Prefer always-closed %name% / %% forms for portable scripts.
 
 delayed_expansion:
   pattern: "!VAR!"
@@ -399,6 +404,9 @@ cmd_processor_switches:
   defaults: >-
     Command Extensions are enabled by default; delayed expansion is disabled
     by default (CMD /?, SET /?).
+  compatibility_aliases: >-
+    For compatibility, /X is the same as /E:ON, /Y is the same as /E:OFF, and
+    /R is the same as /C (CMD /?). Other unrecognized switches are ignored.
   c_k_s_quoting: >-
     /C runs string then terminates; /K runs string and remains. /S modifies
     quote handling after /C or /K. When /C or /K is used, quotes are preserved
@@ -512,6 +520,11 @@ if_forms:
   exist_files_and_directories: >-
     IF EXIST tests whether a file or directory path exists (trailing backslash
     forms commonly target directories).
+  no_and_or_keywords: >-
+    IF has no native boolean AND/OR keywords. Tokens such as and / or after a
+    completed IF command are parsed as separate commands (often yielding
+    "'and' is not recognized..."). Compose conditions with nested IF, chained
+    && / || on ERRORLEVEL, or other documented patterns — not IF ... and ....
 
 if_block_parentheses:
   description: >-
@@ -535,6 +548,18 @@ command_chaining:
   pipe_child_process: >-
     Each side of a pipe runs in a child cmd.exe context. Environment mutations
     (SET, SET /P, SETLOCAL) on a pipe side do not update the parent environment.
+  pipe_delayed_expansion_default: >-
+    Pipe-side child cmd.exe instances start with the processor defaults for
+    delayed expansion and extensions (delayed expansion off unless registry or
+    an explicit /V:ON on that child enables it). Parent SETLOCAL
+    EnableDelayedExpansion does not automatically apply inside the pipe child,
+    so !var! on a pipe side often remains literal unless the child enables
+    delayed expansion itself.
+  and_or_chain_trap: >-
+    In A && (B) || (C), statement C runs when A fails or when B leaves a
+    non-zero ERRORLEVEL. A successful A followed by a failing B still executes
+    C — this is not a boolean if/else. Group carefully or test ERRORLEVEL
+    explicitly when only one of B/C should run.
 
 batch_parameters:
   description: "Batch argument references (CALL /?, SHIFT /?)"
@@ -592,10 +617,14 @@ call_goto:
 
 exit_semantics:
   description: "EXIT [/B] [exitCode] (EXIT /?)"
+  bare_exit: >-
+    Bare EXIT (without /B) terminates the cmd.exe process (closes the console
+    session when it is the top-level interpreter). Prefer EXIT /B inside batch
+    scripts when only the script/routine should end.
   exit_b: >-
-    EXIT /B exits the current batch script (or quits CMD when not in a script).
-    Optional exitCode sets ERRORLEVEL when using /B, or the process exit code
-    when quitting CMD.
+    EXIT /B exits the current batch script context (returns from a CALL :label
+    routine, or ends the script) without necessarily closing the parent cmd.exe
+    window. Optional exitCode sets ERRORLEVEL when using /B.
 
 remarks:
   rem: >-

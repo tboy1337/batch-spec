@@ -1,0 +1,11 @@
+{
+  "description": "SET /P on a pipe side updates only the child environment",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "set",
+    "pipe"
+  ]
+}
