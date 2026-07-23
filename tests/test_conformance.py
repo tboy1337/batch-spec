@@ -25,7 +25,7 @@ def _mock_impl(
 
 def test_discover_cases_finds_repository_corpus() -> None:
     cases = run_parser._discover_cases()
-    assert len(cases) == 76
+    assert len(cases) == 97
     assert all(case_id for case_id, _, _ in cases)
 
 

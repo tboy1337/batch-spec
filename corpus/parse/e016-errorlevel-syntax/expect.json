@@ -1,10 +1,11 @@
 {
-  "description": "ERRORLEVEL syntax",
+  "description": "Invalid cmd.exe IF %ERRORLEVEL% NUMBER syntax; parses as generic command, not IF",
   "parse": {
     "should_parse": true
   },
   "tags": [
     "if",
-    "errorlevel"
+    "errorlevel",
+    "negative"
   ]
 }

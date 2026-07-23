@@ -61,11 +61,6 @@
       "type": "object",
       "required": ["description"],
       "properties": {
-        "valid_caret_counts": {
-          "type": "array",
-          "items": { "type": "integer", "minimum": 1 },
-          "minItems": 1
-        },
         "description": { "type": "string", "minLength": 1 },
         "call_doubling": { "type": "string", "minLength": 1 }
       },

@@ -15,6 +15,7 @@ valid_modifiers:
   a: attributes
   $: path search (e.g. %~$PATH:1)
 
+# Letter modifiers for %~dpnx... combinations. Path-search $ is separate; see path_search_modifier.
 valid_modifier_chars: "nxfpdstaz"
 
 valid_parameter_patterns:

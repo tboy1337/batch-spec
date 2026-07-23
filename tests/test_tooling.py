@@ -30,11 +30,13 @@ def test_paths_resolve_to_existing_targets() -> None:
 
 
 def test_validate_accepts_real_commands_yaml() -> None:
-    validate._validate(_paths.COMMANDS_YAML, _paths.SCHEMA_DIR / "commands.schema.json")
+    validate._validate_yaml(
+        _paths.COMMANDS_YAML, _paths.SCHEMA_DIR / "commands.schema.json"
+    )
 
 
 def test_validate_accepts_real_expansion_yaml() -> None:
-    validate._validate(
+    validate._validate_yaml(
         _paths.EXPANSION_YAML, _paths.SCHEMA_DIR / "expansion.schema.json"
     )
 
@@ -45,7 +47,7 @@ def test_validate_rejects_invalid_yaml(tmp_path: Path) -> None:
     schema_path = _paths.SCHEMA_DIR / "commands.schema.json"
 
     with pytest.raises(jsonschema.ValidationError):
-        validate._validate(invalid_yaml, schema_path)
+        validate._validate_yaml(invalid_yaml, schema_path)
 
 
 def test_validate_main_prints_success(capsys: pytest.CaptureFixture[str]) -> None:

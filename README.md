@@ -21,7 +21,7 @@ define linter rules (E/W/S/SEC/P codes) — those live in Blinter's `spec/` tree
 
 ## Versioning
 
-Releases are tagged with semver (`v0.6.0`, …). Consumers pin a tag via git submodule
+Releases are tagged with semver (`v0.7.0`, …). Consumers pin a tag via git submodule
 or lock file. Do not depend on `main` directly in production CI.
 
 ## Validate
@@ -48,7 +48,6 @@ Useful flags for faster iteration:
 
 ```bash
 python scripts/verify.py --skip-format --skip-conformance
-python scripts/verify.py --skip-python-versions
 ```
 
 The manual validate steps above remain valid when you only need schema and parser checks.

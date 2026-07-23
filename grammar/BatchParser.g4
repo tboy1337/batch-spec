@@ -125,11 +125,8 @@ ifPredicate
     | NOT? DEFINED ifDefinedOperand
     | NOT? EXIST ifExistOperand
     | NOT? comparison
-    | PERCENT_VAR NUMBER
     | DQ_STRING
     | PERCENT_TILDE
-    | PERCENT_VAR
-    | PERCENT_ARG
     | argWord
     ;
 
@@ -296,6 +293,12 @@ argWord
     | GOTO
     | ENDLOCAL
     | SETLOCAL
+    | EQU
+    | NEQ
+    | LSS
+    | LEQ
+    | GTR
+    | GEQ
     ;
 
 token
@@ -328,6 +331,7 @@ token
     | MINUS
     | COMMA
     | EQUALS
+    | EQ
     | SLASH
     | PERCENT
     | argWord

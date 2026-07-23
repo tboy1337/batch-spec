@@ -16,7 +16,7 @@ deprecated_commands:
   edlin: Deprecated line editor
   keys: Deprecated Windows command
   winrm: Deprecated Windows command (use PowerShell WinRM cmdlets)
-  wmic: Deprecated Windows command (removed in Windows 11 24H2+)
+  wmic: Deprecated Windows command (not installed by default on Windows 11 24H2+; optional FoD)
 common_command_typos:
   iff: if
   ecko: echo
@@ -159,6 +159,7 @@ builtin_commands:
 - rd
 - recover
 - reg
+- rem
 - ren
 - rename
 - replace
@@ -212,5 +213,4 @@ builtin_commands:
 - yarn
 - zip
 version: 1
-older_windows_commands:
-- choice
+older_windows_commands: []
