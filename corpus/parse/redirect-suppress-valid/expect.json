@@ -1,0 +1,9 @@
+{
+  "description": "Suppress stdout and stderr via nul",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "redirection"
+  ]
+}

@@ -246,10 +246,16 @@ token
     | FOR_VAR
     | FOR_VAR_TILDE
     | BANG_VAR
+    | BANG
+    | TILDE
     | CARET_ESCAPE
     | CARET
+    | ASTERISK
     | LPAREN
     | RPAREN
+    | APPEND
+    | DUP_OUT
+    | DUP_IN
     | GT
     | LT
     | DOT
@@ -263,6 +269,8 @@ token
     | argWord
     | NUMBER
     | UNMATCHED_DQ
+    | UNMATCHED_SQ
+    | UNMATCHED_BACKTICK
     ;
 
 block

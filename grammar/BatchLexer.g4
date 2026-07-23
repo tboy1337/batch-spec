@@ -43,6 +43,9 @@ AMP            : '&' ;
 PIPE           : '|' ;
 AMPAMP         : '&&' ;
 PIPEPIPE       : '||' ;
+APPEND         : '>>' ;
+DUP_OUT        : '>&' ;
+DUP_IN         : '<&' ;
 GT             : '>' ;
 LT             : '<' ;
 EQ             : '==' ;
@@ -63,6 +66,10 @@ GTR            : [gG][tT][rR] ;
 GEQ            : [gG][eE][qQ] ;
 CARET          : '^' ;
 ASTERISK       : '*' ;
+
+LINE_CONTINUATION
+    : '^' '\r'? '\n' -> skip
+    ;
 
 CARET_ESCAPE
     : '^' ~[\r\n]
@@ -112,6 +119,14 @@ BANG_VAR
     : '!' [a-zA-Z_][a-zA-Z0-9_]* '!'
     ;
 
+BANG
+    : '!'
+    ;
+
+TILDE
+    : '~'
+    ;
+
 PERCENT
     : '%'
     ;
@@ -124,4 +139,12 @@ NEWLINE        : [\r\n]+ ;
 
 UNMATCHED_DQ
     : '"' (~[\r\n"] | '""')*
+    ;
+
+UNMATCHED_SQ
+    : '\'' (~[\r\n'] | '\'\'')*
+    ;
+
+UNMATCHED_BACKTICK
+    : '`' (~[\r\n`'] | '``')*
     ;

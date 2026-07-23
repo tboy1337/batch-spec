@@ -1,0 +1,9 @@
+{
+    "description":  "FOR /F usebackq single-quoted string input",
+    "parse":  {
+                  "should_parse":  true
+              },
+    "tags":  [
+                 "for"
+             ]
+}

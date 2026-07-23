@@ -1,0 +1,9 @@
+{
+  "description": "Stdout append redirection",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "redirection"
+  ]
+}

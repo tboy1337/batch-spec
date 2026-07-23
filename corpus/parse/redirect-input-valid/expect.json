@@ -1,0 +1,9 @@
+{
+  "description": "Stdin redirection from file",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "redirection"
+  ]
+}

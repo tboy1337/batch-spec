@@ -1,0 +1,9 @@
+{
+  "description": "Stderr duplicated to stdout handle",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "redirection"
+  ]
+}

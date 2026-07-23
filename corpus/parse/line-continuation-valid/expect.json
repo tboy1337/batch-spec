@@ -1,0 +1,9 @@
+{
+  "description": "Caret escapes CRLF to continue on next line",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "continuation"
+  ]
+}

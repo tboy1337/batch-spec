@@ -1,0 +1,10 @@
+{
+    "description":  "SET /A unary bitwise not operator",
+    "parse":  {
+                  "should_parse":  true
+              },
+    "tags":  [
+                 "set",
+                 "arithmetic"
+             ]
+}

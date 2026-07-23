@@ -1,0 +1,9 @@
+{
+  "description": "Literal backtick in unquoted argument text",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "quoting"
+  ]
+}
