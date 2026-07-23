@@ -1,0 +1,10 @@
+{
+  "description": "Parenthesized command group with stdout redirection",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "group",
+    "redirection"
+  ]
+}

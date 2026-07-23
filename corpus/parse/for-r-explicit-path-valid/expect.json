@@ -1,0 +1,9 @@
+{
+  "description": "FOR /R with explicit root path before loop variable",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

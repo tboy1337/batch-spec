@@ -1,0 +1,11 @@
+{
+  "description": "IF EXIST with FOR loop variable operand",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "for",
+    "exist"
+  ]
+}

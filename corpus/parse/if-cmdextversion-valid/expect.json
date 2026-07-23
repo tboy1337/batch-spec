@@ -1,0 +1,10 @@
+{
+  "description": "IF CMDEXTVERSION with multiline parenthesized body",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "cmdextversion"
+  ]
+}

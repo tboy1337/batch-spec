@@ -52,8 +52,16 @@ for_loop_variables:
   command_line_prefix: "%"
 
 caret_escape:
-  valid_caret_counts: [1, 3, 7, 15, 31]
-  description: "Valid multilevel escaping follows 2^n-1 caret pattern"
+  description: >-
+    Caret escaping is phase-driven, not a fixed count sequence. Each CMD
+    parsing phase that re-processes a command line may consume one level of
+    carets before special characters. CALL performs an extra re-parse and
+    doubles every caret on its command tail (including carets inside double
+    quotes), so nested CALL or percent-expanded command execution requires
+    compensating caret counts per hop rather than a single 2^n-1 formula.
+  call_doubling: >-
+    CALL doubles all carets once on its arguments before the line is parsed
+    again; quoted carets are doubled even though quotes suppress escaping.
 
 double_percent:
   for_body_rule: "FOR loop variables use %% in batch files"

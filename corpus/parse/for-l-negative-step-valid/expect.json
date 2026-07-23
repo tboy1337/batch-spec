@@ -1,0 +1,9 @@
+{
+  "description": "FOR /L with negative step in numeric list",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "IF NOT string1==string2 comparison",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "comparison"
+  ]
+}

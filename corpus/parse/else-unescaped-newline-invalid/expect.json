@@ -1,0 +1,11 @@
+{
+  "description": "IF block ELSE on separate line without caret continuation",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "if",
+    "else",
+    "negative"
+  ]
+}

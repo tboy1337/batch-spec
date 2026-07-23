@@ -1,0 +1,9 @@
+{
+  "description": "CALL to dynamic label via percent variable",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "call"
+  ]
+}

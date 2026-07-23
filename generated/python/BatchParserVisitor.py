@@ -44,6 +44,11 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by BatchParser#groupStmt.
+    def visitGroupStmt(self, ctx:BatchParser.GroupStmtContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by BatchParser#shiftStmt.
     def visitShiftStmt(self, ctx:BatchParser.ShiftStmtContext):
         return self.visitChildren(ctx)
@@ -74,8 +79,18 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by BatchParser#ifCmdextversionStmt.
+    def visitIfCmdextversionStmt(self, ctx:BatchParser.IfCmdextversionStmtContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by BatchParser#ifExistOperand.
     def visitIfExistOperand(self, ctx:BatchParser.IfExistOperandContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#ifDefinedOperand.
+    def visitIfDefinedOperand(self, ctx:BatchParser.IfDefinedOperandContext):
         return self.visitChildren(ctx)
 
 
@@ -101,6 +116,11 @@ class BatchParserVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by BatchParser#forStmt.
     def visitForStmt(self, ctx:BatchParser.ForStmtContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#forPath.
+    def visitForPath(self, ctx:BatchParser.ForPathContext):
         return self.visitChildren(ctx)
 
 

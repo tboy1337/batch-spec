@@ -1,0 +1,11 @@
+{
+  "description": "IF comparison with FOR loop variable operand",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "for",
+    "comparison"
+  ]
+}

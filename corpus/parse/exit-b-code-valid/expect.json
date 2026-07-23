@@ -1,0 +1,9 @@
+{
+  "description": "EXIT /B with numeric exit code",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "exit"
+  ]
+}

@@ -32,6 +32,7 @@ EXIST          : [eE][xX][iI][sS][tT] ;
 DEFINED        : [dD][eE][fF][iI][nN][eE][dD] ;
 NOT            : [nN][oO][tT] ;
 ERRORLEVEL     : [eE][rR][rR][oO][rR][lL][eE][vV][eE][lL] ;
+CMDEXTVERSION  : [cC][mM][dD][eE][xX][tT][vV][eE][rR][sS][iI][oO][nN] ;
 ELSE           : [eE][lL][sS][eE] ;
 EXIT           : [eE][xX][iI][tT] ;
 SHIFT          : [sS][hH][iI][fF][tT] ;

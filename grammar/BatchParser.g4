@@ -6,6 +6,21 @@ options { tokenVocab = BatchLexer; }
 def _notForToken(self) -> bool:
     from BatchLexer import BatchLexer  # isort: skip
     return self._input.LA(1) != BatchLexer.FOR
+
+def _notLonelyParen(self) -> bool:
+    from BatchLexer import BatchLexer  # isort: skip
+    la1 = self._input.LA(1)
+    if la1 != BatchLexer.RPAREN:
+        return True
+    la2 = self._input.LA(2)
+    return la2 not in (
+        BatchLexer.NEWLINE,
+        BatchLexer.AMP,
+        BatchLexer.PIPE,
+        BatchLexer.AMPAMP,
+        BatchLexer.PIPEPIPE,
+        -1,
+    )
 }
 
 script
@@ -37,6 +52,7 @@ statement
       | endlocalStmt
       | exitStmt
       | shiftStmt
+      | groupStmt
       | genericCmd
       )
     ;
@@ -46,9 +62,13 @@ exitStmt
     ;
 
 exitTail
-    : SLASH WORD
+    : SLASH WORD NUMBER?
     | NUMBER
     | token+
+    ;
+
+groupStmt
+    : LPAREN block RPAREN commandTail?
     ;
 
 shiftStmt
@@ -76,19 +96,35 @@ ifErrorlevelStmt
     : ERRORLEVEL NUMBER
     ;
 
+ifCmdextversionStmt
+    : CMDEXTVERSION NUMBER
+    ;
+
 ifExistOperand
     : DQ_STRING
     | WORD
     | PERCENT_VAR
     | PERCENT_TILDE
     | PERCENT_ARG
+    | FOR_VAR
+    | FOR_VAR_TILDE
+    | BANG_VAR
+    ;
+
+ifDefinedOperand
+    : argWord
+    | PERCENT_VAR
+    | FOR_VAR
+    | FOR_VAR_TILDE
+    | BANG_VAR
     ;
 
 ifPredicate
     : NOT? ifErrorlevelStmt
-    | NOT? DEFINED argWord
+    | NOT? ifCmdextversionStmt
+    | NOT? DEFINED ifDefinedOperand
     | NOT? EXIST ifExistOperand
-    | comparison
+    | NOT? comparison
     | PERCENT_VAR NUMBER
     | DQ_STRING
     | PERCENT_TILDE
@@ -118,12 +154,20 @@ compareOperand
     | PERCENT_VAR_REPLACE
     | PERCENT_VAR
     | PERCENT_ARG
+    | FOR_VAR
+    | FOR_VAR_TILDE
+    | BANG_VAR
     | argWord
     | NUMBER
     ;
 
 forStmt
-    : FOR forSlashMod* forFOptions? FOR_VAR IN LPAREN forList RPAREN DO forBody
+    : FOR forSlashMod* forFOptions? forPath? FOR_VAR IN LPAREN forList RPAREN DO forBody
+    ;
+
+forPath
+    : argWord
+    | DQ_STRING
     ;
 
 forSlashMod
@@ -153,7 +197,7 @@ forListItem
     | PERCENT_ARG
     | ASTERISK (DOT argWord)?
     | argWord
-    | NUMBER
+    | MINUS? NUMBER
     ;
 
 callStmt
@@ -163,8 +207,9 @@ callStmt
 callTarget
     : COLON? EOF_KW
     | COLON? argWord
-    | PERCENT_ARG
-    | PERCENT_VAR
+    | COLON? PERCENT_ARG
+    | COLON? PERCENT_VAR
+    | COLON? BANG_VAR
     | DQ_STRING
     ;
 
@@ -207,7 +252,7 @@ setRest
     ;
 
 genericCmd
-    : {self._notForToken()}? commandTail
+    : {self._notForToken() and self._notLonelyParen()}? commandTail
     ;
 
 commandTail
@@ -225,6 +270,7 @@ argWord
     | DEFINED
     | NOT
     | ERRORLEVEL
+    | CMDEXTVERSION
     | ELSE
     | EXIT
     | SHIFT
