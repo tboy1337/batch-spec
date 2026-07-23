@@ -1,25 +1,22 @@
 removed_commands:
   append: Removed Windows command
+  assign: Removed since Windows NT (not supported in cmd.exe)
+  backup: Removed since Windows NT (replaced by ntbackup then wbadmin)
   browstat: Removed Windows command
   caspol: Removed Windows command
   diskcomp: Removed Windows command
   diskcopy: Removed Windows command
   inuse: Removed Windows command
+  join: Removed since Windows NT (not supported in cmd.exe)
   streams: Removed Windows command
 deprecated_commands:
-  assign: Deprecated Windows command
-  backup: Deprecated Windows command
-  bitsadmin: Deprecated Windows command
-  cacls: Deprecated Windows command
-  comp: Deprecated Windows command
-  dpath: Deprecated Windows command
-  edlin: Deprecated Windows command
-  join: Deprecated Windows command
+  bitsadmin: Deprecated Windows command (use BITS PowerShell cmdlets)
+  cacls: Deprecated Windows command (use icacls)
+  dpath: Deprecated undocumented CMD internal (legacy APPEND equivalent)
+  edlin: Deprecated line editor
   keys: Deprecated Windows command
-  nbtstat: Deprecated Windows command
-  subst: Deprecated Windows command
-  winrm: Deprecated Windows command
-  wmic: Deprecated Windows command
+  winrm: Deprecated Windows command (use PowerShell WinRM cmdlets)
+  wmic: Deprecated Windows command (removed in Windows 11 24H2+)
 common_command_typos:
   iff: if
   ecko: echo
@@ -35,67 +32,101 @@ builtin_overlap_deprecated_notes:
 builtin_commands:
 - 7z
 - aria2c
+- arp
+- assoc
 - attrib
 - aws
 - az
+- bcdedit
+- break
 - bundle
 - call
 - cargo
 - cd
+- certutil
+- chcp
 - chdir
+- chkdsk
+- chkntfs
 - choco
 - choice
+- cipher
+- clip
 - cls
 - cmake
 - cmd
+- cmdkey
 - code
 - color
+- compact
+- comp
 - composer
+- convert
 - copy
 - cscript
 - curl
 - date
 - del
 - dir
+- diskpart
 - docker
 - docker-compose
+- doskey
 - dotnet
+- driverquery
 - echo
 - endlocal
 - erase
 - exit
+- expand
+- fc
 - find
 - findstr
 - for
+- forfiles
+- format
+- fsutil
 - ftp
+- ftype
 - gcloud
 - gem
+- getmac
 - gh
 - git
 - go
 - gofmt
 - goto
+- gpresult
 - gradle
 - gzip
 - helm
 - help
 - hg
+- icacls
 - if
 - ipconfig
 - java
 - javac
 - kubectl
+- label
+- logoff
 - make
 - maven
 - md
 - mkdir
+- mklink
+- mode
 - more
+- mountvol
 - move
 - msbuild
 - msiexec
+- msg
 - mvn
 - nano
+- nbtstat
 - net
+- netsh
 - netstat
 - ninja
 - node
@@ -104,6 +135,7 @@ builtin_commands:
 - npx
 - nslookup
 - nuget
+- openfiles
 - path
 - pause
 - php
@@ -114,31 +146,45 @@ builtin_commands:
 - pnpm
 - poetry
 - popd
+- powercfg
 - powershell
+- print
 - prompt
 - pushd
 - py
 - python
 - python3
+- quser
+- qwinsta
 - rd
+- recover
 - reg
 - ren
 - rename
+- replace
 - rmdir
 - robocopy
+- route
 - ruby
+- runas
 - rustc
 - rustup
 - sc
+- schtasks
 - scoop
 - scp
 - set
 - setlocal
+- setx
 - shift
+- shutdown
 - sort
 - ssh
 - start
+- subst
 - svn
+- systeminfo
+- takeown
 - tar
 - taskkill
 - tasklist
@@ -148,12 +194,17 @@ builtin_commands:
 - timeout
 - title
 - tracert
+- tree
 - type
 - unzip
 - ver
+- verify
 - vim
 - vol
+- waitfor
 - wget
+- where
+- whoami
 - winget
 - wmic
 - wscript
@@ -163,6 +214,3 @@ builtin_commands:
 version: 1
 older_windows_commands:
 - choice
-- forfiles
-- icacls
-- where

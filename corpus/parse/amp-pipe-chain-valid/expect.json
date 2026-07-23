@@ -1,0 +1,9 @@
+{
+  "description": "Single ampersand and pipe statement chaining",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "operators"
+  ]
+}

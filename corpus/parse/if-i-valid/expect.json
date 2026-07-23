@@ -1,0 +1,10 @@
+{
+  "description": "IF /I case-insensitive comparison",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "operators"
+  ]
+}

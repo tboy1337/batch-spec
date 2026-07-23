@@ -10,111 +10,153 @@ else:
 
 def serializedATN():
     return [
-        4,1,64,288,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,64,380,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,
         2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,
         7,20,2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,
         2,27,7,27,2,28,7,28,2,29,7,29,2,30,7,30,2,31,7,31,2,32,7,32,2,33,
-        7,33,2,34,7,34,1,0,5,0,72,8,0,10,0,12,0,75,9,0,1,0,1,0,1,1,1,1,1,
-        1,3,1,82,8,1,1,2,1,2,3,2,86,8,2,1,3,1,3,1,3,5,3,91,8,3,10,3,12,3,
-        94,9,3,1,3,3,3,97,8,3,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,3,
-        4,109,8,4,1,5,1,5,3,5,113,8,5,1,6,1,6,1,6,1,6,4,6,119,8,6,11,6,12,
-        6,120,3,6,123,8,6,1,7,1,7,5,7,127,8,7,10,7,12,7,130,9,7,1,8,1,8,
-        1,8,1,9,1,9,3,9,137,8,9,1,9,3,9,140,8,9,1,10,1,10,1,10,1,11,1,11,
-        1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,3,12,156,8,12,1,13,
-        3,13,159,8,13,1,13,1,13,3,13,163,8,13,1,13,1,13,1,13,3,13,168,8,
-        13,1,13,1,13,1,13,1,13,1,13,1,13,3,13,176,8,13,1,14,1,14,1,14,1,
-        14,1,15,1,15,1,16,1,16,1,17,1,17,5,17,188,8,17,10,17,12,17,191,9,
-        17,1,17,1,17,3,17,195,8,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,
-        17,1,17,1,17,1,17,3,17,208,8,17,1,18,1,18,1,18,1,19,1,19,5,19,215,
-        8,19,10,19,12,19,218,9,19,1,20,1,20,1,21,1,21,1,21,3,21,225,8,21,
-        1,22,3,22,228,8,22,1,22,1,22,3,22,232,8,22,1,22,1,22,1,22,1,22,3,
-        22,238,8,22,1,23,1,23,1,23,3,23,243,8,23,1,24,1,24,1,24,1,24,3,24,
-        249,8,24,1,25,1,25,3,25,253,8,25,1,26,4,26,256,8,26,11,26,12,26,
-        257,1,27,1,27,3,27,262,8,27,1,28,1,28,1,29,1,29,1,30,4,30,269,8,
-        30,11,30,12,30,270,1,31,1,31,1,32,4,32,276,8,32,11,32,12,32,277,
-        1,33,1,33,1,34,5,34,283,8,34,10,34,12,34,286,9,34,1,34,0,0,35,0,
-        2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,
-        48,50,52,54,56,58,60,62,64,66,68,0,7,1,0,23,26,3,0,50,50,55,55,60,
-        60,2,0,27,31,41,46,3,0,50,50,52,56,60,61,3,0,49,51,55,55,60,61,2,
-        0,33,33,35,35,7,0,21,24,27,28,34,34,36,40,47,47,50,61,64,64,304,
-        0,73,1,0,0,0,2,81,1,0,0,0,4,83,1,0,0,0,6,87,1,0,0,0,8,108,1,0,0,
-        0,10,110,1,0,0,0,12,122,1,0,0,0,14,124,1,0,0,0,16,131,1,0,0,0,18,
-        139,1,0,0,0,20,141,1,0,0,0,22,144,1,0,0,0,24,146,1,0,0,0,26,175,
-        1,0,0,0,28,177,1,0,0,0,30,181,1,0,0,0,32,183,1,0,0,0,34,185,1,0,
-        0,0,36,209,1,0,0,0,38,212,1,0,0,0,40,219,1,0,0,0,42,221,1,0,0,0,
-        44,237,1,0,0,0,46,239,1,0,0,0,48,244,1,0,0,0,50,250,1,0,0,0,52,255,
-        1,0,0,0,54,259,1,0,0,0,56,263,1,0,0,0,58,265,1,0,0,0,60,268,1,0,
-        0,0,62,272,1,0,0,0,64,275,1,0,0,0,66,279,1,0,0,0,68,284,1,0,0,0,
-        70,72,3,2,1,0,71,70,1,0,0,0,72,75,1,0,0,0,73,71,1,0,0,0,73,74,1,
-        0,0,0,74,76,1,0,0,0,75,73,1,0,0,0,76,77,5,0,0,1,77,1,1,0,0,0,78,
-        82,3,4,2,0,79,82,3,6,3,0,80,82,5,63,0,0,81,78,1,0,0,0,81,79,1,0,
-        0,0,81,80,1,0,0,0,82,3,1,0,0,0,83,85,5,3,0,0,84,86,5,63,0,0,85,84,
-        1,0,0,0,85,86,1,0,0,0,86,5,1,0,0,0,87,92,3,8,4,0,88,89,7,0,0,0,89,
-        91,3,8,4,0,90,88,1,0,0,0,91,94,1,0,0,0,92,90,1,0,0,0,92,93,1,0,0,
-        0,93,96,1,0,0,0,94,92,1,0,0,0,95,97,5,63,0,0,96,95,1,0,0,0,96,97,
-        1,0,0,0,97,7,1,0,0,0,98,109,3,16,8,0,99,109,3,34,17,0,100,109,3,
-        42,21,0,101,109,3,46,23,0,102,109,3,48,24,0,103,109,3,50,25,0,104,
-        109,3,54,27,0,105,109,3,10,5,0,106,109,3,14,7,0,107,109,3,62,31,
-        0,108,98,1,0,0,0,108,99,1,0,0,0,108,100,1,0,0,0,108,101,1,0,0,0,
-        108,102,1,0,0,0,108,103,1,0,0,0,108,104,1,0,0,0,108,105,1,0,0,0,
-        108,106,1,0,0,0,108,107,1,0,0,0,109,9,1,0,0,0,110,112,5,18,0,0,111,
-        113,3,12,6,0,112,111,1,0,0,0,112,113,1,0,0,0,113,11,1,0,0,0,114,
-        115,5,34,0,0,115,123,5,60,0,0,116,123,5,61,0,0,117,119,3,66,33,0,
-        118,117,1,0,0,0,119,120,1,0,0,0,120,118,1,0,0,0,120,121,1,0,0,0,
-        121,123,1,0,0,0,122,114,1,0,0,0,122,116,1,0,0,0,122,118,1,0,0,0,
-        123,13,1,0,0,0,124,128,5,19,0,0,125,127,3,66,33,0,126,125,1,0,0,
-        0,127,130,1,0,0,0,128,126,1,0,0,0,128,129,1,0,0,0,129,15,1,0,0,0,
-        130,128,1,0,0,0,131,132,5,5,0,0,132,133,3,18,9,0,133,17,1,0,0,0,
-        134,136,3,26,13,0,135,137,3,64,32,0,136,135,1,0,0,0,136,137,1,0,
-        0,0,137,140,1,0,0,0,138,140,3,24,12,0,139,134,1,0,0,0,139,138,1,
-        0,0,0,140,19,1,0,0,0,141,142,5,16,0,0,142,143,5,61,0,0,143,21,1,
-        0,0,0,144,145,7,1,0,0,145,23,1,0,0,0,146,147,3,26,13,0,147,148,5,
-        21,0,0,148,149,3,68,34,0,149,155,5,22,0,0,150,151,5,17,0,0,151,152,
-        5,21,0,0,152,153,3,68,34,0,153,154,5,22,0,0,154,156,1,0,0,0,155,
-        150,1,0,0,0,155,156,1,0,0,0,156,25,1,0,0,0,157,159,5,15,0,0,158,
-        157,1,0,0,0,158,159,1,0,0,0,159,160,1,0,0,0,160,176,3,20,10,0,161,
-        163,5,15,0,0,162,161,1,0,0,0,162,163,1,0,0,0,163,164,1,0,0,0,164,
-        165,5,14,0,0,165,176,5,60,0,0,166,168,5,15,0,0,167,166,1,0,0,0,167,
-        168,1,0,0,0,168,169,1,0,0,0,169,170,5,13,0,0,170,176,3,22,11,0,171,
-        176,3,28,14,0,172,176,5,50,0,0,173,176,5,55,0,0,174,176,5,60,0,0,
-        175,158,1,0,0,0,175,162,1,0,0,0,175,167,1,0,0,0,175,171,1,0,0,0,
-        175,172,1,0,0,0,175,173,1,0,0,0,175,174,1,0,0,0,176,27,1,0,0,0,177,
-        178,3,32,16,0,178,179,3,30,15,0,179,180,3,32,16,0,180,29,1,0,0,0,
-        181,182,7,2,0,0,182,31,1,0,0,0,183,184,7,3,0,0,184,33,1,0,0,0,185,
-        189,5,4,0,0,186,188,3,36,18,0,187,186,1,0,0,0,188,191,1,0,0,0,189,
-        187,1,0,0,0,189,190,1,0,0,0,190,192,1,0,0,0,191,189,1,0,0,0,192,
-        194,5,57,0,0,193,195,5,58,0,0,194,193,1,0,0,0,194,195,1,0,0,0,195,
-        196,1,0,0,0,196,197,5,12,0,0,197,198,5,21,0,0,198,199,3,38,19,0,
-        199,200,5,22,0,0,200,207,5,11,0,0,201,202,5,21,0,0,202,203,3,68,
-        34,0,203,204,5,22,0,0,204,208,1,0,0,0,205,208,3,68,34,0,206,208,
-        3,6,3,0,207,201,1,0,0,0,207,205,1,0,0,0,207,206,1,0,0,0,208,35,1,
-        0,0,0,209,210,5,34,0,0,210,211,5,60,0,0,211,37,1,0,0,0,212,216,3,
-        40,20,0,213,215,3,40,20,0,214,213,1,0,0,0,215,218,1,0,0,0,216,214,
-        1,0,0,0,216,217,1,0,0,0,217,39,1,0,0,0,218,216,1,0,0,0,219,220,7,
-        4,0,0,220,41,1,0,0,0,221,222,5,6,0,0,222,224,3,44,22,0,223,225,3,
-        64,32,0,224,223,1,0,0,0,224,225,1,0,0,0,225,43,1,0,0,0,226,228,5,
-        32,0,0,227,226,1,0,0,0,227,228,1,0,0,0,228,229,1,0,0,0,229,238,5,
-        20,0,0,230,232,5,32,0,0,231,230,1,0,0,0,231,232,1,0,0,0,232,233,
-        1,0,0,0,233,238,5,60,0,0,234,238,5,56,0,0,235,238,5,55,0,0,236,238,
-        5,50,0,0,237,227,1,0,0,0,237,231,1,0,0,0,237,234,1,0,0,0,237,235,
-        1,0,0,0,237,236,1,0,0,0,238,45,1,0,0,0,239,240,5,7,0,0,240,242,3,
-        44,22,0,241,243,3,64,32,0,242,241,1,0,0,0,242,243,1,0,0,0,243,47,
-        1,0,0,0,244,245,5,8,0,0,245,246,3,56,28,0,246,248,3,58,29,0,247,
-        249,3,60,30,0,248,247,1,0,0,0,248,249,1,0,0,0,249,49,1,0,0,0,250,
-        252,5,9,0,0,251,253,3,52,26,0,252,251,1,0,0,0,252,253,1,0,0,0,253,
-        51,1,0,0,0,254,256,3,66,33,0,255,254,1,0,0,0,256,257,1,0,0,0,257,
-        255,1,0,0,0,257,258,1,0,0,0,258,53,1,0,0,0,259,261,5,10,0,0,260,
-        262,3,64,32,0,261,260,1,0,0,0,261,262,1,0,0,0,262,55,1,0,0,0,263,
-        264,7,1,0,0,264,57,1,0,0,0,265,266,7,5,0,0,266,59,1,0,0,0,267,269,
-        3,66,33,0,268,267,1,0,0,0,269,270,1,0,0,0,270,268,1,0,0,0,270,271,
-        1,0,0,0,271,61,1,0,0,0,272,273,3,64,32,0,273,63,1,0,0,0,274,276,
-        3,66,33,0,275,274,1,0,0,0,276,277,1,0,0,0,277,275,1,0,0,0,277,278,
-        1,0,0,0,278,65,1,0,0,0,279,280,7,6,0,0,280,67,1,0,0,0,281,283,3,
-        2,1,0,282,281,1,0,0,0,283,286,1,0,0,0,284,282,1,0,0,0,284,285,1,
-        0,0,0,285,69,1,0,0,0,286,284,1,0,0,0,33,73,81,85,92,96,108,112,120,
-        122,128,136,139,155,158,162,167,175,189,194,207,216,224,227,231,
-        237,242,248,252,257,261,270,277,284
+        7,33,2,34,7,34,2,35,7,35,2,36,7,36,2,37,7,37,2,38,7,38,2,39,7,39,
+        1,0,5,0,82,8,0,10,0,12,0,85,9,0,1,0,1,0,1,1,1,1,1,1,3,1,92,8,1,1,
+        2,1,2,3,2,96,8,2,1,3,1,3,1,3,5,3,101,8,3,10,3,12,3,104,9,3,1,3,3,
+        3,107,8,3,1,4,3,4,110,8,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,
+        4,3,4,122,8,4,1,5,1,5,3,5,126,8,5,1,6,1,6,1,6,1,6,4,6,132,8,6,11,
+        6,12,6,133,3,6,136,8,6,1,7,1,7,5,7,140,8,7,10,7,12,7,143,9,7,1,8,
+        1,8,3,8,147,8,8,1,8,1,8,1,9,1,9,1,9,1,10,1,10,1,10,1,10,1,10,3,10,
+        159,8,10,1,10,1,10,1,10,3,10,164,8,10,1,11,1,11,1,11,1,12,1,12,1,
+        12,1,13,1,13,1,14,3,14,175,8,14,1,14,1,14,3,14,179,8,14,1,14,1,14,
+        1,14,3,14,184,8,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,
+        1,14,3,14,196,8,14,1,15,1,15,1,15,1,15,1,16,1,16,1,17,1,17,1,17,
+        1,17,1,17,1,17,1,17,1,17,3,17,212,8,17,1,18,1,18,5,18,216,8,18,10,
+        18,12,18,219,9,18,1,18,3,18,222,8,18,1,18,1,18,1,18,1,18,1,18,1,
+        18,1,18,1,18,1,19,1,19,1,19,1,20,1,20,1,21,1,21,1,21,1,21,1,21,3,
+        21,242,8,21,1,22,1,22,1,22,5,22,247,8,22,10,22,12,22,250,9,22,1,
+        22,4,22,253,8,22,11,22,12,22,254,3,22,257,8,22,1,23,1,23,1,23,1,
+        23,1,23,1,23,1,23,1,23,1,23,3,23,268,8,23,1,23,1,23,3,23,272,8,23,
+        1,24,1,24,1,24,3,24,277,8,24,1,25,3,25,280,8,25,1,25,1,25,3,25,284,
+        8,25,1,25,1,25,1,25,1,25,3,25,290,8,25,1,26,1,26,1,26,1,27,1,27,
+        3,27,297,8,27,1,27,1,27,1,28,1,28,1,28,1,29,1,29,1,29,1,29,3,29,
+        308,8,29,3,29,310,8,29,1,30,1,30,3,30,314,8,30,1,31,4,31,317,8,31,
+        11,31,12,31,318,1,32,1,32,3,32,323,8,32,1,33,1,33,3,33,327,8,33,
+        1,34,4,34,330,8,34,11,34,12,34,331,1,35,1,35,1,35,1,36,4,36,338,
+        8,36,11,36,12,36,339,1,37,1,37,1,38,1,38,1,38,1,38,1,38,1,38,1,38,
+        1,38,1,38,1,38,1,38,1,38,1,38,1,38,1,38,1,38,1,38,1,38,1,38,1,38,
+        1,38,1,38,1,38,1,38,1,38,1,38,1,38,1,38,3,38,372,8,38,1,39,5,39,
+        375,8,39,10,39,12,39,378,9,39,1,39,0,0,40,0,2,4,6,8,10,12,14,16,
+        18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,
+        62,64,66,68,70,72,74,76,78,0,4,1,0,24,27,4,0,48,48,51,51,54,55,60,
+        60,2,0,30,30,39,44,2,0,5,20,60,60,441,0,83,1,0,0,0,2,91,1,0,0,0,
+        4,93,1,0,0,0,6,97,1,0,0,0,8,109,1,0,0,0,10,123,1,0,0,0,12,135,1,
+        0,0,0,14,137,1,0,0,0,16,144,1,0,0,0,18,150,1,0,0,0,20,163,1,0,0,
+        0,22,165,1,0,0,0,24,168,1,0,0,0,26,171,1,0,0,0,28,195,1,0,0,0,30,
+        197,1,0,0,0,32,201,1,0,0,0,34,211,1,0,0,0,36,213,1,0,0,0,38,231,
+        1,0,0,0,40,234,1,0,0,0,42,241,1,0,0,0,44,256,1,0,0,0,46,271,1,0,
+        0,0,48,273,1,0,0,0,50,289,1,0,0,0,52,291,1,0,0,0,54,294,1,0,0,0,
+        56,300,1,0,0,0,58,309,1,0,0,0,60,311,1,0,0,0,62,316,1,0,0,0,64,320,
+        1,0,0,0,66,326,1,0,0,0,68,329,1,0,0,0,70,333,1,0,0,0,72,337,1,0,
+        0,0,74,341,1,0,0,0,76,371,1,0,0,0,78,376,1,0,0,0,80,82,3,2,1,0,81,
+        80,1,0,0,0,82,85,1,0,0,0,83,81,1,0,0,0,83,84,1,0,0,0,84,86,1,0,0,
+        0,85,83,1,0,0,0,86,87,5,0,0,1,87,1,1,0,0,0,88,92,3,4,2,0,89,92,3,
+        6,3,0,90,92,5,63,0,0,91,88,1,0,0,0,91,89,1,0,0,0,91,90,1,0,0,0,92,
+        3,1,0,0,0,93,95,5,3,0,0,94,96,5,63,0,0,95,94,1,0,0,0,95,96,1,0,0,
+        0,96,5,1,0,0,0,97,102,3,8,4,0,98,99,7,0,0,0,99,101,3,8,4,0,100,98,
+        1,0,0,0,101,104,1,0,0,0,102,100,1,0,0,0,102,103,1,0,0,0,103,106,
+        1,0,0,0,104,102,1,0,0,0,105,107,5,63,0,0,106,105,1,0,0,0,106,107,
+        1,0,0,0,107,7,1,0,0,0,108,110,5,4,0,0,109,108,1,0,0,0,109,110,1,
+        0,0,0,110,121,1,0,0,0,111,122,3,16,8,0,112,122,3,36,18,0,113,122,
+        3,48,24,0,114,122,3,52,26,0,115,122,3,54,27,0,116,122,3,60,30,0,
+        117,122,3,64,32,0,118,122,3,10,5,0,119,122,3,14,7,0,120,122,3,70,
+        35,0,121,111,1,0,0,0,121,112,1,0,0,0,121,113,1,0,0,0,121,114,1,0,
+        0,0,121,115,1,0,0,0,121,116,1,0,0,0,121,117,1,0,0,0,121,118,1,0,
+        0,0,121,119,1,0,0,0,121,120,1,0,0,0,122,9,1,0,0,0,123,125,5,19,0,
+        0,124,126,3,12,6,0,125,124,1,0,0,0,125,126,1,0,0,0,126,11,1,0,0,
+        0,127,128,5,32,0,0,128,136,5,60,0,0,129,136,5,61,0,0,130,132,3,76,
+        38,0,131,130,1,0,0,0,132,133,1,0,0,0,133,131,1,0,0,0,133,134,1,0,
+        0,0,134,136,1,0,0,0,135,127,1,0,0,0,135,129,1,0,0,0,135,131,1,0,
+        0,0,136,13,1,0,0,0,137,141,5,20,0,0,138,140,3,76,38,0,139,138,1,
+        0,0,0,140,143,1,0,0,0,141,139,1,0,0,0,141,142,1,0,0,0,142,15,1,0,
+        0,0,143,141,1,0,0,0,144,146,5,6,0,0,145,147,3,18,9,0,146,145,1,0,
+        0,0,146,147,1,0,0,0,147,148,1,0,0,0,148,149,3,20,10,0,149,17,1,0,
+        0,0,150,151,5,32,0,0,151,152,5,60,0,0,152,19,1,0,0,0,153,154,3,28,
+        14,0,154,155,5,22,0,0,155,156,3,78,39,0,156,158,5,23,0,0,157,159,
+        3,22,11,0,158,157,1,0,0,0,158,159,1,0,0,0,159,164,1,0,0,0,160,161,
+        3,28,14,0,161,162,3,8,4,0,162,164,1,0,0,0,163,153,1,0,0,0,163,160,
+        1,0,0,0,164,21,1,0,0,0,165,166,5,18,0,0,166,167,3,20,10,0,167,23,
+        1,0,0,0,168,169,5,17,0,0,169,170,5,61,0,0,170,25,1,0,0,0,171,172,
+        7,1,0,0,172,27,1,0,0,0,173,175,5,16,0,0,174,173,1,0,0,0,174,175,
+        1,0,0,0,175,176,1,0,0,0,176,196,3,24,12,0,177,179,5,16,0,0,178,177,
+        1,0,0,0,178,179,1,0,0,0,179,180,1,0,0,0,180,181,5,15,0,0,181,196,
+        3,74,37,0,182,184,5,16,0,0,183,182,1,0,0,0,183,184,1,0,0,0,184,185,
+        1,0,0,0,185,186,5,14,0,0,186,196,3,26,13,0,187,196,3,30,15,0,188,
+        189,5,54,0,0,189,196,5,61,0,0,190,196,5,48,0,0,191,196,5,51,0,0,
+        192,196,5,54,0,0,193,196,5,55,0,0,194,196,3,74,37,0,195,174,1,0,
+        0,0,195,178,1,0,0,0,195,183,1,0,0,0,195,187,1,0,0,0,195,188,1,0,
+        0,0,195,190,1,0,0,0,195,191,1,0,0,0,195,192,1,0,0,0,195,193,1,0,
+        0,0,195,194,1,0,0,0,196,29,1,0,0,0,197,198,3,34,17,0,198,199,3,32,
+        16,0,199,200,3,34,17,0,200,31,1,0,0,0,201,202,7,2,0,0,202,33,1,0,
+        0,0,203,212,5,48,0,0,204,212,5,51,0,0,205,212,5,52,0,0,206,212,5,
+        53,0,0,207,212,5,54,0,0,208,212,5,55,0,0,209,212,3,74,37,0,210,212,
+        5,61,0,0,211,203,1,0,0,0,211,204,1,0,0,0,211,205,1,0,0,0,211,206,
+        1,0,0,0,211,207,1,0,0,0,211,208,1,0,0,0,211,209,1,0,0,0,211,210,
+        1,0,0,0,212,35,1,0,0,0,213,217,5,5,0,0,214,216,3,38,19,0,215,214,
+        1,0,0,0,216,219,1,0,0,0,217,215,1,0,0,0,217,218,1,0,0,0,218,221,
+        1,0,0,0,219,217,1,0,0,0,220,222,3,40,20,0,221,220,1,0,0,0,221,222,
+        1,0,0,0,222,223,1,0,0,0,223,224,5,56,0,0,224,225,5,13,0,0,225,226,
+        5,22,0,0,226,227,3,44,22,0,227,228,5,23,0,0,228,229,5,12,0,0,229,
+        230,3,42,21,0,230,37,1,0,0,0,231,232,5,32,0,0,232,233,5,60,0,0,233,
+        39,1,0,0,0,234,235,5,48,0,0,235,41,1,0,0,0,236,237,5,22,0,0,237,
+        238,3,78,39,0,238,239,5,23,0,0,239,242,1,0,0,0,240,242,3,8,4,0,241,
+        236,1,0,0,0,241,240,1,0,0,0,242,43,1,0,0,0,243,248,3,46,23,0,244,
+        245,5,34,0,0,245,247,3,46,23,0,246,244,1,0,0,0,247,250,1,0,0,0,248,
+        246,1,0,0,0,248,249,1,0,0,0,249,257,1,0,0,0,250,248,1,0,0,0,251,
+        253,3,46,23,0,252,251,1,0,0,0,253,254,1,0,0,0,254,252,1,0,0,0,254,
+        255,1,0,0,0,255,257,1,0,0,0,256,243,1,0,0,0,256,252,1,0,0,0,257,
+        45,1,0,0,0,258,272,5,49,0,0,259,272,5,48,0,0,260,272,5,50,0,0,261,
+        272,5,54,0,0,262,272,5,51,0,0,263,272,5,55,0,0,264,267,5,46,0,0,
+        265,266,5,35,0,0,266,268,3,74,37,0,267,265,1,0,0,0,267,268,1,0,0,
+        0,268,272,1,0,0,0,269,272,3,74,37,0,270,272,5,61,0,0,271,258,1,0,
+        0,0,271,259,1,0,0,0,271,260,1,0,0,0,271,261,1,0,0,0,271,262,1,0,
+        0,0,271,263,1,0,0,0,271,264,1,0,0,0,271,269,1,0,0,0,271,270,1,0,
+        0,0,272,47,1,0,0,0,273,274,5,7,0,0,274,276,3,50,25,0,275,277,3,72,
+        36,0,276,275,1,0,0,0,276,277,1,0,0,0,277,49,1,0,0,0,278,280,5,31,
+        0,0,279,278,1,0,0,0,279,280,1,0,0,0,280,281,1,0,0,0,281,290,5,21,
+        0,0,282,284,5,31,0,0,283,282,1,0,0,0,283,284,1,0,0,0,284,285,1,0,
+        0,0,285,290,3,74,37,0,286,290,5,55,0,0,287,290,5,54,0,0,288,290,
+        5,48,0,0,289,279,1,0,0,0,289,283,1,0,0,0,289,286,1,0,0,0,289,287,
+        1,0,0,0,289,288,1,0,0,0,290,51,1,0,0,0,291,292,5,8,0,0,292,293,3,
+        50,25,0,293,53,1,0,0,0,294,296,5,9,0,0,295,297,3,56,28,0,296,295,
+        1,0,0,0,296,297,1,0,0,0,297,298,1,0,0,0,298,299,3,58,29,0,299,55,
+        1,0,0,0,300,301,5,32,0,0,301,302,5,60,0,0,302,57,1,0,0,0,303,310,
+        5,48,0,0,304,305,3,66,33,0,305,307,5,33,0,0,306,308,3,68,34,0,307,
+        306,1,0,0,0,307,308,1,0,0,0,308,310,1,0,0,0,309,303,1,0,0,0,309,
+        304,1,0,0,0,310,59,1,0,0,0,311,313,5,10,0,0,312,314,3,62,31,0,313,
+        312,1,0,0,0,313,314,1,0,0,0,314,61,1,0,0,0,315,317,3,76,38,0,316,
+        315,1,0,0,0,317,318,1,0,0,0,318,316,1,0,0,0,318,319,1,0,0,0,319,
+        63,1,0,0,0,320,322,5,11,0,0,321,323,3,72,36,0,322,321,1,0,0,0,322,
+        323,1,0,0,0,323,65,1,0,0,0,324,327,3,74,37,0,325,327,5,54,0,0,326,
+        324,1,0,0,0,326,325,1,0,0,0,327,67,1,0,0,0,328,330,3,76,38,0,329,
+        328,1,0,0,0,330,331,1,0,0,0,331,329,1,0,0,0,331,332,1,0,0,0,332,
+        69,1,0,0,0,333,334,4,35,0,0,334,335,3,72,36,0,335,71,1,0,0,0,336,
+        338,3,76,38,0,337,336,1,0,0,0,338,339,1,0,0,0,339,337,1,0,0,0,339,
+        340,1,0,0,0,340,73,1,0,0,0,341,342,7,3,0,0,342,75,1,0,0,0,343,372,
+        5,48,0,0,344,372,5,49,0,0,345,372,5,50,0,0,346,372,5,51,0,0,347,
+        372,5,52,0,0,348,372,5,53,0,0,349,372,5,54,0,0,350,372,5,55,0,0,
+        351,372,5,56,0,0,352,372,5,57,0,0,353,372,5,58,0,0,354,372,5,47,
+        0,0,355,372,5,45,0,0,356,372,5,22,0,0,357,372,5,23,0,0,358,372,5,
+        28,0,0,359,372,5,29,0,0,360,372,5,35,0,0,361,372,5,36,0,0,362,372,
+        5,37,0,0,363,372,5,38,0,0,364,372,5,34,0,0,365,372,5,33,0,0,366,
+        372,5,32,0,0,367,372,5,59,0,0,368,372,3,74,37,0,369,372,5,61,0,0,
+        370,372,5,64,0,0,371,343,1,0,0,0,371,344,1,0,0,0,371,345,1,0,0,0,
+        371,346,1,0,0,0,371,347,1,0,0,0,371,348,1,0,0,0,371,349,1,0,0,0,
+        371,350,1,0,0,0,371,351,1,0,0,0,371,352,1,0,0,0,371,353,1,0,0,0,
+        371,354,1,0,0,0,371,355,1,0,0,0,371,356,1,0,0,0,371,357,1,0,0,0,
+        371,358,1,0,0,0,371,359,1,0,0,0,371,360,1,0,0,0,371,361,1,0,0,0,
+        371,362,1,0,0,0,371,363,1,0,0,0,371,364,1,0,0,0,371,365,1,0,0,0,
+        371,366,1,0,0,0,371,367,1,0,0,0,371,368,1,0,0,0,371,369,1,0,0,0,
+        371,370,1,0,0,0,372,77,1,0,0,0,373,375,3,2,1,0,374,373,1,0,0,0,375,
+        378,1,0,0,0,376,374,1,0,0,0,376,377,1,0,0,0,377,79,1,0,0,0,378,376,
+        1,0,0,0,42,83,91,95,102,106,109,121,125,133,135,141,146,158,163,
+        174,178,183,195,211,217,221,241,248,254,256,267,271,276,279,283,
+        289,296,307,309,313,318,322,326,331,339,371,376
     ]
 
 class BatchParser ( Parser ):
@@ -128,28 +170,31 @@ class BatchParser ( Parser ):
     sharedContextCache = PredictionContextCache()
 
     literalNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                     "'@'", "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                     "<INVALID>", "'('", "')'", "'&'", "'|'", "'&&'", "'||'", 
+                     "'>'", "'<'", "'=='", "':'", "'/'", "'='", "','", "'.'", 
+                     "'\\'", "'+'", "'-'", "<INVALID>", "<INVALID>", "<INVALID>", 
+                     "<INVALID>", "<INVALID>", "<INVALID>", "'^'", "'*'", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                     "'EOF'", "'('", "')'", "'&'", "'|'", "'&&'", "'||'", 
-                     "'>'", "'<'", "'>='", "'<='", "'=='", "':'", "'/A'", 
-                     "'/'", "'='", "','", "'.'", "'\\'", "'+'", "'-'", "'EQU'", 
-                     "'NEQ'", "'LSS'", "'LEQ'", "'GTR'", "'GEQ'", "'^'", 
-                     "'%'", "'*'" ]
+                     "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                     "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                     "'%'" ]
 
-    symbolicNames = [ "<INVALID>", "LINE_COMMENT", "REM", "LABEL", "FOR", 
-                      "IF", "CALL", "GOTO", "SET", "SETLOCAL", "ENDLOCAL", 
+    symbolicNames = [ "<INVALID>", "LINE_COMMENT", "REM", "LABEL", "AT", 
+                      "FOR", "IF", "CALL", "GOTO", "SET", "SETLOCAL", "ENDLOCAL", 
                       "DO", "IN", "EXIST", "DEFINED", "NOT", "ERRORLEVEL", 
                       "ELSE", "EXIT", "SHIFT", "EOF_KW", "LPAREN", "RPAREN", 
-                      "AMP", "PIPE", "AMPAMP", "PIPEPIPE", "GT", "LT", "GE", 
-                      "LE", "EQ", "COLON", "SET_A", "SLASH", "EQUALS", "COMMA", 
-                      "DOT", "BACKSLASH", "PLUS", "MINUS", "EQU", "NEQ", 
-                      "LSS", "LEQ", "GTR", "GEQ", "CARET", "PERCENT", "ASTERISK", 
-                      "DQ_STRING", "SQ_STRING", "PERCENT_TILDE", "PERCENT_VAR_SUBSTRING", 
-                      "PERCENT_VAR_REPLACE", "PERCENT_VAR", "PERCENT_NUM", 
-                      "FOR_VAR", "FOR_VAR_TILDE", "BANG_VAR", "WORD", "NUMBER", 
-                      "WS", "NEWLINE", "UNMATCHED_DQ" ]
+                      "AMP", "PIPE", "AMPAMP", "PIPEPIPE", "GT", "LT", "EQ", 
+                      "COLON", "SLASH", "EQUALS", "COMMA", "DOT", "BACKSLASH", 
+                      "PLUS", "MINUS", "EQU", "NEQ", "LSS", "LEQ", "GTR", 
+                      "GEQ", "CARET", "ASTERISK", "CARET_ESCAPE", "DQ_STRING", 
+                      "SQ_STRING", "BACKTICK_STRING", "PERCENT_TILDE", "PERCENT_VAR_SUBSTRING", 
+                      "PERCENT_VAR_REPLACE", "PERCENT_VAR", "PERCENT_ARG", 
+                      "FOR_VAR", "FOR_VAR_TILDE", "BANG_VAR", "PERCENT", 
+                      "WORD", "NUMBER", "WS", "NEWLINE", "UNMATCHED_DQ" ]
 
     RULE_script = 0
     RULE_line = 1
@@ -160,102 +205,108 @@ class BatchParser ( Parser ):
     RULE_exitTail = 6
     RULE_shiftStmt = 7
     RULE_ifStmt = 8
-    RULE_ifTail = 9
-    RULE_ifErrorlevelStmt = 10
-    RULE_ifExistOperand = 11
-    RULE_ifBlockStmt = 12
-    RULE_ifPredicate = 13
-    RULE_comparison = 14
-    RULE_compareOp = 15
-    RULE_compareOperand = 16
-    RULE_forStmt = 17
-    RULE_forMod = 18
-    RULE_forList = 19
-    RULE_forItem = 20
-    RULE_callStmt = 21
-    RULE_callTarget = 22
-    RULE_gotoStmt = 23
-    RULE_setStmt = 24
-    RULE_setlocalStmt = 25
-    RULE_setlocalRest = 26
-    RULE_endlocalStmt = 27
-    RULE_setTarget = 28
-    RULE_setOp = 29
-    RULE_setRest = 30
-    RULE_genericCmd = 31
-    RULE_commandTail = 32
-    RULE_token = 33
-    RULE_block = 34
+    RULE_ifIOpt = 9
+    RULE_ifBody = 10
+    RULE_elseClause = 11
+    RULE_ifErrorlevelStmt = 12
+    RULE_ifExistOperand = 13
+    RULE_ifPredicate = 14
+    RULE_comparison = 15
+    RULE_compareOp = 16
+    RULE_compareOperand = 17
+    RULE_forStmt = 18
+    RULE_forSlashMod = 19
+    RULE_forFOptions = 20
+    RULE_forBody = 21
+    RULE_forList = 22
+    RULE_forListItem = 23
+    RULE_callStmt = 24
+    RULE_callTarget = 25
+    RULE_gotoStmt = 26
+    RULE_setStmt = 27
+    RULE_setMode = 28
+    RULE_setAssign = 29
+    RULE_setlocalStmt = 30
+    RULE_setlocalRest = 31
+    RULE_endlocalStmt = 32
+    RULE_setTarget = 33
+    RULE_setRest = 34
+    RULE_genericCmd = 35
+    RULE_commandTail = 36
+    RULE_argWord = 37
+    RULE_token = 38
+    RULE_block = 39
 
     ruleNames =  [ "script", "line", "label", "commandLine", "statement", 
-                   "exitStmt", "exitTail", "shiftStmt", "ifStmt", "ifTail", 
-                   "ifErrorlevelStmt", "ifExistOperand", "ifBlockStmt", 
+                   "exitStmt", "exitTail", "shiftStmt", "ifStmt", "ifIOpt", 
+                   "ifBody", "elseClause", "ifErrorlevelStmt", "ifExistOperand", 
                    "ifPredicate", "comparison", "compareOp", "compareOperand", 
-                   "forStmt", "forMod", "forList", "forItem", "callStmt", 
-                   "callTarget", "gotoStmt", "setStmt", "setlocalStmt", 
-                   "setlocalRest", "endlocalStmt", "setTarget", "setOp", 
-                   "setRest", "genericCmd", "commandTail", "token", "block" ]
+                   "forStmt", "forSlashMod", "forFOptions", "forBody", "forList", 
+                   "forListItem", "callStmt", "callTarget", "gotoStmt", 
+                   "setStmt", "setMode", "setAssign", "setlocalStmt", "setlocalRest", 
+                   "endlocalStmt", "setTarget", "setRest", "genericCmd", 
+                   "commandTail", "argWord", "token", "block" ]
 
     EOF = Token.EOF
     LINE_COMMENT=1
     REM=2
     LABEL=3
-    FOR=4
-    IF=5
-    CALL=6
-    GOTO=7
-    SET=8
-    SETLOCAL=9
-    ENDLOCAL=10
-    DO=11
-    IN=12
-    EXIST=13
-    DEFINED=14
-    NOT=15
-    ERRORLEVEL=16
-    ELSE=17
-    EXIT=18
-    SHIFT=19
-    EOF_KW=20
-    LPAREN=21
-    RPAREN=22
-    AMP=23
-    PIPE=24
-    AMPAMP=25
-    PIPEPIPE=26
-    GT=27
-    LT=28
-    GE=29
-    LE=30
-    EQ=31
-    COLON=32
-    SET_A=33
-    SLASH=34
-    EQUALS=35
-    COMMA=36
-    DOT=37
-    BACKSLASH=38
-    PLUS=39
-    MINUS=40
-    EQU=41
-    NEQ=42
-    LSS=43
-    LEQ=44
-    GTR=45
-    GEQ=46
-    CARET=47
-    PERCENT=48
-    ASTERISK=49
-    DQ_STRING=50
-    SQ_STRING=51
-    PERCENT_TILDE=52
-    PERCENT_VAR_SUBSTRING=53
-    PERCENT_VAR_REPLACE=54
-    PERCENT_VAR=55
-    PERCENT_NUM=56
-    FOR_VAR=57
-    FOR_VAR_TILDE=58
-    BANG_VAR=59
+    AT=4
+    FOR=5
+    IF=6
+    CALL=7
+    GOTO=8
+    SET=9
+    SETLOCAL=10
+    ENDLOCAL=11
+    DO=12
+    IN=13
+    EXIST=14
+    DEFINED=15
+    NOT=16
+    ERRORLEVEL=17
+    ELSE=18
+    EXIT=19
+    SHIFT=20
+    EOF_KW=21
+    LPAREN=22
+    RPAREN=23
+    AMP=24
+    PIPE=25
+    AMPAMP=26
+    PIPEPIPE=27
+    GT=28
+    LT=29
+    EQ=30
+    COLON=31
+    SLASH=32
+    EQUALS=33
+    COMMA=34
+    DOT=35
+    BACKSLASH=36
+    PLUS=37
+    MINUS=38
+    EQU=39
+    NEQ=40
+    LSS=41
+    LEQ=42
+    GTR=43
+    GEQ=44
+    CARET=45
+    ASTERISK=46
+    CARET_ESCAPE=47
+    DQ_STRING=48
+    SQ_STRING=49
+    BACKTICK_STRING=50
+    PERCENT_TILDE=51
+    PERCENT_VAR_SUBSTRING=52
+    PERCENT_VAR_REPLACE=53
+    PERCENT_VAR=54
+    PERCENT_ARG=55
+    FOR_VAR=56
+    FOR_VAR_TILDE=57
+    BANG_VAR=58
+    PERCENT=59
     WORD=60
     NUMBER=61
     WS=62
@@ -268,6 +319,11 @@ class BatchParser ( Parser ):
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
+
+
+    def _notForToken(self) -> bool:
+        from BatchLexer import BatchLexer  # isort: skip
+        return self._input.LA(1) != BatchLexer.FOR
 
 
 
@@ -304,20 +360,20 @@ class BatchParser ( Parser ):
 
         localctx = BatchParser.ScriptContext(self, self._ctx, self.state)
         self.enterRule(localctx, 0, self.RULE_script)
-        self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 73
+            self.state = 83
             self._errHandler.sync(self)
-            _la = self._input.LA(1)
-            while ((((_la - 3)) & ~0x3f) == 0 and ((1 << (_la - 3)) & 4035102389311471871) != 0):
-                self.state = 70
-                self.line()
-                self.state = 75
+            _alt = self._interp.adaptivePredict(self._input,0,self._ctx)
+            while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
+                if _alt==1:
+                    self.state = 80
+                    self.line() 
+                self.state = 85
                 self._errHandler.sync(self)
-                _la = self._input.LA(1)
+                _alt = self._interp.adaptivePredict(self._input,0,self._ctx)
 
-            self.state = 76
+            self.state = 86
             self.match(BatchParser.EOF)
         except RecognitionException as re:
             localctx.exception = re
@@ -363,26 +419,27 @@ class BatchParser ( Parser ):
         localctx = BatchParser.LineContext(self, self._ctx, self.state)
         self.enterRule(localctx, 2, self.RULE_line)
         try:
-            self.state = 81
+            self.state = 91
             self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [3]:
+            la_ = self._interp.adaptivePredict(self._input,1,self._ctx)
+            if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 78
+                self.state = 88
                 self.label()
                 pass
-            elif token in [4, 5, 6, 7, 8, 9, 10, 18, 19, 21, 22, 23, 24, 27, 28, 34, 36, 37, 38, 39, 40, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 64]:
+
+            elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 79
+                self.state = 89
                 self.commandLine()
                 pass
-            elif token in [63]:
+
+            elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 80
+                self.state = 90
                 self.match(BatchParser.NEWLINE)
                 pass
-            else:
-                raise NoViableAltException(self)
+
 
         except RecognitionException as re:
             localctx.exception = re
@@ -424,13 +481,13 @@ class BatchParser ( Parser ):
         self.enterRule(localctx, 4, self.RULE_label)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 83
+            self.state = 93
             self.match(BatchParser.LABEL)
-            self.state = 85
+            self.state = 95
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,2,self._ctx)
             if la_ == 1:
-                self.state = 84
+                self.state = 94
                 self.match(BatchParser.NEWLINE)
 
 
@@ -503,31 +560,31 @@ class BatchParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 87
+            self.state = 97
             self.statement()
-            self.state = 92
+            self.state = 102
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,3,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 88
+                    self.state = 98
                     _la = self._input.LA(1)
-                    if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 125829120) != 0)):
+                    if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 251658240) != 0)):
                         self._errHandler.recoverInline(self)
                     else:
                         self._errHandler.reportMatch(self)
                         self.consume()
-                    self.state = 89
+                    self.state = 99
                     self.statement() 
-                self.state = 94
+                self.state = 104
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,3,self._ctx)
 
-            self.state = 96
+            self.state = 106
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,4,self._ctx)
             if la_ == 1:
-                self.state = 95
+                self.state = 105
                 self.match(BatchParser.NEWLINE)
 
 
@@ -587,6 +644,9 @@ class BatchParser ( Parser ):
             return self.getTypedRuleContext(BatchParser.GenericCmdContext,0)
 
 
+        def AT(self):
+            return self.getToken(BatchParser.AT, 0)
+
         def getRuleIndex(self):
             return BatchParser.RULE_statement
 
@@ -604,61 +664,68 @@ class BatchParser ( Parser ):
         localctx = BatchParser.StatementContext(self, self._ctx, self.state)
         self.enterRule(localctx, 8, self.RULE_statement)
         try:
-            self.state = 108
+            self.enterOuterAlt(localctx, 1)
+            self.state = 109
             self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [5]:
-                self.enterOuterAlt(localctx, 1)
-                self.state = 98
+            la_ = self._interp.adaptivePredict(self._input,5,self._ctx)
+            if la_ == 1:
+                self.state = 108
+                self.match(BatchParser.AT)
+
+
+            self.state = 121
+            self._errHandler.sync(self)
+            la_ = self._interp.adaptivePredict(self._input,6,self._ctx)
+            if la_ == 1:
+                self.state = 111
                 self.ifStmt()
                 pass
-            elif token in [4]:
-                self.enterOuterAlt(localctx, 2)
-                self.state = 99
+
+            elif la_ == 2:
+                self.state = 112
                 self.forStmt()
                 pass
-            elif token in [6]:
-                self.enterOuterAlt(localctx, 3)
-                self.state = 100
+
+            elif la_ == 3:
+                self.state = 113
                 self.callStmt()
                 pass
-            elif token in [7]:
-                self.enterOuterAlt(localctx, 4)
-                self.state = 101
+
+            elif la_ == 4:
+                self.state = 114
                 self.gotoStmt()
                 pass
-            elif token in [8]:
-                self.enterOuterAlt(localctx, 5)
-                self.state = 102
+
+            elif la_ == 5:
+                self.state = 115
                 self.setStmt()
                 pass
-            elif token in [9]:
-                self.enterOuterAlt(localctx, 6)
-                self.state = 103
+
+            elif la_ == 6:
+                self.state = 116
                 self.setlocalStmt()
                 pass
-            elif token in [10]:
-                self.enterOuterAlt(localctx, 7)
-                self.state = 104
+
+            elif la_ == 7:
+                self.state = 117
                 self.endlocalStmt()
                 pass
-            elif token in [18]:
-                self.enterOuterAlt(localctx, 8)
-                self.state = 105
+
+            elif la_ == 8:
+                self.state = 118
                 self.exitStmt()
                 pass
-            elif token in [19]:
-                self.enterOuterAlt(localctx, 9)
-                self.state = 106
+
+            elif la_ == 9:
+                self.state = 119
                 self.shiftStmt()
                 pass
-            elif token in [21, 22, 23, 24, 27, 28, 34, 36, 37, 38, 39, 40, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 64]:
-                self.enterOuterAlt(localctx, 10)
-                self.state = 107
+
+            elif la_ == 10:
+                self.state = 120
                 self.genericCmd()
                 pass
-            else:
-                raise NoViableAltException(self)
+
 
         except RecognitionException as re:
             localctx.exception = re
@@ -701,13 +768,13 @@ class BatchParser ( Parser ):
         self.enterRule(localctx, 10, self.RULE_exitStmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 110
+            self.state = 123
             self.match(BatchParser.EXIT)
-            self.state = 112
+            self.state = 125
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,6,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,7,self._ctx)
             if la_ == 1:
-                self.state = 111
+                self.state = 124
                 self.exitTail()
 
 
@@ -760,38 +827,38 @@ class BatchParser ( Parser ):
         localctx = BatchParser.ExitTailContext(self, self._ctx, self.state)
         self.enterRule(localctx, 12, self.RULE_exitTail)
         try:
-            self.state = 122
+            self.state = 135
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,8,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,9,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 114
+                self.state = 127
                 self.match(BatchParser.SLASH)
-                self.state = 115
+                self.state = 128
                 self.match(BatchParser.WORD)
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 116
+                self.state = 129
                 self.match(BatchParser.NUMBER)
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 118 
+                self.state = 131 
                 self._errHandler.sync(self)
                 _alt = 1
                 while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                     if _alt == 1:
-                        self.state = 117
+                        self.state = 130
                         self.token()
 
                     else:
                         raise NoViableAltException(self)
-                    self.state = 120 
+                    self.state = 133 
                     self._errHandler.sync(self)
-                    _alt = self._interp.adaptivePredict(self._input,7,self._ctx)
+                    _alt = self._interp.adaptivePredict(self._input,8,self._ctx)
 
                 pass
 
@@ -840,18 +907,18 @@ class BatchParser ( Parser ):
         self.enterRule(localctx, 14, self.RULE_shiftStmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 124
+            self.state = 137
             self.match(BatchParser.SHIFT)
-            self.state = 128
+            self.state = 141
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,9,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,10,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 125
+                    self.state = 138
                     self.token() 
-                self.state = 130
+                self.state = 143
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,9,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,10,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -872,8 +939,12 @@ class BatchParser ( Parser ):
         def IF(self):
             return self.getToken(BatchParser.IF, 0)
 
-        def ifTail(self):
-            return self.getTypedRuleContext(BatchParser.IfTailContext,0)
+        def ifBody(self):
+            return self.getTypedRuleContext(BatchParser.IfBodyContext,0)
+
+
+        def ifIOpt(self):
+            return self.getTypedRuleContext(BatchParser.IfIOptContext,0)
 
 
         def getRuleIndex(self):
@@ -892,12 +963,21 @@ class BatchParser ( Parser ):
 
         localctx = BatchParser.IfStmtContext(self, self._ctx, self.state)
         self.enterRule(localctx, 16, self.RULE_ifStmt)
+        self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 131
+            self.state = 144
             self.match(BatchParser.IF)
-            self.state = 132
-            self.ifTail()
+            self.state = 146
+            self._errHandler.sync(self)
+            _la = self._input.LA(1)
+            if _la==32:
+                self.state = 145
+                self.ifIOpt()
+
+
+            self.state = 148
+            self.ifBody()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -907,7 +987,51 @@ class BatchParser ( Parser ):
         return localctx
 
 
-    class IfTailContext(ParserRuleContext):
+    class IfIOptContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def SLASH(self):
+            return self.getToken(BatchParser.SLASH, 0)
+
+        def WORD(self):
+            return self.getToken(BatchParser.WORD, 0)
+
+        def getRuleIndex(self):
+            return BatchParser.RULE_ifIOpt
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIfIOpt" ):
+                return visitor.visitIfIOpt(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def ifIOpt(self):
+
+        localctx = BatchParser.IfIOptContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 18, self.RULE_ifIOpt)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 150
+            self.match(BatchParser.SLASH)
+            self.state = 151
+            self.match(BatchParser.WORD)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class IfBodyContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -918,55 +1042,118 @@ class BatchParser ( Parser ):
             return self.getTypedRuleContext(BatchParser.IfPredicateContext,0)
 
 
-        def commandTail(self):
-            return self.getTypedRuleContext(BatchParser.CommandTailContext,0)
+        def LPAREN(self):
+            return self.getToken(BatchParser.LPAREN, 0)
+
+        def block(self):
+            return self.getTypedRuleContext(BatchParser.BlockContext,0)
 
 
-        def ifBlockStmt(self):
-            return self.getTypedRuleContext(BatchParser.IfBlockStmtContext,0)
+        def RPAREN(self):
+            return self.getToken(BatchParser.RPAREN, 0)
+
+        def elseClause(self):
+            return self.getTypedRuleContext(BatchParser.ElseClauseContext,0)
+
+
+        def statement(self):
+            return self.getTypedRuleContext(BatchParser.StatementContext,0)
 
 
         def getRuleIndex(self):
-            return BatchParser.RULE_ifTail
+            return BatchParser.RULE_ifBody
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitIfTail" ):
-                return visitor.visitIfTail(self)
+            if hasattr( visitor, "visitIfBody" ):
+                return visitor.visitIfBody(self)
             else:
                 return visitor.visitChildren(self)
 
 
 
 
-    def ifTail(self):
+    def ifBody(self):
 
-        localctx = BatchParser.IfTailContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 18, self.RULE_ifTail)
+        localctx = BatchParser.IfBodyContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 20, self.RULE_ifBody)
         try:
-            self.state = 139
+            self.state = 163
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,11,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,13,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 134
+                self.state = 153
                 self.ifPredicate()
-                self.state = 136
+                self.state = 154
+                self.match(BatchParser.LPAREN)
+                self.state = 155
+                self.block()
+                self.state = 156
+                self.match(BatchParser.RPAREN)
+                self.state = 158
                 self._errHandler.sync(self)
-                la_ = self._interp.adaptivePredict(self._input,10,self._ctx)
+                la_ = self._interp.adaptivePredict(self._input,12,self._ctx)
                 if la_ == 1:
-                    self.state = 135
-                    self.commandTail()
+                    self.state = 157
+                    self.elseClause()
 
 
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 138
-                self.ifBlockStmt()
+                self.state = 160
+                self.ifPredicate()
+                self.state = 161
+                self.statement()
                 pass
 
 
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class ElseClauseContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def ELSE(self):
+            return self.getToken(BatchParser.ELSE, 0)
+
+        def ifBody(self):
+            return self.getTypedRuleContext(BatchParser.IfBodyContext,0)
+
+
+        def getRuleIndex(self):
+            return BatchParser.RULE_elseClause
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitElseClause" ):
+                return visitor.visitElseClause(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def elseClause(self):
+
+        localctx = BatchParser.ElseClauseContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 22, self.RULE_elseClause)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 165
+            self.match(BatchParser.ELSE)
+            self.state = 166
+            self.ifBody()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -1004,12 +1191,12 @@ class BatchParser ( Parser ):
     def ifErrorlevelStmt(self):
 
         localctx = BatchParser.IfErrorlevelStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 20, self.RULE_ifErrorlevelStmt)
+        self.enterRule(localctx, 24, self.RULE_ifErrorlevelStmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 141
+            self.state = 168
             self.match(BatchParser.ERRORLEVEL)
-            self.state = 142
+            self.state = 169
             self.match(BatchParser.NUMBER)
         except RecognitionException as re:
             localctx.exception = re
@@ -1036,6 +1223,12 @@ class BatchParser ( Parser ):
         def PERCENT_VAR(self):
             return self.getToken(BatchParser.PERCENT_VAR, 0)
 
+        def PERCENT_TILDE(self):
+            return self.getToken(BatchParser.PERCENT_TILDE, 0)
+
+        def PERCENT_ARG(self):
+            return self.getToken(BatchParser.PERCENT_ARG, 0)
+
         def getRuleIndex(self):
             return BatchParser.RULE_ifExistOperand
 
@@ -1051,100 +1244,17 @@ class BatchParser ( Parser ):
     def ifExistOperand(self):
 
         localctx = BatchParser.IfExistOperandContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 22, self.RULE_ifExistOperand)
+        self.enterRule(localctx, 26, self.RULE_ifExistOperand)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 144
+            self.state = 171
             _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 1190076201532653568) != 0)):
+            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 1209497974925688832) != 0)):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
                 self.consume()
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
-    class IfBlockStmtContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def ifPredicate(self):
-            return self.getTypedRuleContext(BatchParser.IfPredicateContext,0)
-
-
-        def LPAREN(self, i:int=None):
-            if i is None:
-                return self.getTokens(BatchParser.LPAREN)
-            else:
-                return self.getToken(BatchParser.LPAREN, i)
-
-        def block(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(BatchParser.BlockContext)
-            else:
-                return self.getTypedRuleContext(BatchParser.BlockContext,i)
-
-
-        def RPAREN(self, i:int=None):
-            if i is None:
-                return self.getTokens(BatchParser.RPAREN)
-            else:
-                return self.getToken(BatchParser.RPAREN, i)
-
-        def ELSE(self):
-            return self.getToken(BatchParser.ELSE, 0)
-
-        def getRuleIndex(self):
-            return BatchParser.RULE_ifBlockStmt
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitIfBlockStmt" ):
-                return visitor.visitIfBlockStmt(self)
-            else:
-                return visitor.visitChildren(self)
-
-
-
-
-    def ifBlockStmt(self):
-
-        localctx = BatchParser.IfBlockStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 24, self.RULE_ifBlockStmt)
-        self._la = 0 # Token type
-        try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 146
-            self.ifPredicate()
-            self.state = 147
-            self.match(BatchParser.LPAREN)
-            self.state = 148
-            self.block()
-            self.state = 149
-            self.match(BatchParser.RPAREN)
-            self.state = 155
-            self._errHandler.sync(self)
-            _la = self._input.LA(1)
-            if _la==17:
-                self.state = 150
-                self.match(BatchParser.ELSE)
-                self.state = 151
-                self.match(BatchParser.LPAREN)
-                self.state = 152
-                self.block()
-                self.state = 153
-                self.match(BatchParser.RPAREN)
-
-
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -1171,8 +1281,9 @@ class BatchParser ( Parser ):
         def DEFINED(self):
             return self.getToken(BatchParser.DEFINED, 0)
 
-        def WORD(self):
-            return self.getToken(BatchParser.WORD, 0)
+        def argWord(self):
+            return self.getTypedRuleContext(BatchParser.ArgWordContext,0)
+
 
         def EXIST(self):
             return self.getToken(BatchParser.EXIST, 0)
@@ -1185,11 +1296,20 @@ class BatchParser ( Parser ):
             return self.getTypedRuleContext(BatchParser.ComparisonContext,0)
 
 
+        def PERCENT_VAR(self):
+            return self.getToken(BatchParser.PERCENT_VAR, 0)
+
+        def NUMBER(self):
+            return self.getToken(BatchParser.NUMBER, 0)
+
         def DQ_STRING(self):
             return self.getToken(BatchParser.DQ_STRING, 0)
 
-        def PERCENT_VAR(self):
-            return self.getToken(BatchParser.PERCENT_VAR, 0)
+        def PERCENT_TILDE(self):
+            return self.getToken(BatchParser.PERCENT_TILDE, 0)
+
+        def PERCENT_ARG(self):
+            return self.getToken(BatchParser.PERCENT_ARG, 0)
 
         def getRuleIndex(self):
             return BatchParser.RULE_ifPredicate
@@ -1206,80 +1326,100 @@ class BatchParser ( Parser ):
     def ifPredicate(self):
 
         localctx = BatchParser.IfPredicateContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 26, self.RULE_ifPredicate)
+        self.enterRule(localctx, 28, self.RULE_ifPredicate)
         self._la = 0 # Token type
         try:
-            self.state = 175
+            self.state = 195
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,16,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,17,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 158
+                self.state = 174
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if _la==15:
-                    self.state = 157
+                if _la==16:
+                    self.state = 173
                     self.match(BatchParser.NOT)
 
 
-                self.state = 160
+                self.state = 176
                 self.ifErrorlevelStmt()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 162
+                self.state = 178
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if _la==15:
-                    self.state = 161
+                if _la==16:
+                    self.state = 177
                     self.match(BatchParser.NOT)
 
 
-                self.state = 164
+                self.state = 180
                 self.match(BatchParser.DEFINED)
-                self.state = 165
-                self.match(BatchParser.WORD)
+                self.state = 181
+                self.argWord()
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 167
+                self.state = 183
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if _la==15:
-                    self.state = 166
+                if _la==16:
+                    self.state = 182
                     self.match(BatchParser.NOT)
 
 
-                self.state = 169
+                self.state = 185
                 self.match(BatchParser.EXIST)
-                self.state = 170
+                self.state = 186
                 self.ifExistOperand()
                 pass
 
             elif la_ == 4:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 171
+                self.state = 187
                 self.comparison()
                 pass
 
             elif la_ == 5:
                 self.enterOuterAlt(localctx, 5)
-                self.state = 172
-                self.match(BatchParser.DQ_STRING)
+                self.state = 188
+                self.match(BatchParser.PERCENT_VAR)
+                self.state = 189
+                self.match(BatchParser.NUMBER)
                 pass
 
             elif la_ == 6:
                 self.enterOuterAlt(localctx, 6)
-                self.state = 173
-                self.match(BatchParser.PERCENT_VAR)
+                self.state = 190
+                self.match(BatchParser.DQ_STRING)
                 pass
 
             elif la_ == 7:
                 self.enterOuterAlt(localctx, 7)
-                self.state = 174
-                self.match(BatchParser.WORD)
+                self.state = 191
+                self.match(BatchParser.PERCENT_TILDE)
+                pass
+
+            elif la_ == 8:
+                self.enterOuterAlt(localctx, 8)
+                self.state = 192
+                self.match(BatchParser.PERCENT_VAR)
+                pass
+
+            elif la_ == 9:
+                self.enterOuterAlt(localctx, 9)
+                self.state = 193
+                self.match(BatchParser.PERCENT_ARG)
+                pass
+
+            elif la_ == 10:
+                self.enterOuterAlt(localctx, 10)
+                self.state = 194
+                self.argWord()
                 pass
 
 
@@ -1325,14 +1465,14 @@ class BatchParser ( Parser ):
     def comparison(self):
 
         localctx = BatchParser.ComparisonContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 28, self.RULE_comparison)
+        self.enterRule(localctx, 30, self.RULE_comparison)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 177
+            self.state = 197
             self.compareOperand()
-            self.state = 178
+            self.state = 198
             self.compareOp()
-            self.state = 179
+            self.state = 199
             self.compareOperand()
         except RecognitionException as re:
             localctx.exception = re
@@ -1371,18 +1511,6 @@ class BatchParser ( Parser ):
         def GEQ(self):
             return self.getToken(BatchParser.GEQ, 0)
 
-        def LT(self):
-            return self.getToken(BatchParser.LT, 0)
-
-        def GT(self):
-            return self.getToken(BatchParser.GT, 0)
-
-        def LE(self):
-            return self.getToken(BatchParser.LE, 0)
-
-        def GE(self):
-            return self.getToken(BatchParser.GE, 0)
-
         def getRuleIndex(self):
             return BatchParser.RULE_compareOp
 
@@ -1398,13 +1526,13 @@ class BatchParser ( Parser ):
     def compareOp(self):
 
         localctx = BatchParser.CompareOpContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 30, self.RULE_compareOp)
+        self.enterRule(localctx, 32, self.RULE_compareOp)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 181
+            self.state = 201
             _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 138542625849344) != 0)):
+            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 34635690016768) != 0)):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -1440,11 +1568,12 @@ class BatchParser ( Parser ):
         def PERCENT_VAR(self):
             return self.getToken(BatchParser.PERCENT_VAR, 0)
 
-        def PERCENT_NUM(self):
-            return self.getToken(BatchParser.PERCENT_NUM, 0)
+        def PERCENT_ARG(self):
+            return self.getToken(BatchParser.PERCENT_ARG, 0)
 
-        def WORD(self):
-            return self.getToken(BatchParser.WORD, 0)
+        def argWord(self):
+            return self.getTypedRuleContext(BatchParser.ArgWordContext,0)
+
 
         def NUMBER(self):
             return self.getToken(BatchParser.NUMBER, 0)
@@ -1464,17 +1593,54 @@ class BatchParser ( Parser ):
     def compareOperand(self):
 
         localctx = BatchParser.CompareOperandContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 32, self.RULE_compareOperand)
-        self._la = 0 # Token type
+        self.enterRule(localctx, 34, self.RULE_compareOperand)
         try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 183
-            _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 3599502002175868928) != 0)):
-                self._errHandler.recoverInline(self)
+            self.state = 211
+            self._errHandler.sync(self)
+            token = self._input.LA(1)
+            if token in [48]:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 203
+                self.match(BatchParser.DQ_STRING)
+                pass
+            elif token in [51]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 204
+                self.match(BatchParser.PERCENT_TILDE)
+                pass
+            elif token in [52]:
+                self.enterOuterAlt(localctx, 3)
+                self.state = 205
+                self.match(BatchParser.PERCENT_VAR_SUBSTRING)
+                pass
+            elif token in [53]:
+                self.enterOuterAlt(localctx, 4)
+                self.state = 206
+                self.match(BatchParser.PERCENT_VAR_REPLACE)
+                pass
+            elif token in [54]:
+                self.enterOuterAlt(localctx, 5)
+                self.state = 207
+                self.match(BatchParser.PERCENT_VAR)
+                pass
+            elif token in [55]:
+                self.enterOuterAlt(localctx, 6)
+                self.state = 208
+                self.match(BatchParser.PERCENT_ARG)
+                pass
+            elif token in [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 60]:
+                self.enterOuterAlt(localctx, 7)
+                self.state = 209
+                self.argWord()
+                pass
+            elif token in [61]:
+                self.enterOuterAlt(localctx, 8)
+                self.state = 210
+                self.match(BatchParser.NUMBER)
+                pass
             else:
-                self._errHandler.reportMatch(self)
-                self.consume()
+                raise NoViableAltException(self)
+
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -1500,42 +1666,33 @@ class BatchParser ( Parser ):
         def IN(self):
             return self.getToken(BatchParser.IN, 0)
 
-        def LPAREN(self, i:int=None):
-            if i is None:
-                return self.getTokens(BatchParser.LPAREN)
-            else:
-                return self.getToken(BatchParser.LPAREN, i)
+        def LPAREN(self):
+            return self.getToken(BatchParser.LPAREN, 0)
 
         def forList(self):
             return self.getTypedRuleContext(BatchParser.ForListContext,0)
 
 
-        def RPAREN(self, i:int=None):
-            if i is None:
-                return self.getTokens(BatchParser.RPAREN)
-            else:
-                return self.getToken(BatchParser.RPAREN, i)
+        def RPAREN(self):
+            return self.getToken(BatchParser.RPAREN, 0)
 
         def DO(self):
             return self.getToken(BatchParser.DO, 0)
 
-        def block(self):
-            return self.getTypedRuleContext(BatchParser.BlockContext,0)
+        def forBody(self):
+            return self.getTypedRuleContext(BatchParser.ForBodyContext,0)
 
 
-        def commandLine(self):
-            return self.getTypedRuleContext(BatchParser.CommandLineContext,0)
-
-
-        def forMod(self, i:int=None):
+        def forSlashMod(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(BatchParser.ForModContext)
+                return self.getTypedRuleContexts(BatchParser.ForSlashModContext)
             else:
-                return self.getTypedRuleContext(BatchParser.ForModContext,i)
+                return self.getTypedRuleContext(BatchParser.ForSlashModContext,i)
 
 
-        def FOR_VAR_TILDE(self):
-            return self.getToken(BatchParser.FOR_VAR_TILDE, 0)
+        def forFOptions(self):
+            return self.getTypedRuleContext(BatchParser.ForFOptionsContext,0)
+
 
         def getRuleIndex(self):
             return BatchParser.RULE_forStmt
@@ -1552,65 +1709,44 @@ class BatchParser ( Parser ):
     def forStmt(self):
 
         localctx = BatchParser.ForStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 34, self.RULE_forStmt)
+        self.enterRule(localctx, 36, self.RULE_forStmt)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 185
+            self.state = 213
             self.match(BatchParser.FOR)
-            self.state = 189
+            self.state = 217
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==34:
-                self.state = 186
-                self.forMod()
-                self.state = 191
+            while _la==32:
+                self.state = 214
+                self.forSlashMod()
+                self.state = 219
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 192
-            self.match(BatchParser.FOR_VAR)
-            self.state = 194
+            self.state = 221
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==58:
-                self.state = 193
-                self.match(BatchParser.FOR_VAR_TILDE)
+            if _la==48:
+                self.state = 220
+                self.forFOptions()
 
 
-            self.state = 196
+            self.state = 223
+            self.match(BatchParser.FOR_VAR)
+            self.state = 224
             self.match(BatchParser.IN)
-            self.state = 197
+            self.state = 225
             self.match(BatchParser.LPAREN)
-            self.state = 198
+            self.state = 226
             self.forList()
-            self.state = 199
+            self.state = 227
             self.match(BatchParser.RPAREN)
-            self.state = 200
+            self.state = 228
             self.match(BatchParser.DO)
-            self.state = 207
-            self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,19,self._ctx)
-            if la_ == 1:
-                self.state = 201
-                self.match(BatchParser.LPAREN)
-                self.state = 202
-                self.block()
-                self.state = 203
-                self.match(BatchParser.RPAREN)
-                pass
-
-            elif la_ == 2:
-                self.state = 205
-                self.block()
-                pass
-
-            elif la_ == 3:
-                self.state = 206
-                self.commandLine()
-                pass
-
-
+            self.state = 229
+            self.forBody()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -1620,7 +1756,7 @@ class BatchParser ( Parser ):
         return localctx
 
 
-    class ForModContext(ParserRuleContext):
+    class ForSlashModContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1634,27 +1770,133 @@ class BatchParser ( Parser ):
             return self.getToken(BatchParser.WORD, 0)
 
         def getRuleIndex(self):
-            return BatchParser.RULE_forMod
+            return BatchParser.RULE_forSlashMod
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitForMod" ):
-                return visitor.visitForMod(self)
+            if hasattr( visitor, "visitForSlashMod" ):
+                return visitor.visitForSlashMod(self)
             else:
                 return visitor.visitChildren(self)
 
 
 
 
-    def forMod(self):
+    def forSlashMod(self):
 
-        localctx = BatchParser.ForModContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 36, self.RULE_forMod)
+        localctx = BatchParser.ForSlashModContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 38, self.RULE_forSlashMod)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 209
+            self.state = 231
             self.match(BatchParser.SLASH)
-            self.state = 210
+            self.state = 232
             self.match(BatchParser.WORD)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class ForFOptionsContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def DQ_STRING(self):
+            return self.getToken(BatchParser.DQ_STRING, 0)
+
+        def getRuleIndex(self):
+            return BatchParser.RULE_forFOptions
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitForFOptions" ):
+                return visitor.visitForFOptions(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def forFOptions(self):
+
+        localctx = BatchParser.ForFOptionsContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 40, self.RULE_forFOptions)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 234
+            self.match(BatchParser.DQ_STRING)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class ForBodyContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def LPAREN(self):
+            return self.getToken(BatchParser.LPAREN, 0)
+
+        def block(self):
+            return self.getTypedRuleContext(BatchParser.BlockContext,0)
+
+
+        def RPAREN(self):
+            return self.getToken(BatchParser.RPAREN, 0)
+
+        def statement(self):
+            return self.getTypedRuleContext(BatchParser.StatementContext,0)
+
+
+        def getRuleIndex(self):
+            return BatchParser.RULE_forBody
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitForBody" ):
+                return visitor.visitForBody(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def forBody(self):
+
+        localctx = BatchParser.ForBodyContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 42, self.RULE_forBody)
+        try:
+            self.state = 241
+            self._errHandler.sync(self)
+            la_ = self._interp.adaptivePredict(self._input,21,self._ctx)
+            if la_ == 1:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 236
+                self.match(BatchParser.LPAREN)
+                self.state = 237
+                self.block()
+                self.state = 238
+                self.match(BatchParser.RPAREN)
+                pass
+
+            elif la_ == 2:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 240
+                self.statement()
+                pass
+
+
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -1671,12 +1913,18 @@ class BatchParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def forItem(self, i:int=None):
+        def forListItem(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(BatchParser.ForItemContext)
+                return self.getTypedRuleContexts(BatchParser.ForListItemContext)
             else:
-                return self.getTypedRuleContext(BatchParser.ForItemContext,i)
+                return self.getTypedRuleContext(BatchParser.ForListItemContext,i)
 
+
+        def COMMA(self, i:int=None):
+            if i is None:
+                return self.getTokens(BatchParser.COMMA)
+            else:
+                return self.getToken(BatchParser.COMMA, i)
 
         def getRuleIndex(self):
             return BatchParser.RULE_forList
@@ -1693,21 +1941,46 @@ class BatchParser ( Parser ):
     def forList(self):
 
         localctx = BatchParser.ForListContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 38, self.RULE_forList)
+        self.enterRule(localctx, 44, self.RULE_forList)
         self._la = 0 # Token type
         try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 212
-            self.forItem()
-            self.state = 216
+            self.state = 256
             self._errHandler.sync(self)
-            _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 3498733960513454080) != 0):
-                self.state = 213
-                self.forItem()
-                self.state = 218
+            la_ = self._interp.adaptivePredict(self._input,24,self._ctx)
+            if la_ == 1:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 243
+                self.forListItem()
+                self.state = 248
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
+                while _la==34:
+                    self.state = 244
+                    self.match(BatchParser.COMMA)
+                    self.state = 245
+                    self.forListItem()
+                    self.state = 250
+                    self._errHandler.sync(self)
+                    _la = self._input.LA(1)
+
+                pass
+
+            elif la_ == 2:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 252 
+                self._errHandler.sync(self)
+                _la = self._input.LA(1)
+                while True:
+                    self.state = 251
+                    self.forListItem()
+                    self.state = 254 
+                    self._errHandler.sync(self)
+                    _la = self._input.LA(1)
+                    if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & 3517100202745921504) != 0)):
+                        break
+
+                pass
+
 
         except RecognitionException as re:
             localctx.exception = re
@@ -1718,7 +1991,7 @@ class BatchParser ( Parser ):
         return localctx
 
 
-    class ForItemContext(ParserRuleContext):
+    class ForListItemContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1731,44 +2004,110 @@ class BatchParser ( Parser ):
         def DQ_STRING(self):
             return self.getToken(BatchParser.DQ_STRING, 0)
 
+        def BACKTICK_STRING(self):
+            return self.getToken(BatchParser.BACKTICK_STRING, 0)
+
         def PERCENT_VAR(self):
             return self.getToken(BatchParser.PERCENT_VAR, 0)
 
-        def WORD(self):
-            return self.getToken(BatchParser.WORD, 0)
+        def PERCENT_TILDE(self):
+            return self.getToken(BatchParser.PERCENT_TILDE, 0)
 
-        def NUMBER(self):
-            return self.getToken(BatchParser.NUMBER, 0)
+        def PERCENT_ARG(self):
+            return self.getToken(BatchParser.PERCENT_ARG, 0)
 
         def ASTERISK(self):
             return self.getToken(BatchParser.ASTERISK, 0)
 
+        def DOT(self):
+            return self.getToken(BatchParser.DOT, 0)
+
+        def argWord(self):
+            return self.getTypedRuleContext(BatchParser.ArgWordContext,0)
+
+
+        def NUMBER(self):
+            return self.getToken(BatchParser.NUMBER, 0)
+
         def getRuleIndex(self):
-            return BatchParser.RULE_forItem
+            return BatchParser.RULE_forListItem
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitForItem" ):
-                return visitor.visitForItem(self)
+            if hasattr( visitor, "visitForListItem" ):
+                return visitor.visitForListItem(self)
             else:
                 return visitor.visitChildren(self)
 
 
 
 
-    def forItem(self):
+    def forListItem(self):
 
-        localctx = BatchParser.ForItemContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 40, self.RULE_forItem)
+        localctx = BatchParser.ForListItemContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 46, self.RULE_forListItem)
         self._la = 0 # Token type
         try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 219
-            _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 3498733960513454080) != 0)):
-                self._errHandler.recoverInline(self)
+            self.state = 271
+            self._errHandler.sync(self)
+            token = self._input.LA(1)
+            if token in [49]:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 258
+                self.match(BatchParser.SQ_STRING)
+                pass
+            elif token in [48]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 259
+                self.match(BatchParser.DQ_STRING)
+                pass
+            elif token in [50]:
+                self.enterOuterAlt(localctx, 3)
+                self.state = 260
+                self.match(BatchParser.BACKTICK_STRING)
+                pass
+            elif token in [54]:
+                self.enterOuterAlt(localctx, 4)
+                self.state = 261
+                self.match(BatchParser.PERCENT_VAR)
+                pass
+            elif token in [51]:
+                self.enterOuterAlt(localctx, 5)
+                self.state = 262
+                self.match(BatchParser.PERCENT_TILDE)
+                pass
+            elif token in [55]:
+                self.enterOuterAlt(localctx, 6)
+                self.state = 263
+                self.match(BatchParser.PERCENT_ARG)
+                pass
+            elif token in [46]:
+                self.enterOuterAlt(localctx, 7)
+                self.state = 264
+                self.match(BatchParser.ASTERISK)
+                self.state = 267
+                self._errHandler.sync(self)
+                _la = self._input.LA(1)
+                if _la==35:
+                    self.state = 265
+                    self.match(BatchParser.DOT)
+                    self.state = 266
+                    self.argWord()
+
+
+                pass
+            elif token in [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 60]:
+                self.enterOuterAlt(localctx, 8)
+                self.state = 269
+                self.argWord()
+                pass
+            elif token in [61]:
+                self.enterOuterAlt(localctx, 9)
+                self.state = 270
+                self.match(BatchParser.NUMBER)
+                pass
             else:
-                self._errHandler.reportMatch(self)
-                self.consume()
+                raise NoViableAltException(self)
+
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -1811,18 +2150,18 @@ class BatchParser ( Parser ):
     def callStmt(self):
 
         localctx = BatchParser.CallStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 42, self.RULE_callStmt)
+        self.enterRule(localctx, 48, self.RULE_callStmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 221
+            self.state = 273
             self.match(BatchParser.CALL)
-            self.state = 222
+            self.state = 274
             self.callTarget()
-            self.state = 224
+            self.state = 276
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,21,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,27,self._ctx)
             if la_ == 1:
-                self.state = 223
+                self.state = 275
                 self.commandTail()
 
 
@@ -1848,11 +2187,12 @@ class BatchParser ( Parser ):
         def COLON(self):
             return self.getToken(BatchParser.COLON, 0)
 
-        def WORD(self):
-            return self.getToken(BatchParser.WORD, 0)
+        def argWord(self):
+            return self.getTypedRuleContext(BatchParser.ArgWordContext,0)
 
-        def PERCENT_NUM(self):
-            return self.getToken(BatchParser.PERCENT_NUM, 0)
+
+        def PERCENT_ARG(self):
+            return self.getToken(BatchParser.PERCENT_ARG, 0)
 
         def PERCENT_VAR(self):
             return self.getToken(BatchParser.PERCENT_VAR, 0)
@@ -1875,55 +2215,55 @@ class BatchParser ( Parser ):
     def callTarget(self):
 
         localctx = BatchParser.CallTargetContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 44, self.RULE_callTarget)
+        self.enterRule(localctx, 50, self.RULE_callTarget)
         self._la = 0 # Token type
         try:
-            self.state = 237
+            self.state = 289
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,24,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,30,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 227
+                self.state = 279
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if _la==32:
-                    self.state = 226
+                if _la==31:
+                    self.state = 278
                     self.match(BatchParser.COLON)
 
 
-                self.state = 229
+                self.state = 281
                 self.match(BatchParser.EOF_KW)
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 231
+                self.state = 283
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if _la==32:
-                    self.state = 230
+                if _la==31:
+                    self.state = 282
                     self.match(BatchParser.COLON)
 
 
-                self.state = 233
-                self.match(BatchParser.WORD)
+                self.state = 285
+                self.argWord()
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 234
-                self.match(BatchParser.PERCENT_NUM)
+                self.state = 286
+                self.match(BatchParser.PERCENT_ARG)
                 pass
 
             elif la_ == 4:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 235
+                self.state = 287
                 self.match(BatchParser.PERCENT_VAR)
                 pass
 
             elif la_ == 5:
                 self.enterOuterAlt(localctx, 5)
-                self.state = 236
+                self.state = 288
                 self.match(BatchParser.DQ_STRING)
                 pass
 
@@ -1951,10 +2291,6 @@ class BatchParser ( Parser ):
             return self.getTypedRuleContext(BatchParser.CallTargetContext,0)
 
 
-        def commandTail(self):
-            return self.getTypedRuleContext(BatchParser.CommandTailContext,0)
-
-
         def getRuleIndex(self):
             return BatchParser.RULE_gotoStmt
 
@@ -1970,21 +2306,13 @@ class BatchParser ( Parser ):
     def gotoStmt(self):
 
         localctx = BatchParser.GotoStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 46, self.RULE_gotoStmt)
+        self.enterRule(localctx, 52, self.RULE_gotoStmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 239
+            self.state = 291
             self.match(BatchParser.GOTO)
-            self.state = 240
+            self.state = 292
             self.callTarget()
-            self.state = 242
-            self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,25,self._ctx)
-            if la_ == 1:
-                self.state = 241
-                self.commandTail()
-
-
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -2004,16 +2332,12 @@ class BatchParser ( Parser ):
         def SET(self):
             return self.getToken(BatchParser.SET, 0)
 
-        def setTarget(self):
-            return self.getTypedRuleContext(BatchParser.SetTargetContext,0)
+        def setAssign(self):
+            return self.getTypedRuleContext(BatchParser.SetAssignContext,0)
 
 
-        def setOp(self):
-            return self.getTypedRuleContext(BatchParser.SetOpContext,0)
-
-
-        def setRest(self):
-            return self.getTypedRuleContext(BatchParser.SetRestContext,0)
+        def setMode(self):
+            return self.getTypedRuleContext(BatchParser.SetModeContext,0)
 
 
         def getRuleIndex(self):
@@ -2031,22 +2355,138 @@ class BatchParser ( Parser ):
     def setStmt(self):
 
         localctx = BatchParser.SetStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 48, self.RULE_setStmt)
+        self.enterRule(localctx, 54, self.RULE_setStmt)
+        self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 244
+            self.state = 294
             self.match(BatchParser.SET)
-            self.state = 245
-            self.setTarget()
-            self.state = 246
-            self.setOp()
-            self.state = 248
+            self.state = 296
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,26,self._ctx)
-            if la_ == 1:
-                self.state = 247
-                self.setRest()
+            _la = self._input.LA(1)
+            if _la==32:
+                self.state = 295
+                self.setMode()
 
+
+            self.state = 298
+            self.setAssign()
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class SetModeContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def SLASH(self):
+            return self.getToken(BatchParser.SLASH, 0)
+
+        def WORD(self):
+            return self.getToken(BatchParser.WORD, 0)
+
+        def getRuleIndex(self):
+            return BatchParser.RULE_setMode
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSetMode" ):
+                return visitor.visitSetMode(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def setMode(self):
+
+        localctx = BatchParser.SetModeContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 56, self.RULE_setMode)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 300
+            self.match(BatchParser.SLASH)
+            self.state = 301
+            self.match(BatchParser.WORD)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class SetAssignContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def DQ_STRING(self):
+            return self.getToken(BatchParser.DQ_STRING, 0)
+
+        def setTarget(self):
+            return self.getTypedRuleContext(BatchParser.SetTargetContext,0)
+
+
+        def EQUALS(self):
+            return self.getToken(BatchParser.EQUALS, 0)
+
+        def setRest(self):
+            return self.getTypedRuleContext(BatchParser.SetRestContext,0)
+
+
+        def getRuleIndex(self):
+            return BatchParser.RULE_setAssign
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSetAssign" ):
+                return visitor.visitSetAssign(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def setAssign(self):
+
+        localctx = BatchParser.SetAssignContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 58, self.RULE_setAssign)
+        try:
+            self.state = 309
+            self._errHandler.sync(self)
+            token = self._input.LA(1)
+            if token in [48]:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 303
+                self.match(BatchParser.DQ_STRING)
+                pass
+            elif token in [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 54, 60]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 304
+                self.setTarget()
+                self.state = 305
+                self.match(BatchParser.EQUALS)
+                self.state = 307
+                self._errHandler.sync(self)
+                la_ = self._interp.adaptivePredict(self._input,32,self._ctx)
+                if la_ == 1:
+                    self.state = 306
+                    self.setRest()
+
+
+                pass
+            else:
+                raise NoViableAltException(self)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -2086,16 +2526,16 @@ class BatchParser ( Parser ):
     def setlocalStmt(self):
 
         localctx = BatchParser.SetlocalStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 50, self.RULE_setlocalStmt)
+        self.enterRule(localctx, 60, self.RULE_setlocalStmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 250
+            self.state = 311
             self.match(BatchParser.SETLOCAL)
-            self.state = 252
+            self.state = 313
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,27,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,34,self._ctx)
             if la_ == 1:
-                self.state = 251
+                self.state = 312
                 self.setlocalRest()
 
 
@@ -2137,22 +2577,22 @@ class BatchParser ( Parser ):
     def setlocalRest(self):
 
         localctx = BatchParser.SetlocalRestContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 52, self.RULE_setlocalRest)
+        self.enterRule(localctx, 62, self.RULE_setlocalRest)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 255 
+            self.state = 316 
             self._errHandler.sync(self)
             _alt = 1
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt == 1:
-                    self.state = 254
+                    self.state = 315
                     self.token()
 
                 else:
                     raise NoViableAltException(self)
-                self.state = 257 
+                self.state = 318 
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,28,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,35,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -2192,16 +2632,16 @@ class BatchParser ( Parser ):
     def endlocalStmt(self):
 
         localctx = BatchParser.EndlocalStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 54, self.RULE_endlocalStmt)
+        self.enterRule(localctx, 64, self.RULE_endlocalStmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 259
+            self.state = 320
             self.match(BatchParser.ENDLOCAL)
-            self.state = 261
+            self.state = 322
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,29,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,36,self._ctx)
             if la_ == 1:
-                self.state = 260
+                self.state = 321
                 self.commandTail()
 
 
@@ -2221,14 +2661,12 @@ class BatchParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def WORD(self):
-            return self.getToken(BatchParser.WORD, 0)
+        def argWord(self):
+            return self.getTypedRuleContext(BatchParser.ArgWordContext,0)
+
 
         def PERCENT_VAR(self):
             return self.getToken(BatchParser.PERCENT_VAR, 0)
-
-        def DQ_STRING(self):
-            return self.getToken(BatchParser.DQ_STRING, 0)
 
         def getRuleIndex(self):
             return BatchParser.RULE_setTarget
@@ -2245,65 +2683,24 @@ class BatchParser ( Parser ):
     def setTarget(self):
 
         localctx = BatchParser.SetTargetContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 56, self.RULE_setTarget)
-        self._la = 0 # Token type
+        self.enterRule(localctx, 66, self.RULE_setTarget)
         try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 263
-            _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 1190076201532653568) != 0)):
-                self._errHandler.recoverInline(self)
+            self.state = 326
+            self._errHandler.sync(self)
+            token = self._input.LA(1)
+            if token in [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 60]:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 324
+                self.argWord()
+                pass
+            elif token in [54]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 325
+                self.match(BatchParser.PERCENT_VAR)
+                pass
             else:
-                self._errHandler.reportMatch(self)
-                self.consume()
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
+                raise NoViableAltException(self)
 
-
-    class SetOpContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def EQUALS(self):
-            return self.getToken(BatchParser.EQUALS, 0)
-
-        def SET_A(self):
-            return self.getToken(BatchParser.SET_A, 0)
-
-        def getRuleIndex(self):
-            return BatchParser.RULE_setOp
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitSetOp" ):
-                return visitor.visitSetOp(self)
-            else:
-                return visitor.visitChildren(self)
-
-
-
-
-    def setOp(self):
-
-        localctx = BatchParser.SetOpContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 58, self.RULE_setOp)
-        self._la = 0 # Token type
-        try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 265
-            _la = self._input.LA(1)
-            if not(_la==33 or _la==35):
-                self._errHandler.recoverInline(self)
-            else:
-                self._errHandler.reportMatch(self)
-                self.consume()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -2342,22 +2739,22 @@ class BatchParser ( Parser ):
     def setRest(self):
 
         localctx = BatchParser.SetRestContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 60, self.RULE_setRest)
+        self.enterRule(localctx, 68, self.RULE_setRest)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 268 
+            self.state = 329 
             self._errHandler.sync(self)
             _alt = 1
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt == 1:
-                    self.state = 267
+                    self.state = 328
                     self.token()
 
                 else:
                     raise NoViableAltException(self)
-                self.state = 270 
+                self.state = 331 
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,30,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,38,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -2394,10 +2791,14 @@ class BatchParser ( Parser ):
     def genericCmd(self):
 
         localctx = BatchParser.GenericCmdContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 62, self.RULE_genericCmd)
+        self.enterRule(localctx, 70, self.RULE_genericCmd)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 272
+            self.state = 333
+            if not self._notForToken():
+                from antlr4.error.Errors import FailedPredicateException
+                raise FailedPredicateException(self, "self._notForToken()")
+            self.state = 334
             self.commandTail()
         except RecognitionException as re:
             localctx.exception = re
@@ -2437,23 +2838,116 @@ class BatchParser ( Parser ):
     def commandTail(self):
 
         localctx = BatchParser.CommandTailContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 64, self.RULE_commandTail)
+        self.enterRule(localctx, 72, self.RULE_commandTail)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 275 
+            self.state = 337 
             self._errHandler.sync(self)
             _alt = 1
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt == 1:
-                    self.state = 274
+                    self.state = 336
                     self.token()
 
                 else:
                     raise NoViableAltException(self)
-                self.state = 277 
+                self.state = 339 
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,31,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,39,self._ctx)
 
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class ArgWordContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def WORD(self):
+            return self.getToken(BatchParser.WORD, 0)
+
+        def FOR(self):
+            return self.getToken(BatchParser.FOR, 0)
+
+        def IF(self):
+            return self.getToken(BatchParser.IF, 0)
+
+        def SET(self):
+            return self.getToken(BatchParser.SET, 0)
+
+        def DO(self):
+            return self.getToken(BatchParser.DO, 0)
+
+        def IN(self):
+            return self.getToken(BatchParser.IN, 0)
+
+        def EXIST(self):
+            return self.getToken(BatchParser.EXIST, 0)
+
+        def DEFINED(self):
+            return self.getToken(BatchParser.DEFINED, 0)
+
+        def NOT(self):
+            return self.getToken(BatchParser.NOT, 0)
+
+        def ERRORLEVEL(self):
+            return self.getToken(BatchParser.ERRORLEVEL, 0)
+
+        def ELSE(self):
+            return self.getToken(BatchParser.ELSE, 0)
+
+        def EXIT(self):
+            return self.getToken(BatchParser.EXIT, 0)
+
+        def SHIFT(self):
+            return self.getToken(BatchParser.SHIFT, 0)
+
+        def CALL(self):
+            return self.getToken(BatchParser.CALL, 0)
+
+        def GOTO(self):
+            return self.getToken(BatchParser.GOTO, 0)
+
+        def ENDLOCAL(self):
+            return self.getToken(BatchParser.ENDLOCAL, 0)
+
+        def SETLOCAL(self):
+            return self.getToken(BatchParser.SETLOCAL, 0)
+
+        def getRuleIndex(self):
+            return BatchParser.RULE_argWord
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitArgWord" ):
+                return visitor.visitArgWord(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def argWord(self):
+
+        localctx = BatchParser.ArgWordContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 74, self.RULE_argWord)
+        self._la = 0 # Token type
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 341
+            _la = self._input.LA(1)
+            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 1152921504608944096) != 0)):
+                self._errHandler.recoverInline(self)
+            else:
+                self._errHandler.reportMatch(self)
+                self.consume()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -2476,6 +2970,9 @@ class BatchParser ( Parser ):
         def SQ_STRING(self):
             return self.getToken(BatchParser.SQ_STRING, 0)
 
+        def BACKTICK_STRING(self):
+            return self.getToken(BatchParser.BACKTICK_STRING, 0)
+
         def PERCENT_TILDE(self):
             return self.getToken(BatchParser.PERCENT_TILDE, 0)
 
@@ -2488,8 +2985,8 @@ class BatchParser ( Parser ):
         def PERCENT_VAR(self):
             return self.getToken(BatchParser.PERCENT_VAR, 0)
 
-        def PERCENT_NUM(self):
-            return self.getToken(BatchParser.PERCENT_NUM, 0)
+        def PERCENT_ARG(self):
+            return self.getToken(BatchParser.PERCENT_ARG, 0)
 
         def FOR_VAR(self):
             return self.getToken(BatchParser.FOR_VAR, 0)
@@ -2499,6 +2996,9 @@ class BatchParser ( Parser ):
 
         def BANG_VAR(self):
             return self.getToken(BatchParser.BANG_VAR, 0)
+
+        def CARET_ESCAPE(self):
+            return self.getToken(BatchParser.CARET_ESCAPE, 0)
 
         def CARET(self):
             return self.getToken(BatchParser.CARET, 0)
@@ -2515,12 +3015,6 @@ class BatchParser ( Parser ):
         def LT(self):
             return self.getToken(BatchParser.LT, 0)
 
-        def AMP(self):
-            return self.getToken(BatchParser.AMP, 0)
-
-        def PIPE(self):
-            return self.getToken(BatchParser.PIPE, 0)
-
         def DOT(self):
             return self.getToken(BatchParser.DOT, 0)
 
@@ -2536,11 +3030,18 @@ class BatchParser ( Parser ):
         def COMMA(self):
             return self.getToken(BatchParser.COMMA, 0)
 
+        def EQUALS(self):
+            return self.getToken(BatchParser.EQUALS, 0)
+
         def SLASH(self):
             return self.getToken(BatchParser.SLASH, 0)
 
-        def WORD(self):
-            return self.getToken(BatchParser.WORD, 0)
+        def PERCENT(self):
+            return self.getToken(BatchParser.PERCENT, 0)
+
+        def argWord(self):
+            return self.getTypedRuleContext(BatchParser.ArgWordContext,0)
+
 
         def NUMBER(self):
             return self.getToken(BatchParser.NUMBER, 0)
@@ -2563,17 +3064,154 @@ class BatchParser ( Parser ):
     def token(self):
 
         localctx = BatchParser.TokenContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 66, self.RULE_token)
-        self._la = 0 # Token type
+        self.enterRule(localctx, 76, self.RULE_token)
         try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 279
-            _la = self._input.LA(1)
-            if not(((((_la - 21)) & ~0x3f) == 0 and ((1 << (_la - 21)) & 10994647539919) != 0)):
-                self._errHandler.recoverInline(self)
+            self.state = 371
+            self._errHandler.sync(self)
+            token = self._input.LA(1)
+            if token in [48]:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 343
+                self.match(BatchParser.DQ_STRING)
+                pass
+            elif token in [49]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 344
+                self.match(BatchParser.SQ_STRING)
+                pass
+            elif token in [50]:
+                self.enterOuterAlt(localctx, 3)
+                self.state = 345
+                self.match(BatchParser.BACKTICK_STRING)
+                pass
+            elif token in [51]:
+                self.enterOuterAlt(localctx, 4)
+                self.state = 346
+                self.match(BatchParser.PERCENT_TILDE)
+                pass
+            elif token in [52]:
+                self.enterOuterAlt(localctx, 5)
+                self.state = 347
+                self.match(BatchParser.PERCENT_VAR_SUBSTRING)
+                pass
+            elif token in [53]:
+                self.enterOuterAlt(localctx, 6)
+                self.state = 348
+                self.match(BatchParser.PERCENT_VAR_REPLACE)
+                pass
+            elif token in [54]:
+                self.enterOuterAlt(localctx, 7)
+                self.state = 349
+                self.match(BatchParser.PERCENT_VAR)
+                pass
+            elif token in [55]:
+                self.enterOuterAlt(localctx, 8)
+                self.state = 350
+                self.match(BatchParser.PERCENT_ARG)
+                pass
+            elif token in [56]:
+                self.enterOuterAlt(localctx, 9)
+                self.state = 351
+                self.match(BatchParser.FOR_VAR)
+                pass
+            elif token in [57]:
+                self.enterOuterAlt(localctx, 10)
+                self.state = 352
+                self.match(BatchParser.FOR_VAR_TILDE)
+                pass
+            elif token in [58]:
+                self.enterOuterAlt(localctx, 11)
+                self.state = 353
+                self.match(BatchParser.BANG_VAR)
+                pass
+            elif token in [47]:
+                self.enterOuterAlt(localctx, 12)
+                self.state = 354
+                self.match(BatchParser.CARET_ESCAPE)
+                pass
+            elif token in [45]:
+                self.enterOuterAlt(localctx, 13)
+                self.state = 355
+                self.match(BatchParser.CARET)
+                pass
+            elif token in [22]:
+                self.enterOuterAlt(localctx, 14)
+                self.state = 356
+                self.match(BatchParser.LPAREN)
+                pass
+            elif token in [23]:
+                self.enterOuterAlt(localctx, 15)
+                self.state = 357
+                self.match(BatchParser.RPAREN)
+                pass
+            elif token in [28]:
+                self.enterOuterAlt(localctx, 16)
+                self.state = 358
+                self.match(BatchParser.GT)
+                pass
+            elif token in [29]:
+                self.enterOuterAlt(localctx, 17)
+                self.state = 359
+                self.match(BatchParser.LT)
+                pass
+            elif token in [35]:
+                self.enterOuterAlt(localctx, 18)
+                self.state = 360
+                self.match(BatchParser.DOT)
+                pass
+            elif token in [36]:
+                self.enterOuterAlt(localctx, 19)
+                self.state = 361
+                self.match(BatchParser.BACKSLASH)
+                pass
+            elif token in [37]:
+                self.enterOuterAlt(localctx, 20)
+                self.state = 362
+                self.match(BatchParser.PLUS)
+                pass
+            elif token in [38]:
+                self.enterOuterAlt(localctx, 21)
+                self.state = 363
+                self.match(BatchParser.MINUS)
+                pass
+            elif token in [34]:
+                self.enterOuterAlt(localctx, 22)
+                self.state = 364
+                self.match(BatchParser.COMMA)
+                pass
+            elif token in [33]:
+                self.enterOuterAlt(localctx, 23)
+                self.state = 365
+                self.match(BatchParser.EQUALS)
+                pass
+            elif token in [32]:
+                self.enterOuterAlt(localctx, 24)
+                self.state = 366
+                self.match(BatchParser.SLASH)
+                pass
+            elif token in [59]:
+                self.enterOuterAlt(localctx, 25)
+                self.state = 367
+                self.match(BatchParser.PERCENT)
+                pass
+            elif token in [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 60]:
+                self.enterOuterAlt(localctx, 26)
+                self.state = 368
+                self.argWord()
+                pass
+            elif token in [61]:
+                self.enterOuterAlt(localctx, 27)
+                self.state = 369
+                self.match(BatchParser.NUMBER)
+                pass
+            elif token in [64]:
+                self.enterOuterAlt(localctx, 28)
+                self.state = 370
+                self.match(BatchParser.UNMATCHED_DQ)
+                pass
             else:
-                self._errHandler.reportMatch(self)
-                self.consume()
+                raise NoViableAltException(self)
+
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -2612,19 +3250,19 @@ class BatchParser ( Parser ):
     def block(self):
 
         localctx = BatchParser.BlockContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 68, self.RULE_block)
+        self.enterRule(localctx, 78, self.RULE_block)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 284
+            self.state = 376
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,32,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,41,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 281
+                    self.state = 373
                     self.line() 
-                self.state = 286
+                self.state = 378
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,32,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,41,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -2634,6 +3272,22 @@ class BatchParser ( Parser ):
             self.exitRule()
         return localctx
 
+
+
+    def sempred(self, localctx:RuleContext, ruleIndex:int, predIndex:int):
+        if self._predicates == None:
+            self._predicates = dict()
+        self._predicates[35] = self.genericCmd_sempred
+        pred = self._predicates.get(ruleIndex, None)
+        if pred is None:
+            raise Exception("No predicate with index:" + str(ruleIndex))
+        else:
+            return pred(localctx, predIndex)
+
+    def genericCmd_sempred(self, localctx:GenericCmdContext, predIndex:int):
+            if predIndex == 0:
+                return self._notForToken()
+         
 
 
 

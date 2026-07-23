@@ -1,13 +1,23 @@
 lexer grammar BatchLexer;
 
-// --- DEFAULT mode ---
-fragment IDENT : [a-zA-Z_][a-zA-Z0-9_]* ;
+@lexer::members {
+def _atLineStart(self) -> bool:
+    col = self.column
+    if col == 0:
+        return True
+    start = self._input.index - col
+    prefix = self._input.getText(start, self._input.index - 1)
+    return prefix.strip() == ""
+}
+
 fragment DIGIT : [0-9] ;
 
-LINE_COMMENT   : '::' ~[\r\n]* -> skip ;
-REM            : [rR][eE][mM] ~[\r\n]* -> skip ;
+LINE_COMMENT   : {self._atLineStart()}? '::' ~[\r\n]* -> skip ;
+REM            : {self._atLineStart()}? [rR][eE][mM] ~[\r\n]* -> skip ;
 
-LABEL          : {self._tokenStartColumn == 0}? ':' ~[ \t\r\n(][^\r\n]* ;
+LABEL          : {self._atLineStart()}? ':' ~[ \t\r\n(]+ ;
+
+AT             : '@' ;
 
 FOR            : [fF][oO][rR] ;
 IF             : [iI][fF] ;
@@ -25,7 +35,7 @@ ERRORLEVEL     : [eE][rR][rR][oO][rR][lL][eE][vV][eE][lL] ;
 ELSE           : [eE][lL][sS][eE] ;
 EXIT           : [eE][xX][iI][tT] ;
 SHIFT          : [sS][hH][iI][fF][tT] ;
-EOF_KW         : 'EOF' ;
+EOF_KW         : [eE][oO][fF] ;
 
 LPAREN         : '(' ;
 RPAREN         : ')' ;
@@ -35,11 +45,8 @@ AMPAMP         : '&&' ;
 PIPEPIPE       : '||' ;
 GT             : '>' ;
 LT             : '<' ;
-GE             : '>=' ;
-LE             : '<=' ;
 EQ             : '==' ;
 COLON          : ':' ;
-SET_A          : '/A' ;
 SLASH          : '/' ;
 EQUALS         : '=' ;
 COMMA          : ',' ;
@@ -48,30 +55,37 @@ BACKSLASH      : '\\' ;
 PLUS           : '+' ;
 MINUS          : '-' ;
 
-EQU            : 'EQU' ;
-NEQ            : 'NEQ' ;
-LSS            : 'LSS' ;
-LEQ            : 'LEQ' ;
-GTR            : 'GTR' ;
-GEQ            : 'GEQ' ;
+EQU            : [eE][qQ][uU] ;
+NEQ            : [nN][eE][qQ] ;
+LSS            : [lL][sS][sS] ;
+LEQ            : [lL][eE][qQ] ;
+GTR            : [gG][tT][rR] ;
+GEQ            : [gG][eE][qQ] ;
 CARET          : '^' ;
-PERCENT        : '%' ;
-ASTERISK         : '*' ;
+ASTERISK       : '*' ;
+
+CARET_ESCAPE
+    : '^' ~[\r\n]
+    ;
 
 DQ_STRING
-    : '"' ( '\\' . | '""' | ~["\\])* '"'
+    : '"' (~'"' | '""')* '"'
     ;
 
 SQ_STRING
     : '\'' (~'\'' | '\'\'')* '\''
     ;
 
+BACKTICK_STRING
+    : '`' (~'`' | '``')* '`'
+    ;
+
 PERCENT_TILDE
-    : '%' '~' [a-zA-Z$]+ [0-9a-zA-Z] '%'
+    : '%' '~' ('$' [a-zA-Z_][a-zA-Z0-9_]* ':' [0-9a-zA-Z*] | [a-zA-Z]* [0-9a-zA-Z*])
     ;
 
 PERCENT_VAR_SUBSTRING
-    : '%' [a-zA-Z_][a-zA-Z0-9_]* ':' '~' DIGIT+ ',' DIGIT* '%'
+    : '%' [a-zA-Z_][a-zA-Z0-9_]* ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '%'
     ;
 
 PERCENT_VAR_REPLACE
@@ -82,8 +96,8 @@ PERCENT_VAR
     : '%' [a-zA-Z_][a-zA-Z0-9_]* '%'
     ;
 
-PERCENT_NUM
-    : '%' DIGIT '%'
+PERCENT_ARG
+    : '%' [0-9*]
     ;
 
 FOR_VAR
@@ -91,11 +105,15 @@ FOR_VAR
     ;
 
 FOR_VAR_TILDE
-    : '%%' '~' [a-zA-Z$]+ [a-zA-Z]?
+    : '%%' '~' ([a-zA-Z$]+ [a-zA-Z]? | '$' [a-zA-Z_][a-zA-Z0-9_]* ':' [0-9a-zA-Z*])
     ;
 
 BANG_VAR
     : '!' [a-zA-Z_][a-zA-Z0-9_]* '!'
+    ;
+
+PERCENT
+    : '%'
     ;
 
 WORD           : [a-zA-Z_][a-zA-Z0-9_./\\:+\-]* ;
@@ -105,5 +123,5 @@ WS             : [ \t]+ -> skip ;
 NEWLINE        : [\r\n]+ ;
 
 UNMATCHED_DQ
-    : '"' ~[\r\n]*
+    : '"' (~[\r\n"] | '""')*
     ;

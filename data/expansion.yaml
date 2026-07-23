@@ -24,21 +24,21 @@ valid_parameter_patterns:
 invalid_combinations:
   - modifiers: "*"
     reason: "%~ modifiers may not be used with %* (CALL /?)"
-  - pattern: "%~[^%]*%[^0-9a-zA-Z]%"
-    reason: "Percent-tilde requires parameter 0-9 or single FOR loop letter"
+  - pattern: "%~[^0-9a-zA-Z*]$"
+    reason: "Percent-tilde requires parameter 0-9, *, or single FOR loop letter"
 
 valid_combined_examples:
-  - "%~dpnx1%"
-  - "%~f1%"
-  - "%~nx1%"
-  - "%~dp0%"
-  - "%~z0%"
-  - "%~ftza1%"
+  - "%~dpnx1"
+  - "%~f1"
+  - "%~nx1"
+  - "%~dp0"
+  - "%~z0"
+  - "%~ftza1"
 
 path_search_modifier:
-  pattern: "%~$ENV:parameter%"
+  pattern: "%~$ENV:parameter"
   description: "Searches PATH or other env var for file; expands to first match"
-  example: "%~$PATH:1%"
+  example: "%~$PATH:1"
 
 delayed_expansion:
   pattern: "!VAR!"

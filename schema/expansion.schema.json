@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://blinter.dev/schema/expansion.schema.json",
+  "$id": "https://batch-spec.dev/schema/expansion.schema.json",
   "title": "Blinter batch expansion rules",
   "type": "object",
   "required": ["version", "valid_modifiers", "valid_modifier_chars"],

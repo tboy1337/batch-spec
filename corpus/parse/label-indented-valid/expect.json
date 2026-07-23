@@ -1,0 +1,9 @@
+{
+  "description": "Label with leading whitespace before colon",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "labels"
+  ]
+}

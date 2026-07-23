@@ -25,7 +25,7 @@ def _mock_impl(
 
 def test_discover_cases_finds_repository_corpus() -> None:
     cases = run_parser._discover_cases()
-    assert len(cases) == 36
+    assert len(cases) == 47
     assert all(case_id for case_id, _, _ in cases)
 
 
@@ -116,6 +116,24 @@ def test_check_case_should_parse_false_fails_when_tree_present(tmp_path: Path) -
     )
 
     assert message == "parse-failure-case: expected parse failure"
+
+
+def test_check_case_should_parse_fails_with_hidden_errors(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.cmd"
+    input_path.write_text("echo hi\n", encoding="utf-8")
+    impl = _mock_impl(
+        tree=object(), errors=["line 1:0 token recognition error at: '@'"]
+    )
+
+    message = run_parser._check_case(
+        "hidden-error-case",
+        input_path,
+        {"parse": {"should_parse": True}},
+        impl,
+    )
+
+    assert message is not None
+    assert "expected clean parse" in message
 
 
 def test_check_case_missing_tree_reports_error(tmp_path: Path) -> None:

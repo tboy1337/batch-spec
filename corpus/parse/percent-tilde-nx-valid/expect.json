@@ -1,0 +1,9 @@
+{
+  "description": "Percent-tilde combined nx modifier on argument 1",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "description": "Reserved keywords used as plain argument words",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "keywords"
+  ]
+}

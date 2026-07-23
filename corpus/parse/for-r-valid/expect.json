@@ -1,0 +1,9 @@
+{
+  "description": "FOR /R recursive wildcard filespec",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

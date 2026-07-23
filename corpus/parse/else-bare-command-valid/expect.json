@@ -1,0 +1,9 @@
+{
+  "description": "ELSE followed by bare command without parentheses",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if"
+  ]
+}

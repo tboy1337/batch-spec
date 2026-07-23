@@ -54,8 +54,18 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by BatchParser#ifTail.
-    def visitIfTail(self, ctx:BatchParser.IfTailContext):
+    # Visit a parse tree produced by BatchParser#ifIOpt.
+    def visitIfIOpt(self, ctx:BatchParser.IfIOptContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#ifBody.
+    def visitIfBody(self, ctx:BatchParser.IfBodyContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#elseClause.
+    def visitElseClause(self, ctx:BatchParser.ElseClauseContext):
         return self.visitChildren(ctx)
 
 
@@ -66,11 +76,6 @@ class BatchParserVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by BatchParser#ifExistOperand.
     def visitIfExistOperand(self, ctx:BatchParser.IfExistOperandContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by BatchParser#ifBlockStmt.
-    def visitIfBlockStmt(self, ctx:BatchParser.IfBlockStmtContext):
         return self.visitChildren(ctx)
 
 
@@ -99,8 +104,18 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by BatchParser#forMod.
-    def visitForMod(self, ctx:BatchParser.ForModContext):
+    # Visit a parse tree produced by BatchParser#forSlashMod.
+    def visitForSlashMod(self, ctx:BatchParser.ForSlashModContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#forFOptions.
+    def visitForFOptions(self, ctx:BatchParser.ForFOptionsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#forBody.
+    def visitForBody(self, ctx:BatchParser.ForBodyContext):
         return self.visitChildren(ctx)
 
 
@@ -109,8 +124,8 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by BatchParser#forItem.
-    def visitForItem(self, ctx:BatchParser.ForItemContext):
+    # Visit a parse tree produced by BatchParser#forListItem.
+    def visitForListItem(self, ctx:BatchParser.ForListItemContext):
         return self.visitChildren(ctx)
 
 
@@ -134,6 +149,16 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by BatchParser#setMode.
+    def visitSetMode(self, ctx:BatchParser.SetModeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAssign.
+    def visitSetAssign(self, ctx:BatchParser.SetAssignContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by BatchParser#setlocalStmt.
     def visitSetlocalStmt(self, ctx:BatchParser.SetlocalStmtContext):
         return self.visitChildren(ctx)
@@ -154,11 +179,6 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by BatchParser#setOp.
-    def visitSetOp(self, ctx:BatchParser.SetOpContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by BatchParser#setRest.
     def visitSetRest(self, ctx:BatchParser.SetRestContext):
         return self.visitChildren(ctx)
@@ -171,6 +191,11 @@ class BatchParserVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by BatchParser#commandTail.
     def visitCommandTail(self, ctx:BatchParser.CommandTailContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#argWord.
+    def visitArgWord(self, ctx:BatchParser.ArgWordContext):
         return self.visitChildren(ctx)
 
 

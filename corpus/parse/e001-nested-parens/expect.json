@@ -1,9 +1,11 @@
 {
-  "description": "Nested parentheses",
+  "description": "Unclosed IF parenthesis block (parsed as separate tokens by grammar)",
   "parse": {
     "should_parse": true
   },
   "tags": [
-    "blocks"
+    "if",
+    "negative"
   ]
 }
+

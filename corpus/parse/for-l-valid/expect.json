@@ -1,0 +1,9 @@
+{
+  "description": "FOR /L counting loop with comma-separated bounds",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

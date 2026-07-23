@@ -2,6 +2,12 @@ parser grammar BatchParser;
 
 options { tokenVocab = BatchLexer; }
 
+@parser::members {
+def _notForToken(self) -> bool:
+    from BatchLexer import BatchLexer  # isort: skip
+    return self._input.LA(1) != BatchLexer.FOR
+}
+
 script
     : line* EOF
     ;
@@ -21,16 +27,18 @@ commandLine
     ;
 
 statement
-    : ifStmt
-    | forStmt
-    | callStmt
-    | gotoStmt
-    | setStmt
-    | setlocalStmt
-    | endlocalStmt
-    | exitStmt
-    | shiftStmt
-    | genericCmd
+    : AT? (
+        ifStmt
+      | forStmt
+      | callStmt
+      | gotoStmt
+      | setStmt
+      | setlocalStmt
+      | endlocalStmt
+      | exitStmt
+      | shiftStmt
+      | genericCmd
+      )
     ;
 
 exitStmt
@@ -48,12 +56,20 @@ shiftStmt
     ;
 
 ifStmt
-    : IF ifTail
+    : IF ifIOpt? ifBody
     ;
 
-ifTail
-    : ifPredicate commandTail?
-    | ifBlockStmt
+ifIOpt
+    : SLASH WORD
+    ;
+
+ifBody
+    : ifPredicate LPAREN block RPAREN elseClause?
+    | ifPredicate statement
+    ;
+
+elseClause
+    : ELSE ifBody
     ;
 
 ifErrorlevelStmt
@@ -64,20 +80,21 @@ ifExistOperand
     : DQ_STRING
     | WORD
     | PERCENT_VAR
-    ;
-
-ifBlockStmt
-    : ifPredicate LPAREN block RPAREN (ELSE LPAREN block RPAREN)?
+    | PERCENT_TILDE
+    | PERCENT_ARG
     ;
 
 ifPredicate
     : NOT? ifErrorlevelStmt
-    | NOT? DEFINED WORD
+    | NOT? DEFINED argWord
     | NOT? EXIST ifExistOperand
     | comparison
+    | PERCENT_VAR NUMBER
     | DQ_STRING
+    | PERCENT_TILDE
     | PERCENT_VAR
-    | WORD
+    | PERCENT_ARG
+    | argWord
     ;
 
 comparison
@@ -92,10 +109,6 @@ compareOp
     | LEQ
     | GTR
     | GEQ
-    | LT
-    | GT
-    | LE
-    | GE
     ;
 
 compareOperand
@@ -104,30 +117,43 @@ compareOperand
     | PERCENT_VAR_SUBSTRING
     | PERCENT_VAR_REPLACE
     | PERCENT_VAR
-    | PERCENT_NUM
-    | WORD
+    | PERCENT_ARG
+    | argWord
     | NUMBER
     ;
 
 forStmt
-    : FOR forMod* FOR_VAR (FOR_VAR_TILDE)? IN LPAREN forList RPAREN DO (LPAREN block RPAREN | block | commandLine)
+    : FOR forSlashMod* forFOptions? FOR_VAR IN LPAREN forList RPAREN DO forBody
     ;
 
-forMod
+forSlashMod
     : SLASH WORD
     ;
 
-forList
-    : forItem (forItem)*
+forFOptions
+    : DQ_STRING
     ;
 
-forItem
+forBody
+    : LPAREN block RPAREN
+    | statement
+    ;
+
+forList
+    : forListItem (COMMA forListItem)*
+    | forListItem+
+    ;
+
+forListItem
     : SQ_STRING
     | DQ_STRING
+    | BACKTICK_STRING
     | PERCENT_VAR
-    | WORD
+    | PERCENT_TILDE
+    | PERCENT_ARG
+    | ASTERISK (DOT argWord)?
+    | argWord
     | NUMBER
-    | ASTERISK
     ;
 
 callStmt
@@ -136,18 +162,27 @@ callStmt
 
 callTarget
     : COLON? EOF_KW
-    | COLON? WORD
-    | PERCENT_NUM
+    | COLON? argWord
+    | PERCENT_ARG
     | PERCENT_VAR
     | DQ_STRING
     ;
 
 gotoStmt
-    : GOTO callTarget commandTail?
+    : GOTO callTarget
     ;
 
 setStmt
-    : SET setTarget setOp setRest?
+    : SET setMode? setAssign
+    ;
+
+setMode
+    : SLASH WORD
+    ;
+
+setAssign
+    : DQ_STRING
+    | setTarget EQUALS setRest?
     ;
 
 setlocalStmt
@@ -163,14 +198,8 @@ endlocalStmt
     ;
 
 setTarget
-    : WORD
+    : argWord
     | PERCENT_VAR
-    | DQ_STRING
-    ;
-
-setOp
-    : EQUALS
-    | SET_A
     ;
 
 setRest
@@ -178,38 +207,60 @@ setRest
     ;
 
 genericCmd
-    : commandTail
+    : {self._notForToken()}? commandTail
     ;
 
 commandTail
     : token+
     ;
 
+argWord
+    : WORD
+    | FOR
+    | IF
+    | SET
+    | DO
+    | IN
+    | EXIST
+    | DEFINED
+    | NOT
+    | ERRORLEVEL
+    | ELSE
+    | EXIT
+    | SHIFT
+    | CALL
+    | GOTO
+    | ENDLOCAL
+    | SETLOCAL
+    ;
+
 token
     : DQ_STRING
     | SQ_STRING
+    | BACKTICK_STRING
     | PERCENT_TILDE
     | PERCENT_VAR_SUBSTRING
     | PERCENT_VAR_REPLACE
     | PERCENT_VAR
-    | PERCENT_NUM
+    | PERCENT_ARG
     | FOR_VAR
     | FOR_VAR_TILDE
     | BANG_VAR
+    | CARET_ESCAPE
     | CARET
     | LPAREN
     | RPAREN
     | GT
     | LT
-    | AMP
-    | PIPE
     | DOT
     | BACKSLASH
     | PLUS
     | MINUS
     | COMMA
+    | EQUALS
     | SLASH
-    | WORD
+    | PERCENT
+    | argWord
     | NUMBER
     | UNMATCHED_DQ
     ;

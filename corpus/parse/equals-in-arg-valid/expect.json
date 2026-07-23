@@ -1,0 +1,9 @@
+{
+  "description": "Equals sign in generic command arguments",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "arguments"
+  ]
+}

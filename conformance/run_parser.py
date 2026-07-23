@@ -116,24 +116,22 @@ def _check_case(
         parse_meta = {}
 
     if parse_meta.get("expect_syntax_errors"):
-
-        if not errors:
-
-            return f"{case_id}: expected syntax errors, got none"
-
-        return None
+        return f"{case_id}: expected syntax errors, got none" if not errors else None
 
     if parse_meta.get("should_parse") is False:
-
-        if tree is not None and not errors:
-
-            return f"{case_id}: expected parse failure"
-
-        return None
+        return (
+            f"{case_id}: expected parse failure"
+            if tree is not None and not errors
+            else None
+        )
 
     if tree is None:
 
         return f"{case_id}: parser returned no tree"
+
+    if errors:
+
+        return f"{case_id}: expected clean parse, got errors: {'; '.join(errors)}"
 
     return None
 
@@ -148,9 +146,11 @@ def main() -> int:
 
     impl = _IMPLEMENTATIONS[args.impl]
 
+    cases = _discover_cases()
+
     failures: list[str] = []
 
-    for case_id, input_path, expect in _discover_cases():
+    for case_id, input_path, expect in cases:
 
         message = _check_case(case_id, input_path, expect, impl)
 
@@ -166,7 +166,7 @@ def main() -> int:
 
         return 1
 
-    print(f"All {len(_discover_cases())} parse cases passed ({args.impl})")
+    print(f"All {len(cases)} parse cases passed ({args.impl})")
 
     return 0
 
