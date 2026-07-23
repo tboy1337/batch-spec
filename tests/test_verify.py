@@ -28,13 +28,20 @@ def test_build_steps_includes_all_defaults() -> None:
         "validate",
         "generate",
         "test",
+        "pip-audit",
         "conformance",
     ]
 
 
 def test_build_steps_honors_skip_flags() -> None:
     args = verify._parse_args(
-        ["--skip-format", "--skip-lint", "--skip-types", "--skip-conformance"]
+        [
+            "--skip-format",
+            "--skip-lint",
+            "--skip-types",
+            "--skip-conformance",
+            "--skip-audit",
+        ]
     )
     steps = verify._build_steps(args)
     names = [name for name, _ in steps]

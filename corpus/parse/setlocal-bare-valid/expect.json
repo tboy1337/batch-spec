@@ -1,9 +1,9 @@
 {
-    "description": "Bare SETLOCAL without enable flags",
-    "parse": {
-        "should_parse": true
-    },
-    "tags": [
-        "setlocal"
-    ]
+  "description": "Bare SETLOCAL without enable flags",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "setlocal"
+  ]
 }

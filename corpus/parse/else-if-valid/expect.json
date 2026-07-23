@@ -1,9 +1,11 @@
 {
   "description": "ELSE IF chain",
   "parse": {
+    "top_level_statement": "ifStmt",
     "should_parse": true
   },
   "tags": [
-    "if"
+    "if",
+    "else"
   ]
 }

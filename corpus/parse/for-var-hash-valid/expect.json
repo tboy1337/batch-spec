@@ -1,0 +1,10 @@
+{
+  "description": "FOR loop variable with hash punctuation",
+  "parse": {
+    "top_level_statement": "forStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

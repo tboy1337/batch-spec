@@ -1,0 +1,10 @@
+{
+  "description": "Delayed expansion search-replace",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion",
+    "delayed"
+  ]
+}

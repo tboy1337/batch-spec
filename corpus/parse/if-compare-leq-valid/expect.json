@@ -1,9 +1,9 @@
 {
-    "description": "IF numeric comparison with LEQ operator",
-    "parse": {
-        "should_parse": true
-    },
-    "tags": [
-        "if"
-    ]
+  "description": "IF numeric comparison with LEQ operator",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "if"
+  ]
 }

@@ -1,10 +1,10 @@
 {
-    "description":  "SET /A parenthesized expression with multiplication",
-    "parse":  {
-                  "should_parse":  true
-              },
-    "tags":  [
-                 "set",
-                 "arithmetic"
-             ]
+  "description": "SET /A parenthesized expression with multiplication",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "set",
+    "arithmetic"
+  ]
 }

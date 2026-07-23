@@ -1,0 +1,10 @@
+{
+  "description": "FOR /F with single-quoted command (non-usebackq)",
+  "parse": {
+    "top_level_statement": "forStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

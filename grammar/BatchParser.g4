@@ -12,6 +12,8 @@ def _notLonelyParen(self) -> bool:
     la1 = self._input.LA(1)
     if la1 != BatchLexer.RPAREN:
         return True
+    # Lonely ')' closes a paren block; do not absorb into genericCmd.
+    # ELSE must be lonely so ") ELSE" builds elseClause (IF /? form).
     la2 = self._input.LA(2)
     return la2 not in (
         BatchLexer.NEWLINE,
@@ -19,8 +21,19 @@ def _notLonelyParen(self) -> bool:
         BatchLexer.PIPE,
         BatchLexer.AMPAMP,
         BatchLexer.PIPEPIPE,
+        BatchLexer.ELSE,
         -1,
     )
+
+def _enterThenStmt(self) -> None:
+    self._thenStmtDepth = getattr(self, "_thenStmtDepth", 0) + 1
+
+def _exitThenStmt(self) -> None:
+    self._thenStmtDepth = getattr(self, "_thenStmtDepth", 0) - 1
+
+def _elseAsArgAllowed(self) -> bool:
+    # Inside IF then-statement (non-paren), bare ELSE starts elseClause.
+    return getattr(self, "_thenStmtDepth", 0) == 0
 }
 
 script
@@ -85,11 +98,12 @@ ifIOpt
 
 ifBody
     : ifPredicate LPAREN block RPAREN elseClause?
-    | ifPredicate statement
+    | ifPredicate {self._enterThenStmt()} statement {self._exitThenStmt()} elseClause?
     ;
 
 elseClause
-    : ELSE ifBody
+    : ELSE LPAREN block RPAREN
+    | ELSE statement
     ;
 
 ifErrorlevelStmt
@@ -108,6 +122,8 @@ ifExistOperand
     | PERCENT_ARG
     | FOR_VAR
     | FOR_VAR_TILDE
+    | BANG_VAR_SUBSTRING
+    | BANG_VAR_REPLACE
     | BANG_VAR
     ;
 
@@ -153,6 +169,8 @@ compareOperand
     | PERCENT_ARG
     | FOR_VAR
     | FOR_VAR_TILDE
+    | BANG_VAR_SUBSTRING
+    | BANG_VAR_REPLACE
     | BANG_VAR
     | argWord
     | MINUS? NUMBER
@@ -212,6 +230,7 @@ forListItem
     | PERCENT_TILDE
     | PERCENT_ARG
     | ASTERISK (DOT argWord)?
+    | DOT argWord?
     | argWord
     | MINUS? NUMBER
     | MINUS? HEX_NUMBER
@@ -235,7 +254,7 @@ gotoStmt
     ;
 
 setStmt
-    : SET setMode? setAssign
+    : SET setMode? setAssign?
     ;
 
 setMode
@@ -245,6 +264,7 @@ setMode
 setAssign
     : DQ_STRING
     | setTarget EQUALS setRest?
+    | setTarget
     ;
 
 setlocalStmt
@@ -288,13 +308,13 @@ argWord
     | NOT
     | ERRORLEVEL
     | CMDEXTVERSION
-    | ELSE
     | EXIT
     | SHIFT
     | CALL
     | GOTO
     | ENDLOCAL
     | SETLOCAL
+    | {self._elseAsArgAllowed()}? ELSE
     | EQU
     | NEQ
     | LSS
@@ -314,6 +334,8 @@ token
     | PERCENT_ARG
     | FOR_VAR
     | FOR_VAR_TILDE
+    | BANG_VAR_SUBSTRING
+    | BANG_VAR_REPLACE
     | BANG_VAR
     | BANG
     | TILDE
@@ -321,7 +343,7 @@ token
     | CARET
     | ASTERISK
     | LPAREN
-    | RPAREN
+    | {self._notLonelyParen()}? RPAREN
     | APPEND
     | DUP_OUT
     | DUP_IN

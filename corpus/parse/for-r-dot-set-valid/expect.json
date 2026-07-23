@@ -1,0 +1,10 @@
+{
+  "description": "FOR /R with single-period set",
+  "parse": {
+    "top_level_statement": "forStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

@@ -1,10 +1,10 @@
 {
-    "description": "Line comment inside parenthesized IF block (parse-only; :: skipped at line start)",
-    "parse": {
-        "should_parse": true
-    },
-    "tags": [
-        "comment",
-        "if"
-    ]
+  "description": "Line comment inside parenthesized IF block (parse-only; :: skipped at line start)",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "comment",
+    "if"
+  ]
 }

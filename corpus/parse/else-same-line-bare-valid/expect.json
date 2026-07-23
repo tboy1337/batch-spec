@@ -1,0 +1,11 @@
+{
+  "description": "IF then bare command ELSE bare command on same line",
+  "parse": {
+    "top_level_statement": "ifStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "else"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "FOR set consisting of a single period",
+  "parse": {
+    "top_level_statement": "forStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

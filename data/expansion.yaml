@@ -1,6 +1,6 @@
-version: 1
+version: 2
 
-# Percent-tilde (%~) expansion rules used by E017, E019, E024, E025
+# Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
 
 valid_modifiers:
@@ -20,15 +20,16 @@ valid_modifier_chars: "nxfpdstaz"
 
 valid_parameter_patterns:
   - digit_0_9
-  - single_alpha_for_var
+  - for_var_letter
 
 invalid_combinations:
   - modifiers: "*"
     reason: "%~ modifiers may not be used with %* (CALL /?)"
   - pattern: "%~[^0-9a-zA-Z*]$"
-    reason: "Percent-tilde requires parameter 0-9, *, or single FOR loop letter"
+    reason: "Percent-tilde requires parameter 0-9, *, or a FOR loop letter"
 
 valid_combined_examples:
+  - "%~1"
   - "%~dpnx1"
   - "%~f1"
   - "%~nx1"
@@ -42,16 +43,35 @@ path_search_modifier:
   description: "Searches PATH or other env var for file; expands to first match"
   example: "%~$PATH:1"
 
+percent_tilde_notes:
+  bare_quote_strip: "%~1 strips surrounding quotes from the parameter with no letter modifiers"
+  multi_digit_parameter: "%~10 is %~1 followed by literal 0; only a single digit or * terminates %~"
+
 delayed_expansion:
   pattern: "!VAR!"
-  requires_setlocal: true
+  requires_setlocal: false
   enable_keywords:
     - "setlocal enabledelayedexpansion"
     - "setlocal enableextensions enabledelayedexpansion"
+  enable_paths:
+    - "cmd /V:ON"
+    - "SETLOCAL EnableDelayedExpansion"
+    - "registry Command Processor DelayedExpansion"
+  substring_pattern: "!var:~start,length!"
+  replacement_pattern: "!var:old=new!"
+  digit_leading_names: >-
+    Environment names that start with a digit expand with delayed !name! forms;
+    percent %1name% is parsed as argument %1 plus literal text.
 
 for_loop_variables:
   batch_file_prefix: "%%"
   command_line_prefix: "%"
+  letter_charset: "a-zA-Z0-9?#$@_`[]{}+.-\\!*():/"
+  letter_charset_notes: >-
+    Live cmd.exe accepts letters, digits, and many punctuation characters as the
+    single FOR variable letter. Operators that fail as FOR letters include
+    % | & = ; < >. Tilde after %% starts %%~ modifier forms rather than a bare
+    %%~ variable in the grammar. Prefer letters to avoid clashing with %0-%9.
 
 caret_escape:
   description: >-
@@ -72,7 +92,77 @@ double_percent:
 string_operations:
   substring_pattern: "%var:~start,length%"
   replacement_pattern: "%var:old=new%"
-  description: "Batch substring and search-replace expansion (E021)"
+  description: "Batch substring and search-replace expansion"
+  negative_offsets: >-
+    Negative start counts from the end (%PATH:~-10%). Negative length trims
+    from the end (%PATH:~0,-2%). Combined forms like %PATH:~7,-5% are valid.
+  empty_defined_substring_batveat: >-
+    When a variable is defined but empty, forms like %var:~-1% can expand to
+    the literal ~-1 text instead of an empty string.
+  star_prefix_replace: >-
+    In %var:*old=new%, a leading asterisk on the search text replaces from the
+    beginning of the value through the first match of old.
+
+set_a:
+  description: "SET /A arithmetic expression operators (SET /?)"
+  unary_operators:
+    - "!"
+    - "~"
+    - "-"
+  binary_operators:
+    - "*"
+    - "/"
+    - "%"
+    - "+"
+    - "-"
+    - "<<"
+    - ">>"
+    - "&"
+    - "^"
+    - "|"
+  assignment_operators:
+    - "="
+    - "*="
+    - "/="
+    - "%="
+    - "+="
+    - "-="
+    - "&="
+    - "^="
+    - "|="
+    - "<<="
+    - ">>="
+  hex_literal: "0x12 style hexadecimal integers"
+  octal_literal: >-
+    Leading-zero octal (022). Digits 08 and 09 are invalid octal and fail SET /A.
+  modulo_in_batch: "Modulo uses %% in batch files (single % on the interactive command line)"
+
+setlocal_options:
+  flags:
+    - ENABLEEXTENSIONS
+    - DISABLEEXTENSIONS
+    - ENABLEDELAYEDEXPANSION
+    - DISABLEDELAYEDEXPANSION
+  nesting_limit: "SETLOCAL nesting is limited (commonly 32 levels)"
+  implied_endlocal: "An unmatched SETLOCAL is ended when the batch script exits"
+
+errorlevel:
+  if_form: >-
+    IF ERRORLEVEL n is true when the current exit code is greater than or equal
+    to n (not equality). Prefer IF %ERRORLEVEL% EQU n for exact tests.
+  variable_form: "%ERRORLEVEL% / !ERRORLEVEL! hold the numeric exit code as text"
+
+cmdextversion:
+  description: >-
+    IF CMDEXTVERSION n is true when the Command Extensions version is >= n.
+    Never true when extensions are disabled. %CMDEXTVERSION% exposes the version.
+
+remarks:
+  rem: "REM remarks out the remainder of the line when used as a command"
+  double_colon: >-
+    A line starting with :: is a label whose second character is :, commonly
+    used as a remark. Labels must not place : in the second character position
+    for real jump targets. :: inside parenthesized blocks can be fragile at runtime.
 
 legacy_id_notes:
   E006: "Historical E-prefix ID with WARNING severity; retained for compatibility"

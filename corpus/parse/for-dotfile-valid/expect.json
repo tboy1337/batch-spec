@@ -1,0 +1,10 @@
+{
+  "description": "FOR list item with leading dot filename",
+  "parse": {
+    "top_level_statement": "forStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

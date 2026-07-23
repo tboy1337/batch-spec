@@ -1,10 +1,11 @@
 {
   "description": "IF block with ELSE",
   "parse": {
+    "top_level_statement": "ifStmt",
     "should_parse": true
   },
   "tags": [
     "if",
-    "blocks"
+    "else"
   ]
 }

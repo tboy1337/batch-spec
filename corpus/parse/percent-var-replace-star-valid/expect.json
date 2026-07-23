@@ -1,0 +1,9 @@
+{
+  "description": "Percent replace with asterisk prefix pattern",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion"
+  ]
+}

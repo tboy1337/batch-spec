@@ -1,0 +1,11 @@
+{
+  "description": "SET /A hexadecimal literal",
+  "parse": {
+    "top_level_statement": "setStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "set",
+    "arithmetic"
+  ]
+}

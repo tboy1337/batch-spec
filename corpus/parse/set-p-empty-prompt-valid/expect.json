@@ -1,0 +1,10 @@
+{
+  "description": "SET /P with empty prompt string",
+  "parse": {
+    "top_level_statement": "setStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "set"
+  ]
+}

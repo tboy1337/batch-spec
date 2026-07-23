@@ -56,6 +56,41 @@ def test_validate_main_prints_success(capsys: pytest.CaptureFixture[str]) -> Non
     assert "batch-spec validation passed" in captured.out
 
 
+def test_validate_corpus_rejects_orphan_expect(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    corpus = tmp_path / "corpus" / "parse"
+    orphan = corpus / "orphan-expect"
+    orphan.mkdir(parents=True)
+    (orphan / "expect.json").write_text(
+        '{"description": "orphan", "parse": {"should_parse": true}}',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(validate, "CORPUS_DIR", corpus)
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit) as exc_info:
+        validate._validate_corpus()
+
+    assert exc_info.value.code == 1
+
+
+def test_validate_corpus_rejects_orphan_input(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    corpus = tmp_path / "corpus" / "parse"
+    orphan = corpus / "orphan-input"
+    orphan.mkdir(parents=True)
+    (orphan / "input.cmd").write_text("@echo off\n", encoding="utf-8")
+    monkeypatch.setattr(validate, "CORPUS_DIR", corpus)
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit) as exc_info:
+        validate._validate_corpus()
+
+    assert exc_info.value.code == 1
+
+
 def test_grammar_fingerprint_is_deterministic() -> None:
     first = generate_parser._grammar_fingerprint()
     second = generate_parser._grammar_fingerprint()
@@ -128,16 +163,18 @@ def test_generate_parser_check_passes_when_up_to_date(
     generated_dir = tmp_path / "generated" / "python"
     generated_dir.mkdir(parents=True)
     fingerprint = generate_parser._grammar_fingerprint()
-    for name in (
-        "BatchLexer.py",
-        "BatchParser.py",
-        "BatchParserVisitor.py",
-        "__init__.py",
-    ):
+    init_text = '"""ANTLR-generated batch parser (do not edit by hand)."""\n'
+    for name in ("BatchLexer.py", "BatchParser.py", "BatchParserVisitor.py"):
         (generated_dir / name).write_text("placeholder", encoding="utf-8")
+    (generated_dir / "__init__.py").write_text(init_text, encoding="utf-8")
     (generated_dir / ".grammar-stamp").write_text(fingerprint, encoding="utf-8")
 
+    def _fake_run_antlr(output_dir: Path) -> None:
+        for name in ("BatchLexer.py", "BatchParser.py", "BatchParserVisitor.py"):
+            (output_dir / name).write_text("placeholder", encoding="utf-8")
+
     monkeypatch.setattr(generate_parser, "GENERATED_DIR", generated_dir)
+    monkeypatch.setattr(generate_parser, "_run_antlr", _fake_run_antlr)
     monkeypatch.setattr(sys, "argv", ["generate_parser.py", "--check"])
 
     generate_parser.main()

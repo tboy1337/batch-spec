@@ -1,9 +1,9 @@
 {
-    "description": "ENDLOCAL after SETLOCAL block",
-    "parse": {
-        "should_parse": true
-    },
-    "tags": [
-        "setlocal"
-    ]
+  "description": "ENDLOCAL after SETLOCAL block",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "setlocal"
+  ]
 }

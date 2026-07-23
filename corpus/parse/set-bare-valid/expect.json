@@ -1,0 +1,10 @@
+{
+  "description": "Bare SET lists environment variables",
+  "parse": {
+    "top_level_statement": "setStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "set"
+  ]
+}

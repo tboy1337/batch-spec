@@ -1,0 +1,10 @@
+{
+  "description": "Delayed expansion substring with negative offset",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion",
+    "delayed"
+  ]
+}

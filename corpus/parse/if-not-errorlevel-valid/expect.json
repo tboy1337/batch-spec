@@ -1,0 +1,11 @@
+{
+  "description": "IF NOT ERRORLEVEL number",
+  "parse": {
+    "top_level_statement": "ifStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "errorlevel"
+  ]
+}

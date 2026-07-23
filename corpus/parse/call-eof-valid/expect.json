@@ -1,9 +1,9 @@
 {
-    "description": "CALL :EOF subroutine terminator",
-    "parse": {
-        "should_parse": true
-    },
-    "tags": [
-        "call"
-    ]
+  "description": "CALL :EOF subroutine terminator",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "call"
+  ]
 }

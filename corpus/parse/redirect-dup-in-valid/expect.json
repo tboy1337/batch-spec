@@ -1,9 +1,9 @@
 {
-    "description": "Input handle duplication with <&",
-    "parse": {
-        "should_parse": true
-    },
-    "tags": [
-        "redirect"
-    ]
+  "description": "Input handle duplication with <&",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "redirect"
+  ]
 }

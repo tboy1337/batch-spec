@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://batch-spec.dev/schema/expansion.schema.json",
-  "title": "Blinter batch expansion rules",
+  "title": "batch-spec expansion and language semantics",
   "type": "object",
   "required": ["version", "valid_modifiers", "valid_modifier_chars"],
   "properties": {
@@ -44,7 +44,14 @@
         "enable_keywords": {
           "type": "array",
           "items": { "type": "string" }
-        }
+        },
+        "enable_paths": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "substring_pattern": { "type": "string" },
+        "replacement_pattern": { "type": "string" },
+        "digit_leading_names": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -53,7 +60,9 @@
       "required": ["batch_file_prefix", "command_line_prefix"],
       "properties": {
         "batch_file_prefix": { "type": "string", "const": "%%" },
-        "command_line_prefix": { "type": "string", "const": "%" }
+        "command_line_prefix": { "type": "string", "const": "%" },
+        "letter_charset": { "type": "string" },
+        "letter_charset_notes": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -79,7 +88,10 @@
       "properties": {
         "substring_pattern": { "type": "string" },
         "replacement_pattern": { "type": "string" },
-        "description": { "type": "string" }
+        "description": { "type": "string" },
+        "negative_offsets": { "type": "string" },
+        "empty_defined_substring_batveat": { "type": "string" },
+        "star_prefix_replace": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -89,6 +101,71 @@
         "pattern": { "type": "string" },
         "description": { "type": "string" },
         "example": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "percent_tilde_notes": {
+      "type": "object",
+      "properties": {
+        "bare_quote_strip": { "type": "string" },
+        "multi_digit_parameter": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "set_a": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "unary_operators": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "binary_operators": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "assignment_operators": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "hex_literal": { "type": "string" },
+        "octal_literal": { "type": "string" },
+        "modulo_in_batch": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "setlocal_options": {
+      "type": "object",
+      "properties": {
+        "flags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "nesting_limit": { "type": "string" },
+        "implied_endlocal": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "errorlevel": {
+      "type": "object",
+      "properties": {
+        "if_form": { "type": "string" },
+        "variable_form": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "cmdextversion": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "remarks": {
+      "type": "object",
+      "properties": {
+        "rem": { "type": "string" },
+        "double_colon": { "type": "string" }
       },
       "additionalProperties": false
     },

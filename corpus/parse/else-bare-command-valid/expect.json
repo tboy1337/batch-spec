@@ -1,9 +1,11 @@
 {
   "description": "ELSE followed by bare command without parentheses",
   "parse": {
+    "top_level_statement": "ifStmt",
     "should_parse": true
   },
   "tags": [
-    "if"
+    "if",
+    "else"
   ]
 }

@@ -1,0 +1,9 @@
+{
+  "description": "Percent substring with negative offset and length",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion"
+  ]
+}

@@ -25,8 +25,13 @@ def _mock_impl(
 
 def test_discover_cases_finds_repository_corpus() -> None:
     cases = run_parser._discover_cases()
-    assert len(cases) == 107
+    assert len(cases) > 0
+    expect_paths = sorted(run_parser.CORPUS_DIR.glob("**/expect.json"))
+    input_paths = sorted(run_parser.CORPUS_DIR.glob("**/input.cmd"))
+    assert len(expect_paths) == len(input_paths) == len(cases)
     assert all(case_id for case_id, _, _ in cases)
+    for expect_path in expect_paths:
+        assert (expect_path.parent / "input.cmd").is_file()
 
 
 def test_discover_cases_skips_missing_input(
@@ -207,6 +212,18 @@ def test_top_level_statement_helpers_with_real_tree(
 
 
 @pytest.mark.integration
+def test_top_level_ignores_nested_else_block_statements(
+    generated_parser: None,
+) -> None:
+    tree, errors = run_parser._parse_antlr(["IF 1==1 (echo yes) ELSE (echo no)"])
+    assert tree is not None
+    assert errors == []
+    assert run_parser._top_level_statement_name(tree) == "ifStmt"
+    nested = run_parser._collect_command_line_statements(tree)
+    assert len(nested) > 1
+
+
+@pytest.mark.integration
 def test_check_case_top_level_statement_mismatch_with_real_tree(
     generated_parser: None,
     tmp_path: Path,
@@ -249,6 +266,10 @@ def test_statement_rule_name_returns_none_for_empty_children() -> None:
         children: list[object] | None = []
 
     assert run_parser._statement_rule_name(_EmptyStatement()) is None
+
+
+def test_collect_top_level_statements_handles_non_tree() -> None:
+    assert run_parser._collect_top_level_statements(object()) == []
 
 
 @pytest.mark.integration

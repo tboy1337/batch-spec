@@ -1,10 +1,10 @@
 {
-    "description": "SET glued to percent expansion parses as generic command, not SET",
-    "parse": {
-        "should_parse": true
-    },
-    "tags": [
-        "set",
-        "negative"
-    ]
+  "description": "SET glued to percent expansion parses as generic command, not SET",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "set",
+    "negative"
+  ]
 }

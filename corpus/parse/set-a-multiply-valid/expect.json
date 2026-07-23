@@ -1,10 +1,10 @@
 {
-    "description":  "SET /A multiplication operator",
-    "parse":  {
-                  "should_parse":  true
-              },
-    "tags":  [
-                 "set",
-                 "arithmetic"
-             ]
+  "description": "SET /A multiplication operator",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "set",
+    "arithmetic"
+  ]
 }

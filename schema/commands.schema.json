@@ -17,6 +17,13 @@
         "type": "string"
       }
     },
+    "common_external_tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Common third-party or optional CLIs recognized by tooling, not cmd.exe internals"
+    },
     "deprecated_commands": {
       "type": "object",
       "additionalProperties": {

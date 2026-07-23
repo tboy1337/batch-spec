@@ -1,0 +1,10 @@
+{
+  "description": "CALL :label with arguments",
+  "parse": {
+    "top_level_statement": "callStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "call"
+  ]
+}

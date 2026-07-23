@@ -53,6 +53,22 @@ def _build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
         ]
     )
 
+    if not args.skip_audit:
+        steps.append(
+            (
+                "pip-audit",
+                [
+                    sys.executable,
+                    "-m",
+                    "pip_audit",
+                    "-r",
+                    "requirements.txt",
+                    "-r",
+                    "requirements-dev.txt",
+                ],
+            )
+        )
+
     if not args.skip_conformance:
         steps.append(
             (
@@ -83,6 +99,7 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--skip-lint", action="store_true")
     parser.add_argument("--skip-types", action="store_true")
     parser.add_argument("--skip-conformance", action="store_true")
+    parser.add_argument("--skip-audit", action="store_true")
     parser.add_argument(
         "--verbose",
         action="store_true",

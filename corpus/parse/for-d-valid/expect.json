@@ -1,9 +1,9 @@
 {
-    "description":  "FOR /D directory loop",
-    "parse":  {
-                  "should_parse":  true
-              },
-    "tags":  [
-                 "for"
-             ]
+  "description": "FOR /D directory loop",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
 }

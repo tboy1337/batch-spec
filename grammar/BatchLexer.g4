@@ -21,7 +21,9 @@ def _notKeywordBoundary(self) -> bool:
 }
 
 fragment DIGIT : [0-9] ;
-fragment FOR_VAR_LETTER : [a-zA-Z?@_`[\]{}] ;
+// Live cmd accepts letters, digits, and many punctuation chars as FOR vars.
+// Exclude ~ (%%~ is FOR_VAR_TILDE), and operators that fail live: %|&=;<>|
+fragment FOR_VAR_LETTER : [a-zA-Z0-9?#$@_`[\]{}+.\-\\!*():/] ;
 
 LINE_COMMENT   : {self._atLineStart()}? '::' ~[\r\n]* -> skip ;
 REM            : {self._atLineStart()}? [rR][eE][mM] ~[\r\n]* -> skip ;
@@ -119,16 +121,24 @@ PERCENT_ARG
     : '%' [0-9*]
     ;
 
-FOR_VAR
-    : '%%' FOR_VAR_LETTER
-    ;
-
 FOR_VAR_TILDE
     : '%%' '~' ([a-zA-Z]* '$' [a-zA-Z_][a-zA-Z0-9_]* ':' FOR_VAR_LETTER | [a-zA-Z]* FOR_VAR_LETTER)
     ;
 
+FOR_VAR
+    : '%%' FOR_VAR_LETTER
+    ;
+
+BANG_VAR_SUBSTRING
+    : '!' [a-zA-Z0-9_][a-zA-Z0-9_]* ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '!'
+    ;
+
+BANG_VAR_REPLACE
+    : '!' [a-zA-Z0-9_][a-zA-Z0-9_]* ':' (~[!\r\n] | '!!')+ '=' (~[!\r\n] | '!!')* '!'
+    ;
+
 BANG_VAR
-    : '!' [a-zA-Z_][a-zA-Z0-9_]* '!'
+    : '!' [a-zA-Z0-9_][a-zA-Z0-9_]* '!'
     ;
 
 BANG

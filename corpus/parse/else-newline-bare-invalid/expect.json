@@ -1,0 +1,12 @@
+{
+  "description": "ELSE after newline following non-paren THEN is not attached (cmd-invalid form)",
+  "parse": {
+    "top_level_statement": "genericCmd",
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "else",
+    "negative"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Delayed expansion of digit-leading env name",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion",
+    "delayed"
+  ]
+}

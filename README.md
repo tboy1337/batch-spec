@@ -11,46 +11,55 @@ define linter rules (E/W/S/SEC/P codes) — those live in Blinter's `spec/` tree
 | Path | Purpose |
 |------|---------|
 | `grammar/` | ANTLR 4 lexer/parser (`.g4`) |
-| `data/commands.yaml` | Builtin, deprecated, removed commands and typos |
-| `data/expansion.yaml` | `%` / `!` / `%~` expansion semantics |
+| `data/commands.yaml` | Builtin, external, deprecated, removed commands and typos |
+| `data/expansion.yaml` | `%` / `!` / `%~` expansion and related language semantics |
 | `schema/` | JSON Schema for YAML and parse corpus |
 | `audit/cmd-help/` | Captured `cmd.exe /?` reference text |
 | `corpus/parse/` | Parser conformance fixtures (parse-only `expect.json`) |
 | `conformance/` | Implementation-agnostic conformance runner |
 | `scripts/` | Validation and parser generation |
+| `docs/` | Consumer documentation for catalogs and corpus contract |
 
 ## Versioning
 
-Releases are tagged with semver (`v0.9.0`, …). Consumers pin a tag via git submodule
-or lock file. Do not depend on `main` directly in production CI.
+The package version is the contents of [`VERSION`](VERSION) (currently **0.10.0**).
+Releases are intended to be tagged `vMAJOR.MINOR.PATCH` matching that file. Pin a
+published tag via git submodule or lock file once it exists; do not depend on `main`
+directly in production CI.
 
 ## Validate
 
 ```bash
-pip install pyyaml jsonschema antlr4-tools antlr4-python3-runtime
+pip install -r requirements.txt
 python scripts/validate.py
 python scripts/generate_parser.py
 python conformance/run_parser.py --impl antlr
 ```
 
+Parser generation uses ANTLR **4.13.2** (`antlr4-tools`).
+
 ## Local verification
 
 Supported Python versions: **3.12**, **3.13**, and **3.14**.
 
-For linting, type checking, tests (>=90% coverage), and conformance in one step:
+For linting, type checking, tests (>=90% coverage), pip-audit, and conformance:
 
 ```bash
 pip install -r requirements-dev.txt
 python scripts/verify.py
 ```
 
-Useful flags for faster iteration:
+Useful flags:
 
 ```bash
-python scripts/verify.py --skip-format --skip-conformance
+python scripts/verify.py --skip-format --skip-conformance --skip-audit
 ```
 
-The manual validate steps above remain valid when you only need schema and parser checks.
+## Documentation
+
+- [Parse corpus contract](docs/parse-corpus.md)
+- [Expansion catalog](docs/expansion.md)
+- [Commands catalog](docs/commands-catalog.md)
 
 ## Add a parser implementation
 

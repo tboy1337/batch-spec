@@ -1,10 +1,10 @@
 {
-    "description": "FOR loop variable with tilde modifiers %%~nxf",
-    "parse": {
-        "should_parse": true
-    },
-    "tags": [
-        "for",
-        "expansion"
-    ]
+  "description": "FOR loop variable with tilde modifiers %%~nxf",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for",
+    "expansion"
+  ]
 }

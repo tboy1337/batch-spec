@@ -1,6 +1,7 @@
 {
   "description": "SET prefix query without equals sign",
   "parse": {
+    "top_level_statement": "setStmt",
     "should_parse": true
   },
   "tags": [

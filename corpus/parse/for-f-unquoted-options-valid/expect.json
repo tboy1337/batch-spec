@@ -1,9 +1,9 @@
 {
-    "description": "FOR /F unquoted caret-escaped tokens and delims options",
-    "parse": {
-        "should_parse": true
-    },
-    "tags": [
-        "for"
-    ]
+  "description": "FOR /F unquoted caret-escaped tokens and delims options",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
 }

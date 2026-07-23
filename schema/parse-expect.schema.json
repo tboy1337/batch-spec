@@ -3,9 +3,7 @@
   "$id": "https://batch-spec.dev/schema/parse-expect.schema.json",
   "title": "batch-spec parse corpus expect.json",
   "type": "object",
-  "required": [
-    "description"
-  ],
+  "required": ["description", "parse"],
   "properties": {
     "description": {
       "type": "string",
@@ -28,10 +26,37 @@
         },
         "top_level_statement": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "description": "Rule name of the last script-level statement (not nested in IF/FOR/group blocks), e.g. ifStmt, forStmt."
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "expect_syntax_errors": { "const": true } },
+            "required": ["expect_syntax_errors"]
+          },
+          "then": {
+            "not": {
+              "properties": { "should_parse": { "const": true } },
+              "required": ["should_parse"]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "should_parse": { "const": false } },
+            "required": ["should_parse"]
+          },
+          "then": {
+            "not": {
+              "properties": { "expect_syntax_errors": { "const": true } },
+              "required": ["expect_syntax_errors"]
+            }
+          }
+        }
+      ]
     }
   },
   "additionalProperties": false
