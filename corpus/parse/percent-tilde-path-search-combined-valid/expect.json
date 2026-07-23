@@ -1,0 +1,9 @@
+{
+  "description": "Percent-tilde combined letter modifiers and path search",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion"
+  ]
+}

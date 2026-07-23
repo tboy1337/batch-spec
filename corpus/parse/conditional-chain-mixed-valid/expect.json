@@ -1,0 +1,9 @@
+{
+  "description": "Mixed conditional execution chain with && and ||",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "conditional"
+  ]
+}

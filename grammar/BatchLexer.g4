@@ -99,7 +99,7 @@ BACKTICK_STRING
     ;
 
 PERCENT_TILDE
-    : '%' '~' ('$' [a-zA-Z_][a-zA-Z0-9_]* ':' [0-9a-zA-Z*] | [a-zA-Z]* [0-9a-zA-Z*])
+    : '%' '~' ([a-zA-Z]* '$' [a-zA-Z_][a-zA-Z0-9_]* ':' [0-9a-zA-Z*] | [a-zA-Z]* [0-9a-zA-Z*])
     ;
 
 PERCENT_VAR_SUBSTRING
@@ -123,7 +123,7 @@ FOR_VAR
     ;
 
 FOR_VAR_TILDE
-    : '%%' '~' ([a-zA-Z$]+ [a-zA-Z]? | '$' [a-zA-Z_][a-zA-Z0-9_]* ':' [0-9a-zA-Z*])
+    : '%%' '~' ([a-zA-Z]* '$' [a-zA-Z_][a-zA-Z0-9_]* ':' [a-zA-Z] | [a-zA-Z]* [a-zA-Z])
     ;
 
 BANG_VAR

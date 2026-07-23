@@ -1,0 +1,9 @@
+{
+  "description": "SET /A expression without assignment",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "set"
+  ]
+}

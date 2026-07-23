@@ -1,0 +1,9 @@
+{
+  "description": "SET prefix query without equals sign",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "set"
+  ]
+}

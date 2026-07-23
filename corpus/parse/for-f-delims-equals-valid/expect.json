@@ -1,0 +1,9 @@
+{
+  "description": "FOR /F delims with equals sign delimiter",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}
