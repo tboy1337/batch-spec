@@ -1,7 +1,8 @@
 {
   "description": "SET /A parenthesized expression with multiplication",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "setStmt"
   },
   "tags": [
     "set",

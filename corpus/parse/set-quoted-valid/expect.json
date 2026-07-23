@@ -1,7 +1,8 @@
 {
   "description": "SET with quoted var=value assignment",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "setStmt"
   },
   "tags": [
     "set"

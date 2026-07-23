@@ -1,7 +1,8 @@
 {
   "description": "FOR /F usebackq single-quoted string input",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "forStmt"
   },
   "tags": [
     "for"

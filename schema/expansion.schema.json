@@ -161,6 +161,41 @@
       },
       "additionalProperties": false
     },
+    "dynamic_environment_variables": {
+      "type": "object",
+      "required": ["description", "names"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "names": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 },
+          "minProperties": 1
+        },
+        "extensions_required": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "keyword_boundaries": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "reject_glue_after_keyword": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "if_block_parentheses": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
     "remarks": {
       "type": "object",
       "properties": {
@@ -168,10 +203,6 @@
         "double_colon": { "type": "string" }
       },
       "additionalProperties": false
-    },
-    "legacy_id_notes": {
-      "type": "object",
-      "additionalProperties": { "type": "string" }
     }
   },
   "additionalProperties": false

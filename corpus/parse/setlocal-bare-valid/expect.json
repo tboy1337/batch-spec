@@ -1,7 +1,8 @@
 {
   "description": "Bare SETLOCAL without enable flags",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "endlocalStmt"
   },
   "tags": [
     "setlocal"

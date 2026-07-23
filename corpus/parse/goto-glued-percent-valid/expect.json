@@ -1,0 +1,11 @@
+{
+  "description": "GOTO glued to percent parses as generic command, not GOTO",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "goto",
+    "negative"
+  ]
+}

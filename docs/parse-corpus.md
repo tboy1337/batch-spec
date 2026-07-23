@@ -13,16 +13,16 @@ scripts/validate.py fails if either file is missing for a case directory.
 |-------|----------|---------|
 | description | yes | Human-readable case summary |
 | parse | yes | Parse expectation object |
-| 	ags | no | Free-form tags (if, or, expansion, ...) |
+| tags | no | Free-form tags (if, for, expansion, ...) |
 
 ### parse object
 
 | Field | Meaning |
 |-------|---------|
-| should_parse | When 	rue (or omitted with no error flags), require a clean parse tree and no syntax errors |
+| should_parse | When true (or omitted with no error flags), require a clean parse tree and no syntax errors |
 | should_parse: false | Pass only when the parse is not clean (errors and/or no usable tree) |
 | expect_syntax_errors | Pass only when the implementation reports syntax errors |
-| 	op_level_statement | Optional rule name of the **last script-level** statement (ifStmt, orStmt, setStmt, genericCmd, ...). Nested statements inside IF/FOR/group blocks are ignored |
+| top_level_statement | Optional rule name of the **last script-level** statement (ifStmt, forStmt, setStmt, genericCmd, ...). Nested statements inside IF/FOR/group blocks are ignored |
 
 should_parse: true must not be combined with expect_syntax_errors: true.
 should_parse: false must not be combined with expect_syntax_errors: true.
@@ -33,4 +33,4 @@ This corpus is **parse-structure** conformance. A case may still should_parse: t
 for semantically dubious input (for example invalid %~ modifiers) when the goal is
 to document tokenizer/parser acceptance rather than runtime validity.
 
-Authoritative command syntax snippets for authors live under udit/cmd-help/.
+Authoritative command syntax snippets for authors live under audit/cmd-help/.

@@ -25,8 +25,12 @@ valid_parameter_patterns:
 invalid_combinations:
   - modifiers: "*"
     reason: "%~ modifiers may not be used with %* (CALL /?)"
-  - pattern: "%~[^0-9a-zA-Z*]$"
-    reason: "Percent-tilde requires parameter 0-9, *, or a FOR loop letter"
+  # Matches forms like %~q1 or %~dq1 where a letter is outside nxfpdstaz.
+  # Does not match valid %~1, %~dpnx0, %~*, or %~$PATH:1.
+  - pattern: "%~[nxfpdstaz]*[^0-9*$nxfpdstaz]"
+    reason: >-
+      Percent-tilde letter modifiers must be from nxfpdstaz (CALL /?);
+      the parameter must be 0-9, *, or a path-search $ENV: form
 
 valid_combined_examples:
   - "%~1"
@@ -157,12 +161,44 @@ cmdextversion:
     IF CMDEXTVERSION n is true when the Command Extensions version is >= n.
     Never true when extensions are disabled. %CMDEXTVERSION% exposes the version.
 
+dynamic_environment_variables:
+  description: >-
+    When Command Extensions are enabled, these names expand dynamically and do
+    not appear in the SET listing unless the user defines a normal variable with
+    the same name (which overrides the dynamic value). Source: SET /?.
+  names:
+    CD: current directory string
+    DATE: current date (same format as DATE command)
+    TIME: current time (same format as TIME command)
+    RANDOM: random decimal integer from 0 to 32767
+    ERRORLEVEL: current ERRORLEVEL value
+    CMDEXTVERSION: Command Processor Extensions version number
+    CMDCMDLINE: original command line that invoked the Command Processor
+    HIGHESTNUMANODENUMBER: highest NUMA node number on this machine
+  extensions_required: true
+
+keyword_boundaries:
+  description: >-
+    Builtin keywords must not be glued to %, !, or quote marks. Live cmd expands
+    percent forms first, so IF%1 and SET%x% become IF1 / SET1 and are not
+    recognized as IF/SET. Spaced forms (IF %1, SET %x%, FOR %%i) are required.
+  reject_glue_after_keyword:
+    - "%"
+    - "!"
+    - "\""
+    - "'"
+    - "`"
+
+if_block_parentheses:
+  description: >-
+    A parenthesized THEN/ELSE block requires '(' immediately after the
+    predicate (or ELSE) on the same logical line. An unclosed '(' block is a
+    syntax error at runtime. ELSE must attach to the closing ')' without an
+    intervening newline (IF /? / SS64).
+
 remarks:
   rem: "REM remarks out the remainder of the line when used as a command"
   double_colon: >-
     A line starting with :: is a label whose second character is :, commonly
     used as a remark. Labels must not place : in the second character position
     for real jump targets. :: inside parenthesized blocks can be fragile at runtime.
-
-legacy_id_notes:
-  E006: "Historical E-prefix ID with WARNING severity; retained for compatibility"

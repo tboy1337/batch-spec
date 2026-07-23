@@ -1,7 +1,8 @@
 {
   "description": "IF%1==1 glued form parses as generic command, not IF statement",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "if",

@@ -1,7 +1,8 @@
 {
   "description": "PUSHD POPD valid",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
   },
   "tags": [
     "pushd"

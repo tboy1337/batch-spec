@@ -1,7 +1,8 @@
 {
   "description": "IF comparison with FOR loop variable operand",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "forStmt"
   },
   "tags": [
     "if",

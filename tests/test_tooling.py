@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
 
 import jsonschema
 import pytest
+import yaml
 
 SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
@@ -23,6 +25,7 @@ def test_paths_resolve_to_existing_targets() -> None:
     assert _paths.DATA_DIR.is_dir()
     assert _paths.SCHEMA_DIR.is_dir()
     assert _paths.GRAMMAR_DIR.is_dir()
+    assert _paths.DOCS_DIR.is_dir()
     assert _paths.CORPUS_DIR.is_dir()
     assert _paths.GENERATED_DIR.is_dir()
     assert _paths.COMMANDS_YAML.is_file()
@@ -41,6 +44,24 @@ def test_validate_accepts_real_expansion_yaml() -> None:
     )
 
 
+def test_expansion_invalid_tilde_patterns_match_bad_forms() -> None:
+    """Catalog regexes must catch invalid %~ forms and spare valid ones."""
+    data = yaml.safe_load(_paths.EXPANSION_YAML.read_text(encoding="utf-8"))
+    patterns = [
+        entry["pattern"] for entry in data["invalid_combinations"] if "pattern" in entry
+    ]
+    assert patterns, "expected at least one invalid_combinations pattern"
+    compiled = [re.compile(pattern) for pattern in patterns]
+
+    def any_match(sample: str) -> bool:
+        return any(rx.search(sample) for rx in compiled)
+
+    for bad in ("%~q1", "%~q1%", "echo %~q1", "%~dq1", "%~b0"):
+        assert any_match(bad), f"expected invalid pattern match for {bad!r}"
+    for good in ("%~1", "%~dpnx0", "%~*", "%~$PATH:1", "%~ftza1", "%~dp0"):
+        assert not any_match(good), f"unexpected invalid pattern match for {good!r}"
+
+
 def test_validate_rejects_invalid_yaml(tmp_path: Path) -> None:
     invalid_yaml = tmp_path / "invalid.yaml"
     invalid_yaml.write_text("builtin_commands: []\n", encoding="utf-8")
@@ -54,6 +75,25 @@ def test_validate_main_prints_success(capsys: pytest.CaptureFixture[str]) -> Non
     validate.main()
     captured = capsys.readouterr()
     assert "batch-spec validation passed" in captured.out
+
+
+def test_validate_docs_encoding_rejects_c0(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "bad.md").write_bytes(b"# Title\nfor \x0cor\n")
+    monkeypatch.setattr(validate, "DOCS_DIR", docs)
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit) as exc_info:
+        validate._validate_docs_encoding()
+
+    assert exc_info.value.code == 1
+
+
+def test_validate_docs_encoding_accepts_real_docs() -> None:
+    validate._validate_docs_encoding()
 
 
 def test_validate_corpus_rejects_orphan_expect(

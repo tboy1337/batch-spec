@@ -18,12 +18,16 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from _paths import (  # noqa: E402
     COMMANDS_YAML,
     CORPUS_DIR,
+    DOCS_DIR,
     EXPANSION_YAML,
     REPO_ROOT,
     SCHEMA_DIR,
 )
 
 LOGGER = logging.getLogger(__name__)
+
+# Allow tab/LF/CR only among C0 controls in consumer docs.
+_ALLOWED_C0 = {9, 10, 13}
 
 
 def _validate_yaml(path: Path, schema_path: Path) -> None:
@@ -40,6 +44,36 @@ def _validate_json(path: Path, schema: dict[str, object]) -> None:
     rel = path.relative_to(REPO_ROOT)
     LOGGER.info("OK %s", rel.as_posix())
     print(f"OK {rel.as_posix()}")
+
+
+def _validate_docs_encoding() -> None:
+    """Reject C0 control characters (except tab/LF/CR) in docs/*.md."""
+    failures: list[str] = []
+    for path in sorted(DOCS_DIR.glob("*.md")):
+        data = path.read_bytes()
+        try:
+            data.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            failures.append(f"{path.relative_to(REPO_ROOT).as_posix()}: {exc}")
+            continue
+        bad = [
+            f"0x{byte:02x}@{index}"
+            for index, byte in enumerate(data)
+            if byte < 32 and byte not in _ALLOWED_C0
+        ]
+        if bad:
+            rel = path.relative_to(REPO_ROOT).as_posix()
+            sample = ", ".join(bad[:5])
+            failures.append(f"{rel}: disallowed C0 controls ({sample})")
+    if failures:
+        for message in failures:
+            print(message, file=sys.stderr)
+            LOGGER.error("%s", message)
+        raise SystemExit(1)
+    for path in sorted(DOCS_DIR.glob("*.md")):
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        LOGGER.info("OK %s", rel)
+        print(f"OK {rel}")
 
 
 def _validate_corpus() -> None:
@@ -73,6 +107,7 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     _validate_yaml(COMMANDS_YAML, SCHEMA_DIR / "commands.schema.json")
     _validate_yaml(EXPANSION_YAML, SCHEMA_DIR / "expansion.schema.json")
+    _validate_docs_encoding()
     _validate_corpus()
     print("batch-spec validation passed")
 

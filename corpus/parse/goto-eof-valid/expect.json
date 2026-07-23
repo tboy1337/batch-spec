@@ -1,7 +1,8 @@
 {
   "description": "GOTO :EOF implicit end-of-file label",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
   },
   "tags": [
     "goto"

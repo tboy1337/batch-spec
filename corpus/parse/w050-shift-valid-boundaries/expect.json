@@ -1,7 +1,8 @@
 {
   "description": "SHIFT valid boundaries",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "shiftStmt"
   },
   "tags": [
     "shift"

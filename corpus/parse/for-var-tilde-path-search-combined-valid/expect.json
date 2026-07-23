@@ -1,7 +1,8 @@
 {
   "description": "FOR variable percent-tilde combined modifiers and path search",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "forStmt"
   },
   "tags": [
     "expansion",

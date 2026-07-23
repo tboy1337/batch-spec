@@ -9,7 +9,9 @@ def _atLineStart(self) -> bool:
     prefix = self._input.getText(start, self._input.index - 1)
     return prefix.strip() == ""
 
-def _notKeywordBoundary(self) -> bool:
+def _keywordTrailerOk(self) -> bool:
+    # After matching the keyword text, reject glue to percent/bang/quotes.
+    # Live cmd: IF%1, SET%x%, FOR%%i become non-keywords after expansion.
     la = self._input.LA(1)
     return la not in (
         ord('%'),
@@ -32,24 +34,24 @@ LABEL          : {self._atLineStart()}? ':' ~[ \t\r\n(]+ ;
 
 AT             : '@' ;
 
-FOR            : {self._notKeywordBoundary()}? [fF][oO][rR] ;
-IF             : {self._notKeywordBoundary()}? [iI][fF] ;
-CALL           : {self._notKeywordBoundary()}? [cC][aA][lL][lL] ;
-GOTO           : {self._notKeywordBoundary()}? [gG][oO][tT][oO] ;
-SET            : {self._notKeywordBoundary()}? [sS][eE][tT] ;
-SETLOCAL       : {self._notKeywordBoundary()}? [sS][eE][tT][lL][oO][cC][aA][lL] ;
-ENDLOCAL       : {self._notKeywordBoundary()}? [eE][nN][dD][lL][oO][cC][aA][lL] ;
-DO             : {self._notKeywordBoundary()}? [dD][oO] ;
-IN             : {self._notKeywordBoundary()}? [iI][nN] ;
-EXIST          : {self._notKeywordBoundary()}? [eE][xX][iI][sS][tT] ;
-DEFINED        : {self._notKeywordBoundary()}? [dD][eE][fF][iI][nN][eE][dD] ;
-NOT            : {self._notKeywordBoundary()}? [nN][oO][tT] ;
-ERRORLEVEL     : {self._notKeywordBoundary()}? [eE][rR][rR][oO][rR][lL][eE][vV][eE][lL] ;
-CMDEXTVERSION  : {self._notKeywordBoundary()}? [cC][mM][dD][eE][xX][tT][vV][eE][rR][sS][iI][oO][nN] ;
-ELSE           : {self._notKeywordBoundary()}? [eE][lL][sS][eE] ;
-EXIT           : {self._notKeywordBoundary()}? [eE][xX][iI][tT] ;
-SHIFT          : {self._notKeywordBoundary()}? [sS][hH][iI][fF][tT] ;
-EOF_KW         : {self._notKeywordBoundary()}? [eE][oO][fF] ;
+FOR            : [fF][oO][rR] {self._keywordTrailerOk()}? ;
+IF             : [iI][fF] {self._keywordTrailerOk()}? ;
+CALL           : [cC][aA][lL][lL] {self._keywordTrailerOk()}? ;
+GOTO           : [gG][oO][tT][oO] {self._keywordTrailerOk()}? ;
+SET            : [sS][eE][tT] {self._keywordTrailerOk()}? ;
+SETLOCAL       : [sS][eE][tT][lL][oO][cC][aA][lL] {self._keywordTrailerOk()}? ;
+ENDLOCAL       : [eE][nN][dD][lL][oO][cC][aA][lL] {self._keywordTrailerOk()}? ;
+DO             : [dD][oO] {self._keywordTrailerOk()}? ;
+IN             : [iI][nN] {self._keywordTrailerOk()}? ;
+EXIST          : [eE][xX][iI][sS][tT] {self._keywordTrailerOk()}? ;
+DEFINED        : [dD][eE][fF][iI][nN][eE][dD] {self._keywordTrailerOk()}? ;
+NOT            : [nN][oO][tT] {self._keywordTrailerOk()}? ;
+ERRORLEVEL     : [eE][rR][rR][oO][rR][lL][eE][vV][eE][lL] {self._keywordTrailerOk()}? ;
+CMDEXTVERSION  : [cC][mM][dD][eE][xX][tT][vV][eE][rR][sS][iI][oO][nN] {self._keywordTrailerOk()}? ;
+ELSE           : [eE][lL][sS][eE] {self._keywordTrailerOk()}? ;
+EXIT           : [eE][xX][iI][tT] {self._keywordTrailerOk()}? ;
+SHIFT          : [sS][hH][iI][fF][tT] {self._keywordTrailerOk()}? ;
+EOF_KW         : [eE][oO][fF] {self._keywordTrailerOk()}? ;
 
 LPAREN         : '(' ;
 RPAREN         : ')' ;

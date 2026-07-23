@@ -1,7 +1,8 @@
 {
   "description": "EXIT /B with numeric exit code",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
   },
   "tags": [
     "exit"

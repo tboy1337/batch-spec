@@ -1,0 +1,11 @@
+{
+  "description": "CALL glued to percent parses as generic command, not CALL",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "call",
+    "negative"
+  ]
+}

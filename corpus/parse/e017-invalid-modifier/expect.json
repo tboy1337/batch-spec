@@ -1,7 +1,8 @@
 {
-  "description": "Invalid percent-tilde modifier",
+  "description": "Invalid %~ letter modifier still tokenizes (semantic catalog rejects; parse accepts)",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "expansion",

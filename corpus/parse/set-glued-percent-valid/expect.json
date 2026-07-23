@@ -1,7 +1,8 @@
 {
   "description": "SET glued to percent expansion parses as generic command, not SET",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "set",

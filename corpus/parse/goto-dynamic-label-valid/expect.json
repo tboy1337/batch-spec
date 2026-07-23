@@ -1,7 +1,8 @@
 {
   "description": "GOTO dynamic label via percent variable",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
   },
   "tags": [
     "goto"

@@ -1,7 +1,8 @@
 {
   "description": "ENDLOCAL after SETLOCAL block",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "endlocalStmt"
   },
   "tags": [
     "setlocal"

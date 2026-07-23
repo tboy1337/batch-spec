@@ -1,7 +1,8 @@
 {
   "description": "IF NOT string1==string2 comparison",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
   },
   "tags": [
     "if",

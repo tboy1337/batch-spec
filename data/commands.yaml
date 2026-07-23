@@ -236,4 +236,6 @@ common_command_typos:
   sett: set
 
 builtin_overlap_deprecated_notes:
-  wmic: Recognized as builtin for command detection; W024 flags as deprecated
+  wmic: >-
+    Listed in both builtin_commands and deprecated_commands: still present for
+    detection on modern Windows, but deprecated in favor of CIM/PowerShell.

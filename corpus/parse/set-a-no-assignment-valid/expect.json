@@ -1,7 +1,8 @@
 {
-  "description": "SET /A expression without assignment",
+  "description": "SET /A expression without assignment; trailing tokens remain genericCmd (parse-structure; SET /A AST not modeled)",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "set"

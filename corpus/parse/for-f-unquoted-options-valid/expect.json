@@ -1,7 +1,8 @@
 {
   "description": "FOR /F unquoted caret-escaped tokens and delims options",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "forStmt"
   },
   "tags": [
     "for"

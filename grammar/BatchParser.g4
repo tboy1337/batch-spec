@@ -34,6 +34,11 @@ def _exitThenStmt(self) -> None:
 def _elseAsArgAllowed(self) -> bool:
     # Inside IF then-statement (non-paren), bare ELSE starts elseClause.
     return getattr(self, "_thenStmtDepth", 0) == 0
+
+def _notOpenParenThen(self) -> bool:
+    from BatchLexer import BatchLexer  # isort: skip
+    # Same-line '(' after the predicate starts a paren block (IF /?).
+    return self._input.LA(1) != BatchLexer.LPAREN
 }
 
 script
@@ -98,7 +103,7 @@ ifIOpt
 
 ifBody
     : ifPredicate LPAREN block RPAREN elseClause?
-    | ifPredicate {self._enterThenStmt()} statement {self._exitThenStmt()} elseClause?
+    | ifPredicate {self._notOpenParenThen()}? {self._enterThenStmt()} statement {self._exitThenStmt()} elseClause?
     ;
 
 elseClause

@@ -1,7 +1,8 @@
 {
   "description": "CALL :EOF subroutine terminator",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "callStmt"
   },
   "tags": [
     "call"

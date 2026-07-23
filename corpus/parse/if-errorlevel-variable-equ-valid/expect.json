@@ -1,7 +1,8 @@
 {
   "description": "IF %ERRORLEVEL% EQU n explicit variable comparison",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
   },
   "tags": [
     "if",

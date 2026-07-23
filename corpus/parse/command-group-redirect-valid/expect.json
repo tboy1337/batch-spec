@@ -1,7 +1,8 @@
 {
   "description": "Parenthesized command group with stdout redirection",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "groupStmt"
   },
   "tags": [
     "group",

@@ -1,7 +1,8 @@
 {
   "description": "FOR /R with explicit root path before loop variable",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "forStmt"
   },
   "tags": [
     "for"

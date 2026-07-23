@@ -1,7 +1,7 @@
 {
-  "description": "Unclosed IF parenthesis block (parsed as separate tokens by grammar)",
+  "description": "Unclosed IF parenthesis block reports syntax errors (live cmd exit 255)",
   "parse": {
-    "should_parse": true
+    "expect_syntax_errors": true
   },
   "tags": [
     "if",
