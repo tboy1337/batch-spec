@@ -1,0 +1,9 @@
+{
+    "description": "IF numeric comparison with GTR operator",
+    "parse": {
+        "should_parse": true
+    },
+    "tags": [
+        "if"
+    ]
+}

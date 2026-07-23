@@ -1,0 +1,9 @@
+{
+    "description": "Comparison operator words and == as generic command text",
+    "parse": {
+        "should_parse": true
+    },
+    "tags": [
+        "expansion"
+    ]
+}

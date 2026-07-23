@@ -1,0 +1,9 @@
+{
+    "description": "IF numeric comparison with LSS operator",
+    "parse": {
+        "should_parse": true
+    },
+    "tags": [
+        "if"
+    ]
+}

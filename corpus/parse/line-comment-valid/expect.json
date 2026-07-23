@@ -1,0 +1,9 @@
+{
+    "description": "Double-colon line comment at start of line",
+    "parse": {
+        "should_parse": true
+    },
+    "tags": [
+        "comment"
+    ]
+}

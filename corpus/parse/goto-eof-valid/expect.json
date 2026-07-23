@@ -1,0 +1,9 @@
+{
+    "description": "GOTO :EOF implicit end-of-file label",
+    "parse": {
+        "should_parse": true
+    },
+    "tags": [
+        "goto"
+    ]
+}

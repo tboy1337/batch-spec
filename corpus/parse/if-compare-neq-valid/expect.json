@@ -1,0 +1,9 @@
+{
+    "description": "IF comparison with NEQ operator",
+    "parse": {
+        "should_parse": true
+    },
+    "tags": [
+        "if"
+    ]
+}

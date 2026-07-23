@@ -1,0 +1,9 @@
+{
+    "description": "FOR /F with eol= comment character option",
+    "parse": {
+        "should_parse": true
+    },
+    "tags": [
+        "for"
+    ]
+}

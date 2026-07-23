@@ -1,0 +1,10 @@
+{
+    "description": "Percent variable string replacement %var:old=new%",
+    "parse": {
+        "should_parse": true
+    },
+    "tags": [
+        "expansion",
+        "set"
+    ]
+}

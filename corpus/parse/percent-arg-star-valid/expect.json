@@ -1,0 +1,9 @@
+{
+    "description": "Percent-asterisk all-arguments expansion %*",
+    "parse": {
+        "should_parse": true
+    },
+    "tags": [
+        "expansion"
+    ]
+}

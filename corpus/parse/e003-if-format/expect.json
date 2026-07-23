@@ -1,9 +1,10 @@
 {
-  "description": "IF command format",
+  "description": "IF%1==1 glued form parses as generic command, not IF statement",
   "parse": {
     "should_parse": true
   },
   "tags": [
-    "if"
+    "if",
+    "negative"
   ]
 }
