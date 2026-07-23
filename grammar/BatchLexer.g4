@@ -108,15 +108,15 @@ PERCENT_TILDE
     ;
 
 PERCENT_VAR_SUBSTRING
-    : '%' [a-zA-Z_][a-zA-Z0-9_.\-]* ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '%'
+    : '%' [a-zA-Z_][a-zA-Z0-9_.\-~]* ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '%'
     ;
 
 PERCENT_VAR_REPLACE
-    : '%' [a-zA-Z_][a-zA-Z0-9_.\-]* ':' (~'%' | '%%')+ '=' (~'%' | '%%')* '%'
+    : '%' [a-zA-Z_][a-zA-Z0-9_.\-~]* ':' (~'%' | '%%')+ '=' (~'%' | '%%')* '%'
     ;
 
 PERCENT_VAR
-    : '%' [a-zA-Z_][a-zA-Z0-9_.\-]* '%'
+    : '%' [a-zA-Z_][a-zA-Z0-9_.\-~]* '%'
     ;
 
 PERCENT_ARG
@@ -132,15 +132,15 @@ FOR_VAR
     ;
 
 BANG_VAR_SUBSTRING
-    : '!' [a-zA-Z0-9_][a-zA-Z0-9_.\-]* ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '!'
+    : '!' [a-zA-Z0-9_][a-zA-Z0-9_.\-~]* ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '!'
     ;
 
 BANG_VAR_REPLACE
-    : '!' [a-zA-Z0-9_][a-zA-Z0-9_.\-]* ':' (~[!\r\n] | '!!')+ '=' (~[!\r\n] | '!!')* '!'
+    : '!' [a-zA-Z0-9_][a-zA-Z0-9_.\-~]* ':' (~[!\r\n] | '!!')+ '=' (~[!\r\n] | '!!')* '!'
     ;
 
 BANG_VAR
-    : '!' [a-zA-Z0-9_][a-zA-Z0-9_.\-]* '!'
+    : '!' [a-zA-Z0-9_][a-zA-Z0-9_.\-~]* '!'
     ;
 
 BANG

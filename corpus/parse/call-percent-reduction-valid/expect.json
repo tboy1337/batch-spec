@@ -1,0 +1,11 @@
+{
+  "description": "CALL reduces %% to % on its argument tail (parse acceptance)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "callStmt"
+  },
+  "tags": [
+    "call",
+    "expansion"
+  ]
+}

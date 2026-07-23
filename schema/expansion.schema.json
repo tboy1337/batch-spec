@@ -60,7 +60,8 @@
         "substring_pattern": { "type": "string" },
         "replacement_pattern": { "type": "string" },
         "digit_leading_names": { "type": "string" },
-        "exclamation_escaping": { "type": "string" }
+        "exclamation_escaping": { "type": "string" },
+        "case_insensitive_search": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -122,7 +123,8 @@
       "properties": {
         "for_body_rule": { "type": "string" },
         "echo_literal_rule": { "type": "string" },
-        "batch_vs_cmdline": { "type": "string" }
+        "batch_vs_cmdline": { "type": "string" },
+        "call_percent_reduction": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -133,7 +135,9 @@
         "replacement_pattern": { "type": "string" },
         "description": { "type": "string" },
         "negative_offsets": { "type": "string" },
-        "empty_defined_substring_batveat": { "type": "string" },
+        "omit_length": { "type": "string" },
+        "missing_or_empty_substring_batveat": { "type": "string" },
+        "case_insensitive_search": { "type": "string" },
         "star_prefix_replace": { "type": "string" }
       },
       "additionalProperties": false
@@ -143,7 +147,8 @@
       "properties": {
         "pattern": { "type": "string" },
         "description": { "type": "string" },
-        "example": { "type": "string" }
+        "example": { "type": "string" },
+        "empty_on_miss": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -151,7 +156,8 @@
       "type": "object",
       "properties": {
         "bare_quote_strip": { "type": "string" },
-        "multi_digit_parameter": { "type": "string" }
+        "multi_digit_parameter": { "type": "string" },
+        "modifier_order_independent": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -192,7 +198,25 @@
       "properties": {
         "description": { "type": "string", "minLength": 1 },
         "prefix_query": { "type": "string" },
-        "missing_name_errorlevel": { "type": "string" }
+        "missing_name_errorlevel": { "type": "string" },
+        "unset_with_empty_value": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "set_p": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "eof_keeps_prior": { "type": "string" },
+        "pipe_child_isolation": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "percent_expansion": {
+      "type": "object",
+      "properties": {
+        "undefined_is_empty": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -205,7 +229,8 @@
         "accepted_examples": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 }
-        }
+        },
+        "tokenizer_note": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -217,7 +242,9 @@
         "blank_line_examples": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 }
-        }
+        },
+        "blank_line_tokenizer_note": { "type": "string" },
+        "echo_on_off": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -227,7 +254,8 @@
       "properties": {
         "description": { "type": "string", "minLength": 1 },
         "delayed_expansion": { "type": "string" },
-        "extensions": { "type": "string" }
+        "extensions": { "type": "string" },
+        "c_k_s_quoting": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -240,7 +268,8 @@
         },
         "nesting_limit": { "type": "string" },
         "implied_endlocal": { "type": "string" },
-        "argument_errorlevel": { "type": "string" }
+        "argument_errorlevel": { "type": "string" },
+        "survive_via_percent_on_same_line": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -328,7 +357,8 @@
           "additionalProperties": { "type": "string", "minLength": 1 },
           "minProperties": 1
         },
-        "grouping": { "type": "string" }
+        "grouping": { "type": "string" },
+        "pipe_child_process": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -389,7 +419,8 @@
         },
         "nul_suppress": { "type": "string" },
         "group_redirect": { "type": "string" },
-        "leading_redirect": { "type": "string" }
+        "leading_redirect": { "type": "string" },
+        "handle_order": { "type": "string" }
       },
       "additionalProperties": false
     },

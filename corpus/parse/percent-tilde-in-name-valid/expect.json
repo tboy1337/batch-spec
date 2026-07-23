@@ -1,0 +1,11 @@
+{
+  "description": "Environment names may contain tilde (%a~b%)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "set"
+  ]
+}

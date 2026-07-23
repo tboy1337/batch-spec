@@ -1,0 +1,11 @@
+{
+  "description": "Percent replace search is case-insensitive (%x:bc=XX% matches AbCdE)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "string-operations"
+  ]
+}

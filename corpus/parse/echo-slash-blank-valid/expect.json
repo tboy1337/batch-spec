@@ -1,0 +1,10 @@
+{
+  "description": "ECHO/ and ECHO\\ blank-line forms (no space after ECHO)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "echo"
+  ]
+}

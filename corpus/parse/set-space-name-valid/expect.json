@@ -1,0 +1,10 @@
+{
+  "description": "Quoted SET can define names containing spaces",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "set"
+  ]
+}

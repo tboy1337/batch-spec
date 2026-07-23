@@ -49,10 +49,24 @@ path_search_modifier:
   pattern: "%~$ENV:parameter"
   description: "Searches PATH or other env var for file; expands to first match"
   example: "%~$PATH:1"
+  empty_on_miss: >-
+    When the named environment variable is undefined or no matching file is
+    found, %~$ENV:n expands to an empty string (CALL /?).
 
 percent_tilde_notes:
   bare_quote_strip: "%~1 strips surrounding quotes from the parameter with no letter modifiers"
-  multi_digit_parameter: "%~10 is %~1 followed by literal 0; only a single digit or * terminates %~"
+  multi_digit_parameter: >-
+    %~10 is %~1 followed by literal 0; a single digit, *, or a path-search
+    $ENV: form terminates %~ (CALL /?).
+  modifier_order_independent: >-
+    Letter modifiers may be combined in any order (%~dpnx0 and %~nxdp0 are
+    equivalent).
+
+percent_expansion:
+  undefined_is_empty: >-
+    An undefined name expands to an empty string for both %name% and (when
+    delayed expansion is enabled) !name!. Incomplete forms without a closing
+    % are not treated as successful expansions.
 
 delayed_expansion:
   pattern: "!VAR!"
@@ -81,6 +95,9 @@ delayed_expansion:
     typically needs caret doubling relative to the number of parse phases
     (commonly ^^! for a literal ! in ECHO). Percent signs still use %% rather
     than ^% for a literal %.
+  case_insensitive_search: >-
+    Delayed !var:old=new! search is case-insensitive, matching percent
+    %var:old=new% behavior; replacement text is literal.
 
 for_loop_variables:
   batch_file_prefix: "%%"
@@ -168,6 +185,10 @@ double_percent:
     a single % is usually enough for a literal percent. FOR variables follow the
     same split: %%i in batch files versus %i interactively. SET /A modulo also
     uses %% in batch files (single % interactively).
+  call_percent_reduction: >-
+    CALL performs an extra parse of its argument tail that reduces each %% pair
+    to a single % (in addition to caret doubling). Example: call echo %%%%
+    prints a single %.
 
 string_operations:
   substring_pattern: "%var:~start,length%"
@@ -176,9 +197,18 @@ string_operations:
   negative_offsets: >-
     Negative start counts from the end (%PATH:~-10%). Negative length trims
     from the end (%PATH:~0,-2%). Combined forms like %PATH:~7,-5% are valid.
-  empty_defined_substring_batveat: >-
-    When a variable is defined but empty, forms like %var:~-1% can expand to
-    the literal ~-1 text instead of an empty string.
+  omit_length: >-
+    If the length is omitted (%PATH:~10%), the substring runs from the start
+    offset through the remainder of the value (SET /?).
+  missing_or_empty_substring_batveat: >-
+    When a name is undefined or expands to empty (including after SET name=),
+    substring forms like %var:~-1% or %NOSUCH:~0,1% expand to the literal
+    ~-offset[,length] text rather than an empty string. SET name= unsets the
+    name (IF DEFINED is false); it does not leave a defined empty value.
+  case_insensitive_search: >-
+    In %var:old=new%, the search for old is case-insensitive; the replacement
+    text new is inserted literally. The same case rule applies to delayed
+    !var:old=new! forms.
   star_prefix_replace: >-
     In %var:*old=new%, a leading asterisk on the search text replaces from the
     beginning of the value through the first match of old.
@@ -255,34 +285,77 @@ set_assignment:
   missing_name_errorlevel: >-
     SET with a name/prefix that matches no variable sets ERRORLEVEL to 1 and
     prints that the environment variable is not defined (SET /?).
+  unset_with_empty_value: >-
+    SET name= or SET "name=" removes the variable (IF DEFINED name is false).
+    A value that is only spaces (SET "name= ") remains defined.
+
+set_p:
+  description: >-
+    SET /P var=[prompt] reads a line of input into var (SET /?). The prompt
+    string is optional and may be empty (SET /P var=).
+  eof_keeps_prior: >-
+    If input ends immediately (EOF) or is redirected from NUL with no data,
+    the prior value of var is left unchanged.
+  pipe_child_isolation: >-
+    The right-hand side of a pipe runs in a child cmd.exe context, so
+    echo text| set /p var= updates var only in that child; the parent
+    environment is unchanged (same isolation as other pipe-side mutations).
 
 environment_variable_names:
   description: >-
     SET /? forbids '=' inside a variable name. Live cmd.exe accepts a wider
-    charset than [A-Za-z_][A-Za-z0-9_]* — including '.' and '-' (for example
-    %my.var% and %a-b%). Quoted SET "a b=value" can define names that contain
-    spaces; percent expansion then uses matching %a b% forms. Prefer
-    underscore-alnum names for portability.
+    charset than [A-Za-z_][A-Za-z0-9_]* — including '.', '-', and '~' (for
+    example %my.var%, %a-b%, %a~b%). Quoted SET "a b=value" can define names
+    that contain spaces; percent expansion then uses matching %a b% forms.
+    Prefer underscore-alnum names for portability.
   forbidden_in_name: "="
   accepted_examples:
     - "my.var"
     - "a-b"
+    - "a~b"
     - "a b"
+  tokenizer_note: >-
+    The ANTLR lexer treats %name% as a single PERCENT_VAR when the name uses
+    letters, digits, underscore, '.', '-', or '~'. Spaced names are accepted
+    at runtime but are not a single percent token (spaces remain separators);
+    prefer documenting them via quoted SET forms in the parse corpus.
 
 echo_forms:
   description: >-
-    ECHO prints its arguments. The classic blank-line forms ECHO. and ECHO:
-    (no space between ECHO and the punctuation) write a blank line. A spaced
-    form such as ECHO . prints a dot instead.
+    ECHO prints its arguments. Blank-line forms glue punctuation directly to
+    ECHO with no intervening space (ECHO. ECHO: ECHO/ and similar). A spaced
+    form such as ECHO . prints the punctuation instead of a blank line.
   blank_line_examples:
     - "echo."
     - "echo:"
+    - "echo/"
+    - "echo\\"
+    - "echo("
+    - "echo+"
+    - "echo["
+    - "echo]"
+  blank_line_tokenizer_note: >-
+    Live cmd accepts the listed blank-line spellings. The ANTLR lexer may split
+    some of them (for example echo( is WORD echo plus LPAREN; echo[ / echo]
+    can produce token-recognition errors for bare brackets). Prefer documenting
+    runtime behavior here and using parse corpus cases for forms that tokenize
+    cleanly.
+  echo_on_off: >-
+    ECHO ON and ECHO OFF toggle command echoing. A leading @ suppresses
+    echoing for that single statement (@echo off).
 
 cmd_processor_switches:
   description: >-
     CMD.EXE command-line switches that affect language behavior (CMD /?).
   delayed_expansion: "cmd /V:ON enables delayed expansion; /V:OFF disables it"
   extensions: "cmd /E:ON enables Command Extensions; /E:OFF disables them"
+  c_k_s_quoting: >-
+    /C runs string then terminates; /K runs string and remains. /S modifies
+    quote handling after /C or /K. When /C or /K is used, quotes are preserved
+    only if there is no /S, exactly two quotes, no special &<>()@^| between
+    them, whitespace between the quotes, and the interior names an executable;
+    otherwise a leading quote is stripped and the last quote on the line is
+    removed (CMD /?).
 
 setlocal_options:
   flags:
@@ -297,6 +370,10 @@ setlocal_options:
     Enable/Disable argument and to 1 for an unrecognized argument. Classic
     probe: VERIFY OTHER 2>nul & SETLOCAL ENABLEEXTENSIONS & IF ERRORLEVEL 1
     (SETLOCAL /?).
+  survive_via_percent_on_same_line: >-
+    Percent expansion happens before ENDLOCAL runs on a chained line, so
+    endlocal & set "out=%in%" can export in into out after the local scope
+    ends.
 
 errorlevel:
   if_form: >-
@@ -390,6 +467,9 @@ command_chaining:
   grouping: >-
     Parentheses group a statement list so trailing && / || observe the group's
     resulting ERRORLEVEL.
+  pipe_child_process: >-
+    Each side of a pipe runs in a child cmd.exe context. Environment mutations
+    (SET, SET /P, SETLOCAL) on a pipe side do not update the parent environment.
 
 batch_parameters:
   description: "Batch argument references (CALL /?, SHIFT /?)"
@@ -469,6 +549,11 @@ redirection:
   leading_redirect: >-
     A redirect may appear before the command name (for example
     >out.txt echo hi); cmd applies it to that statement.
+  handle_order: >-
+    Redirects apply left to right. command >file 2>&1 sends both stdout and
+    stderr to file. command 2>&1 >file first duplicates stderr to the current
+    stdout (often the console), then redirects stdout alone to file, so stderr
+    may remain on the console.
 
 paren_block_expansion:
   description: >-

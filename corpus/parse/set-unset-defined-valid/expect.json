@@ -1,0 +1,11 @@
+{
+  "description": "SET name= unsets; IF DEFINED probes the name after clear",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "set",
+    "if"
+  ]
+}

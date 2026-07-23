@@ -1,0 +1,12 @@
+{
+  "description": "endlocal & set out=%in% same-line percent survive chain",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "setlocal",
+    "endlocal",
+    "expansion"
+  ]
+}

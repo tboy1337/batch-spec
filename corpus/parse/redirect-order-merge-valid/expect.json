@@ -1,0 +1,10 @@
+{
+  "description": "Redirect order >file 2>&1 vs 2>&1 >file both parse",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "redirection"
+  ]
+}

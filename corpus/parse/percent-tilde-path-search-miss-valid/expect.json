@@ -1,11 +1,11 @@
 {
-  "description": "Empty-but-defined substring %empty:~-1% is a known batveat form",
+  "description": "%~$ENV:n with missing ENV expands empty (parse acceptance)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"
   },
   "tags": [
     "expansion",
-    "string-operations"
+    "percent-tilde"
   ]
 }

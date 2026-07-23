@@ -34,9 +34,10 @@ for new fixtures.
 
 This corpus is **parse-structure** conformance. A case may still
 `should_parse: true` for semantically dubious input (for example invalid `%~`
-modifiers — see `e017-invalid-modifier` — or `%~*` which CALL /? forbids — see
-`percent-tilde-star-invalid`) when the goal is to document tokenizer/parser
-acceptance rather than runtime validity.
+modifiers - see `e017-invalid-modifier` - or `%~*` which CALL /? forbids - see
+`percent-tilde-star-invalid`, or the missing/empty substring batveat
+`percent-missing-substring-batveat-valid`) when the goal is to document
+tokenizer/parser acceptance rather than runtime validity.
 
 Semantic rejection guidance (valid `%~` letters, SET /A rules, remarks, and
 related facts) lives in [`data/expansion.yaml`](../data/expansion.yaml). Parser

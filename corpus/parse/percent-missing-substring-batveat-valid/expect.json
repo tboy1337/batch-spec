@@ -1,0 +1,11 @@
+{
+  "description": "Missing/empty substring %empty:~-1% expands to literal ~-1 (set empty= leaves name undefined)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "string-operations"
+  ]
+}
