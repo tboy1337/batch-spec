@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F skip=n option",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "SETLOCAL DisableExtensions flag",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setlocalStmt"
+  },
+  "tags": [
+    "setlocal"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "SET /A division operator",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "set-a"
+  ]
+}

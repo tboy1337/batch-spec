@@ -1,0 +1,11 @@
+{
+  "description": "Environment names with dots expand via %name%",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "set"
+  ]
+}

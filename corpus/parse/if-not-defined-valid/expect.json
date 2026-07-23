@@ -1,0 +1,10 @@
+{
+  "description": "IF NOT DEFINED variable form",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if"
+  ]
+}

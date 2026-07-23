@@ -1,0 +1,10 @@
+{
+  "description": "IF /I applies to string1==string2 form",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "GOTO EOF without colon matches a user label named EOF",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "goto"
+  ]
+}

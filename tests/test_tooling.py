@@ -45,11 +45,10 @@ def test_validate_accepts_real_expansion_yaml() -> None:
 
 
 def test_expansion_invalid_tilde_patterns_match_bad_forms() -> None:
-    """Catalog regexes must catch invalid %~ forms and spare valid ones."""
+    """Catalog rules must catch invalid %~ forms and spare valid ones."""
     data = yaml.safe_load(_paths.EXPANSION_YAML.read_text(encoding="utf-8"))
-    patterns = [
-        entry["pattern"] for entry in data["invalid_combinations"] if "pattern" in entry
-    ]
+    invalid = data["invalid_combinations"]
+    patterns = [entry["pattern"] for entry in invalid if "pattern" in entry]
     assert patterns, "expected at least one invalid_combinations pattern"
     compiled = [re.compile(pattern) for pattern in patterns]
 
@@ -58,8 +57,23 @@ def test_expansion_invalid_tilde_patterns_match_bad_forms() -> None:
 
     for bad in ("%~q1", "%~q1%", "echo %~q1", "%~dq1", "%~b0"):
         assert any_match(bad), f"expected invalid pattern match for {bad!r}"
-    for good in ("%~1", "%~dpnx0", "%~*", "%~$PATH:1", "%~ftza1", "%~dp0"):
-        assert not any_match(good), f"unexpected invalid pattern match for {good!r}"
+    # Letter-regex must not falsely flag these (including %~*, which is invalid
+    # for a different reason — modifiers may not combine with %*).
+    for spared_by_letter_regex in (
+        "%~1",
+        "%~dpnx0",
+        "%~*",
+        "%~$PATH:1",
+        "%~ftza1",
+        "%~dp0",
+    ):
+        assert not any_match(
+            spared_by_letter_regex
+        ), f"unexpected letter-regex match for {spared_by_letter_regex!r}"
+
+    star_rules = [entry for entry in invalid if entry.get("modifiers") == "*"]
+    assert star_rules, "expected invalid_combinations entry for %~ with %*"
+    assert "may not be used with %*" in star_rules[0]["reason"]
 
 
 def test_validate_rejects_invalid_yaml(tmp_path: Path) -> None:

@@ -1,4 +1,4 @@
-version: 2
+version: 3
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -26,7 +26,9 @@ invalid_combinations:
   - modifiers: "*"
     reason: "%~ modifiers may not be used with %* (CALL /?)"
   # Matches forms like %~q1 or %~dq1 where a letter is outside nxfpdstaz.
-  # Does not match valid %~1, %~dpnx0, %~*, or %~$PATH:1.
+  # Does not match %~1, %~dpnx0, %~*, or %~$PATH:1. Note: %~* is still
+  # semantically invalid (see modifiers: "*" above); the letter-regex simply
+  # does not catch the star form because * is an allowed terminator.
   - pattern: "%~[nxfpdstaz]*[^0-9*$nxfpdstaz]"
     reason: >-
       Percent-tilde letter modifiers must be from nxfpdstaz (CALL /?);
@@ -37,6 +39,7 @@ valid_combined_examples:
   - "%~dpnx1"
   - "%~f1"
   - "%~nx1"
+  - "%~fs1"
   - "%~dp0"
   - "%~z0"
   - "%~ftza1"
@@ -231,6 +234,12 @@ set_a:
   interactive_display: >-
     When SET /A runs from the interactive command line outside a script, it
     prints the final expression value.
+  unary_bang_vs_delayed: >-
+    SET /A lists unary ! (logical NOT). When delayed expansion is enabled,
+    ! is also the delayed-expansion delimiter, so bare ! in a SET /A expression
+    is consumed as delayed syntax first unless carefully quoted/escaped. Prefer
+    testing unary ! with delayed expansion disabled, or quote the expression
+    and avoid adjacent !name! forms.
 
 set_assignment:
   description: >-
@@ -239,6 +248,41 @@ set_assignment:
     adjacent to = become part of the name and/or value. Quoted forms like
     SET "name=value" keep spaces out of the name when the quotes wrap the
     assignment.
+  prefix_query: >-
+    With extensions, SET name (no equals) lists every defined variable whose
+    name begins with that prefix (SET /?). Example: SET P lists PATH, PATHEXT,
+    and other P* names.
+  missing_name_errorlevel: >-
+    SET with a name/prefix that matches no variable sets ERRORLEVEL to 1 and
+    prints that the environment variable is not defined (SET /?).
+
+environment_variable_names:
+  description: >-
+    SET /? forbids '=' inside a variable name. Live cmd.exe accepts a wider
+    charset than [A-Za-z_][A-Za-z0-9_]* — including '.' and '-' (for example
+    %my.var% and %a-b%). Quoted SET "a b=value" can define names that contain
+    spaces; percent expansion then uses matching %a b% forms. Prefer
+    underscore-alnum names for portability.
+  forbidden_in_name: "="
+  accepted_examples:
+    - "my.var"
+    - "a-b"
+    - "a b"
+
+echo_forms:
+  description: >-
+    ECHO prints its arguments. The classic blank-line forms ECHO. and ECHO:
+    (no space between ECHO and the punctuation) write a blank line. A spaced
+    form such as ECHO . prints a dot instead.
+  blank_line_examples:
+    - "echo."
+    - "echo:"
+
+cmd_processor_switches:
+  description: >-
+    CMD.EXE command-line switches that affect language behavior (CMD /?).
+  delayed_expansion: "cmd /V:ON enables delayed expansion; /V:OFF disables it"
+  extensions: "cmd /E:ON enables Command Extensions; /E:OFF disables them"
 
 setlocal_options:
   flags:
@@ -370,6 +414,10 @@ call_goto:
     GOTO :EOF transfers control to the end of the current batch script file
     without requiring a user-defined label. A user label named :eof does not
     replace this extension target.
+  goto_eof_vs_label: >-
+    With the colon (GOTO :EOF), Command Extensions treat EOF as the end-of-file
+    target and ignore a user label :EOF. Without the colon (GOTO EOF), cmd
+    performs an ordinary label search and jumps to :EOF if present.
 
 exit_semantics:
   description: "EXIT [/B] [exitCode] (EXIT /?)"
@@ -411,12 +459,16 @@ redirection:
     - "command >out.txt 2>&1"
     - "command 1>nul 2>&1"
     - "command >&2"
+    - ">out.txt echo hi"
   nul_suppress: >-
     Redirecting to NUL discards that stream (commonly 1>nul, 2>nul, or
     >nul 2>&1).
   group_redirect: >-
     A parenthesized group may take a trailing redirect that applies to the
     whole group.
+  leading_redirect: >-
+    A redirect may appear before the command name (for example
+    >out.txt echo hi); cmd applies it to that statement.
 
 paren_block_expansion:
   description: >-

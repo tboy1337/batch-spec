@@ -1,0 +1,12 @@
+{
+  "description": "Invalid %~* still tokenizes (CALL /? forbids tilde with %*; parse accepts)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "percent-tilde",
+    "negative"
+  ]
+}

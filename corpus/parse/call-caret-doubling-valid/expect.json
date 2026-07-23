@@ -1,0 +1,11 @@
+{
+  "description": "CALL command tail with carets (CALL doubles carets on reparse)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "callStmt"
+  },
+  "tags": [
+    "call",
+    "caret"
+  ]
+}

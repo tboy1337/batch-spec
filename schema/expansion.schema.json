@@ -181,7 +181,8 @@
         "bare_names": { "type": "string" },
         "integer_range": { "type": "string" },
         "spaces_around_assignment": { "type": "string" },
-        "interactive_display": { "type": "string" }
+        "interactive_display": { "type": "string" },
+        "unary_bang_vs_delayed": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -189,7 +190,44 @@
       "type": "object",
       "required": ["description"],
       "properties": {
-        "description": { "type": "string", "minLength": 1 }
+        "description": { "type": "string", "minLength": 1 },
+        "prefix_query": { "type": "string" },
+        "missing_name_errorlevel": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "environment_variable_names": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "forbidden_in_name": { "type": "string" },
+        "accepted_examples": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "echo_forms": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "blank_line_examples": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "cmd_processor_switches": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "delayed_expansion": { "type": "string" },
+        "extensions": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -312,7 +350,8 @@
       "properties": {
         "description": { "type": "string", "minLength": 1 },
         "call_label": { "type": "string" },
-        "goto_eof": { "type": "string" }
+        "goto_eof": { "type": "string" },
+        "goto_eof_vs_label": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -349,7 +388,8 @@
           "items": { "type": "string", "minLength": 1 }
         },
         "nul_suppress": { "type": "string" },
-        "group_redirect": { "type": "string" }
+        "group_redirect": { "type": "string" },
+        "leading_redirect": { "type": "string" }
       },
       "additionalProperties": false
     },

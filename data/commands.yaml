@@ -192,9 +192,9 @@ deprecated_commands:
   bitsadmin: Deprecated Windows command (use BITS PowerShell cmdlets)
   cacls: Deprecated Windows command (use icacls)
   caspol: Deprecated .NET Framework CAS policy tool (still ships with Framework)
-  dpath: Deprecated undocumented CMD internal (legacy APPEND equivalent)
+  dpath: Deprecated undocumented CMD internal (legacy APPEND equivalent; still responds to /?)
   edlin: Deprecated line editor
-  keys: Deprecated Windows command
+  keys: Deprecated DOS-compatibility CMD internal (typically a no-op on modern Windows)
   winrm: Deprecated Windows command (use PowerShell WinRM cmdlets)
   wmic: Deprecated Windows command (not installed by default on Windows 11 24H2+; optional FoD)
 
@@ -205,6 +205,7 @@ removed_commands:
   browstat: Windows Resource Kit add-on tool (browser status); not a stock cmd.exe command
   diskcomp: Removed Windows command
   diskcopy: Removed Windows command
+  graftabl: Removed / unavailable on modern Windows (still listed by HELP; binary not present)
   inuse: Windows Resource Kit add-on tool; not a stock cmd.exe command
   join: Removed since Windows NT (not supported in cmd.exe)
   streams: Sysinternals Streams tool; not a stock cmd.exe command
