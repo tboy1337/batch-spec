@@ -176,6 +176,24 @@ forSlashMod
 
 forFOptions
     : DQ_STRING
+    | forFOptionAnchor forFOptionExtra*
+    ;
+
+forFOptionAnchor
+    : argWord CARET_ESCAPE
+    | CARET_ESCAPE
+    ;
+
+forFOptionExtra
+    : argWord CARET_ESCAPE
+    | CARET_ESCAPE
+    | NUMBER
+    | COMMA
+    | ASTERISK
+    | MINUS
+    | PLUS
+    | PERCENT
+    | argWord
     ;
 
 forBody
