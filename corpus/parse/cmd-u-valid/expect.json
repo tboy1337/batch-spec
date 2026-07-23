@@ -1,0 +1,10 @@
+{
+  "description": "CMD /U Unicode pipe/file output",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cmd"
+  ]
+}

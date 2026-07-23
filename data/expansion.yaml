@@ -1,7 +1,8 @@
-version: 4
+version: 5
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
+# Requires Command Extensions (CALL /?); see command_extensions_off.
 
 valid_modifiers:
   n: name
@@ -54,6 +55,12 @@ path_search_modifier:
     found, %~$ENV:n expands to an empty string (CALL /?).
 
 percent_tilde_notes:
+  requires_command_extensions: >-
+    Percent-tilde (%~) modifiers and path-search forms require Command
+    Extensions (CALL /?). With extensions disabled, %~1 / %~dp0 / %~$PATH:1
+    are not expanded (the leading % is consumed and the remainder such as
+    ~1 or ~dp0 remains literal text). Base %0-%9 still expand without
+    extensions.
   bare_quote_strip: "%~1 strips surrounding quotes from the parameter with no letter modifiers"
   multi_digit_parameter: >-
     %~10 is %~1 followed by literal 0; a single digit, *, or a path-search
@@ -134,7 +141,10 @@ for_forms:
   slash_r: >-
     FOR /R walks the directory tree rooted at an optional path (default: current
     directory). A set that is only '.' enumerates the tree without an extra
-    file-set filter beyond the walk.
+    file-set filter beyond the walk. When the set has no wildcards (* or ?),
+    FOR /R synthesizes a candidate path of root\setname under each directory
+    visited (even when that file does not exist) rather than matching existing
+    files by wildcard (FOR /?).
   slash_l: >-
     FOR /L iterates a numeric sequence (start,step,end), inclusive of endpoints
     that the step reaches.
@@ -220,6 +230,10 @@ string_operations:
   substring_pattern: "%var:~start,length%"
   replacement_pattern: "%var:old=new%"
   description: "Batch substring and search-replace expansion"
+  requires_command_extensions: >-
+    Substring (%var:~...) and replace (%var:old=new%) forms require Command
+    Extensions (SET /?). With extensions disabled these expansions do not
+    apply as documented substring/replace operations.
   negative_offsets: >-
     Negative start counts from the end (%PATH:~-10%). Negative length trims
     from the end (%PATH:~0,-2%). Combined forms like %PATH:~7,-5% are valid.
@@ -247,6 +261,9 @@ string_operations:
 
 set_a:
   description: "SET /A arithmetic expression operators (SET /?)"
+  requires_command_extensions: >-
+    SET /A requires Command Extensions (SET /?). With extensions disabled,
+    SET /A is a syntax error.
   unary_operators:
     - "!"
     - "~"
@@ -414,6 +431,65 @@ cmd_processor_switches:
     them, whitespace between the quotes, and the interior names an executable;
     otherwise a leading quote is stripped and the last quote on the line is
     removed (CMD /?).
+  echo_off_q: "/Q turns echo off for the CMD session (CMD /?)"
+  disable_autorun_d: >-
+    /D disables execution of AutoRun commands from the registry on startup
+    (CMD /?).
+  output_ansi_a: >-
+    /A causes output of internal commands to a pipe or file to be ANSI
+    (CMD /?).
+  output_unicode_u: >-
+    /U causes output of internal commands to a pipe or file to be Unicode
+    (CMD /?).
+  file_completion_f: >-
+    /F:ON enables file and directory name completion characters; /F:OFF
+    disables them. Completion is off by default (CMD /?).
+  color_t: >-
+    /T:fg sets the foreground/background colors for the session (see COLOR /?;
+    CMD /?).
+  autorun_registry: >-
+    Unless /D is specified, CMD looks for AutoRun REG_SZ/REG_EXPAND_SZ values
+    under HKLM and HKCU Software\Microsoft\Command Processor\AutoRun and
+    executes them first when present (CMD /?). Command-line switches take
+    precedence over registry EnableExtensions / DelayedExpansion /
+    CompletionChar settings; SETLOCAL Enable/Disable Extensions or
+    DelayedExpansion takes precedence over /E and /V for the local scope.
+
+command_extensions_off:
+  description: >-
+    Behavior when Command Extensions are disabled via cmd /E:OFF, /Y, registry
+    EnableExtensions=0, or SETLOCAL DisableExtensions (CMD /?, IF /?, SET /?,
+    FOR /?, CALL /?, GOTO /?, SHIFT /?).
+  disable_paths:
+    - "cmd /E:OFF"
+    - "cmd /Y"
+    - "SETLOCAL DisableExtensions"
+    - "registry Command Processor EnableExtensions=0"
+  base_if_remains: >-
+    Base IF forms remain: IF [NOT] ERRORLEVEL n, IF [NOT] string1==string2, and
+    IF [NOT] EXIST filename.
+  extension_if_unavailable: >-
+    Extension IF forms are unavailable: compare-ops (EQU/NEQ/LSS/LEQ/GTR/GEQ),
+    /I, IF DEFINED, and IF CMDEXTVERSION. Using them yields a syntax error
+    (for example 'EQU was unexpected').
+  goto_eof_not_special: >-
+    GOTO :EOF is not an end-of-file target without extensions; cmd searches for
+    a user label named eof and errors if none exists.
+  call_label_and_modifiers: >-
+    CALL :label internal routines and percent-tilde / %* argument expansions
+    require extensions. With extensions off, %* expands to literal * and %~1
+    leaves literal ~1 (leading % consumed). Base %0-%9 still expand.
+  set_a_and_string_ops: >-
+    SET /A and %var:~...% / %var:old=new% string operations require extensions.
+  for_slash_forms: >-
+    FOR /D, /R, /L, and /F (and their options) require extensions; only the
+    classic FOR %%i IN (set) DO form remains without them.
+  shift_n: >-
+    SHIFT /n requires extensions; bare SHIFT remains available.
+  dynamic_environment: >-
+    Dynamic environment names (CD, DATE, TIME, RANDOM, ERRORLEVEL,
+    CMDEXTVERSION, CMDCMDLINE, HIGHESTNUMANODENUMBER) are not provided without
+    extensions unless the user defines ordinary variables with those names.
 
 setlocal_options:
   flags:
@@ -421,7 +497,10 @@ setlocal_options:
     - DISABLEEXTENSIONS
     - ENABLEDELAYEDEXPANSION
     - DISABLEDELAYEDEXPANSION
-  nesting_limit: "SETLOCAL nesting is limited (commonly 32 levels)"
+  nesting_limit: >-
+    SETLOCAL nesting is limited to 32 levels. Exceeding the limit prints
+    "Maximum setlocal recursion level reached." (SETLOCAL /?; commonly cited
+    as 32 levels).
   implied_endlocal: "An unmatched SETLOCAL is ended when the batch script exits"
   argument_errorlevel: >-
     With extensions, SETLOCAL sets ERRORLEVEL to 0 when given a recognized
@@ -520,6 +599,11 @@ if_forms:
   exist_files_and_directories: >-
     IF EXIST tests whether a file or directory path exists (trailing backslash
     forms commonly target directories).
+  empty_unquoted_operands: >-
+    Unquoted empty IF operands cause a syntax error (for example IF == text or
+    IF %EMPTY%==x when EMPTY is undefined and expands to nothing). Prefer
+    quoted compares such as IF "%var%"=="value" or IF DEFINED for presence
+    tests.
   no_and_or_keywords: >-
     IF has no native boolean AND/OR keywords. Tokens such as and / or after a
     completed IF command are parsed as separate commands (often yielding
@@ -563,7 +647,10 @@ command_chaining:
 
 batch_parameters:
   description: "Batch argument references (CALL /?, SHIFT /?)"
-  percent_star: "%* expands to all arguments (%1 %2 ...)"
+  percent_star: >-
+    With Command Extensions, %* expands to all arguments (%1 %2 ...). With
+    extensions disabled, %* is not expanded (literal * after the leading % is
+    consumed). Base %1-%9 and %0 still expand without extensions.
   percent_star_and_shift: >-
     SHIFT moves %1/%2/... but does not change the text expanded by %* (still
     the original full argument list).
@@ -574,10 +661,11 @@ batch_parameters:
     Bare SHIFT (no /n) shifts starting at %0: the former %1 becomes the new %0,
     former %2 becomes %1, and so on.
   percent_zero: >-
-    %0 / %~0 is the script path or, inside CALL :label, the :label identity —
-    not a user-supplied argument. Path modifiers such as %~dp0 apply. The text
-    of %0 mirrors the spelling/casing/quoting used to invoke the script or
-    CALL :label (for example CALL :MiXeD yields %0=':MiXeD').
+    %0 is the script path or, inside CALL :label, the :label identity — not a
+    user-supplied argument. With extensions, path modifiers such as %~dp0
+    apply; without extensions %~ forms are not expanded. The text of %0 mirrors
+    the spelling/casing/quoting used to invoke the script or CALL :label (for
+    example CALL :MiXeD yields %0=':MiXeD').
   argument_delimiters: >-
     Unquoted argument tokens are split on space, tab, comma, semicolon, and
     equals. Quotes preserve those characters inside a single argument.
@@ -636,7 +724,9 @@ remarks:
   double_colon: >-
     A line starting with :: is a label whose second character is :, commonly
     used as a remark. Labels must not place : in the second character position
-    for real jump targets. :: inside parenthesized blocks can be fragile at runtime.
+    for real jump targets. Inside parenthesized blocks, a :: line that contains
+    ')' can close the block early because ')' is still significant on that
+    label line. Prefer REM inside ( ) blocks.
   rem_vs_label: >-
     Prefer REM for portable remarks. :: is a label form and can break or
     misparse inside parenthesized IF/FOR blocks.

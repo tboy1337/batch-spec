@@ -1,0 +1,12 @@
+{
+  "description": "SET /A divide-by-zero leaves non-zero ERRORLEVEL",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "arithmetic",
+    "negative"
+  ]
+}

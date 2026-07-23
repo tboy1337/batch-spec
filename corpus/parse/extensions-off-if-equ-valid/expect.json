@@ -1,0 +1,11 @@
+{
+  "description": "IF EQU compare-op (requires extensions at runtime)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "extensions"
+  ]
+}

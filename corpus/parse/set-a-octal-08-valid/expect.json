@@ -1,0 +1,12 @@
+{
+  "description": "SET /A invalid octal 08 fails at runtime",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "arithmetic",
+    "negative"
+  ]
+}

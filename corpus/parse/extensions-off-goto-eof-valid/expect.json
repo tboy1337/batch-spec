@@ -1,0 +1,11 @@
+{
+  "description": "GOTO :EOF (extensions-off: EOF is not special at runtime)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "goto",
+    "extensions"
+  ]
+}

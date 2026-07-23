@@ -1,0 +1,10 @@
+{
+  "description": "CMD /D disables AutoRun",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cmd"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "description": ":: line containing ) inside paren block can close the block early",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "remarks",
+    "negative"
+  ]
+}

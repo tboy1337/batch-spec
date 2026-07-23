@@ -137,6 +137,7 @@
         "substring_pattern": { "type": "string" },
         "replacement_pattern": { "type": "string" },
         "description": { "type": "string" },
+        "requires_command_extensions": { "type": "string" },
         "negative_offsets": { "type": "string" },
         "omit_length": { "type": "string" },
         "missing_or_empty_substring_batveat": { "type": "string" },
@@ -160,6 +161,7 @@
     "percent_tilde_notes": {
       "type": "object",
       "properties": {
+        "requires_command_extensions": { "type": "string" },
         "bare_quote_strip": { "type": "string" },
         "multi_digit_parameter": { "type": "string" },
         "modifier_order_independent": { "type": "string" },
@@ -171,6 +173,7 @@
       "type": "object",
       "properties": {
         "description": { "type": "string" },
+        "requires_command_extensions": { "type": "string" },
         "unary_operators": {
           "type": "array",
           "items": { "type": "string" }
@@ -271,7 +274,34 @@
         "extensions": { "type": "string" },
         "defaults": { "type": "string" },
         "compatibility_aliases": { "type": "string" },
-        "c_k_s_quoting": { "type": "string" }
+        "c_k_s_quoting": { "type": "string" },
+        "echo_off_q": { "type": "string" },
+        "disable_autorun_d": { "type": "string" },
+        "output_ansi_a": { "type": "string" },
+        "output_unicode_u": { "type": "string" },
+        "file_completion_f": { "type": "string" },
+        "color_t": { "type": "string" },
+        "autorun_registry": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "command_extensions_off": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "disable_paths": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "base_if_remains": { "type": "string" },
+        "extension_if_unavailable": { "type": "string" },
+        "goto_eof_not_special": { "type": "string" },
+        "call_label_and_modifiers": { "type": "string" },
+        "set_a_and_string_ops": { "type": "string" },
+        "for_slash_forms": { "type": "string" },
+        "shift_n": { "type": "string" },
+        "dynamic_environment": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -355,6 +385,7 @@
         "defined_notes": { "type": "string" },
         "else_same_line": { "type": "string" },
         "exist_files_and_directories": { "type": "string" },
+        "empty_unquoted_operands": { "type": "string" },
         "no_and_or_keywords": { "type": "string" }
       },
       "additionalProperties": false

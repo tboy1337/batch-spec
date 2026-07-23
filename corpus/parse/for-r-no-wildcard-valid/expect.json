@@ -1,0 +1,10 @@
+{
+  "description": "FOR /R with non-wildcard set synthesizes root\\\\name paths under each directory",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for"
+  ]
+}

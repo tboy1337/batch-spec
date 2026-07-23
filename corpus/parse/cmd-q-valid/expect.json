@@ -1,0 +1,10 @@
+{
+  "description": "CMD /Q turns echo off",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cmd"
+  ]
+}
