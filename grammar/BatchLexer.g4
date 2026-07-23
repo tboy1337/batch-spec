@@ -21,6 +21,7 @@ def _notKeywordBoundary(self) -> bool:
 }
 
 fragment DIGIT : [0-9] ;
+fragment FOR_VAR_LETTER : [a-zA-Z?@_`[\]{}] ;
 
 LINE_COMMENT   : {self._atLineStart()}? '::' ~[\r\n]* -> skip ;
 REM            : {self._atLineStart()}? [rR][eE][mM] ~[\r\n]* -> skip ;
@@ -119,11 +120,11 @@ PERCENT_ARG
     ;
 
 FOR_VAR
-    : '%%' [a-zA-Z]
+    : '%%' FOR_VAR_LETTER
     ;
 
 FOR_VAR_TILDE
-    : '%%' '~' ([a-zA-Z]* '$' [a-zA-Z_][a-zA-Z0-9_]* ':' [a-zA-Z] | [a-zA-Z]* [a-zA-Z])
+    : '%%' '~' ([a-zA-Z]* '$' [a-zA-Z_][a-zA-Z0-9_]* ':' FOR_VAR_LETTER | [a-zA-Z]* FOR_VAR_LETTER)
     ;
 
 BANG_VAR
@@ -143,6 +144,7 @@ PERCENT
     ;
 
 WORD           : [a-zA-Z_][a-zA-Z0-9_./\\:+\-]* ;
+HEX_NUMBER     : '0' [xX] [0-9a-fA-F]+ ;
 NUMBER         : DIGIT+ ;
 
 WS             : [ \t]+ -> skip ;

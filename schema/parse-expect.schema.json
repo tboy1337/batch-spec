@@ -25,6 +25,10 @@
         },
         "expect_syntax_errors": {
           "type": "boolean"
+        },
+        "top_level_statement": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "additionalProperties": false

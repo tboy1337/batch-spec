@@ -155,7 +155,8 @@ compareOperand
     | FOR_VAR_TILDE
     | BANG_VAR
     | argWord
-    | NUMBER
+    | MINUS? NUMBER
+    | MINUS? HEX_NUMBER
     ;
 
 forStmt
@@ -213,6 +214,7 @@ forListItem
     | ASTERISK (DOT argWord)?
     | argWord
     | MINUS? NUMBER
+    | MINUS? HEX_NUMBER
     ;
 
 callStmt
@@ -336,6 +338,7 @@ token
     | PERCENT
     | argWord
     | NUMBER
+    | HEX_NUMBER
     | UNMATCHED_DQ
     | UNMATCHED_SQ
     | UNMATCHED_BACKTICK

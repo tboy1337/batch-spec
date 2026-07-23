@@ -40,6 +40,41 @@ def _discover_cases() -> list[tuple[str, Path, dict[str, object]]]:
     return cases
 
 
+def _statement_rule_name(statement_ctx: object) -> str | None:
+    children = getattr(statement_ctx, "children", None)
+    if not children:
+        return None
+    for child in children:
+        type_name = type(child).__name__
+        if type_name == "StatementContext":
+            continue
+        if type_name.endswith("Context"):
+            rule_name = type_name[: -len("Context")]
+            return rule_name[0].lower() + rule_name[1:]
+    return None
+
+
+def _collect_command_line_statements(node: object) -> list[object]:
+    statements: list[object] = []
+    type_name = type(node).__name__
+    if type_name == "CommandLineContext":
+        for child in getattr(node, "children", None) or []:
+            if type(child).__name__ == "StatementContext":
+                statements.append(child)
+    children = getattr(node, "children", None)
+    if children:
+        for child in children:
+            statements.extend(_collect_command_line_statements(child))
+    return statements
+
+
+def _top_level_statement_name(tree: object) -> str | None:
+    statements = _collect_command_line_statements(tree)
+    if not statements:
+        return None
+    return _statement_rule_name(statements[-1])
+
+
 def _parse_antlr(lines: List[str]) -> tuple[object | None, list[str]]:
 
     if str(GENERATED_DIR) not in sys.path:
@@ -132,6 +167,15 @@ def _check_case(
     if errors:
 
         return f"{case_id}: expected clean parse, got errors: {'; '.join(errors)}"
+
+    expected_stmt = parse_meta.get("top_level_statement")
+    if isinstance(expected_stmt, str) and expected_stmt:
+        actual_stmt = _top_level_statement_name(tree)
+        if actual_stmt != expected_stmt:
+            return (
+                f"{case_id}: expected top-level statement {expected_stmt!r}, "
+                f"got {actual_stmt!r}"
+            )
 
     return None
 

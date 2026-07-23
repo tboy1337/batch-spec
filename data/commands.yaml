@@ -10,6 +10,7 @@ removed_commands:
   join: Removed since Windows NT (not supported in cmd.exe)
   streams: Removed Windows command
 deprecated_commands:
+  at: Deprecated Windows command (use schtasks)
   bitsadmin: Deprecated Windows command (use BITS PowerShell cmdlets)
   cacls: Deprecated Windows command (use icacls)
   dpath: Deprecated undocumented CMD internal (legacy APPEND equivalent)

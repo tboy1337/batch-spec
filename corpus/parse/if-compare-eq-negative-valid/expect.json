@@ -1,0 +1,11 @@
+{
+  "description": "IF == comparison with negative numeric literal operand",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "compare"
+  ]
+}

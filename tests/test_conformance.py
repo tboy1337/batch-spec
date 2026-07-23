@@ -25,7 +25,7 @@ def _mock_impl(
 
 def test_discover_cases_finds_repository_corpus() -> None:
     cases = run_parser._discover_cases()
-    assert len(cases) == 103
+    assert len(cases) == 107
     assert all(case_id for case_id, _, _ in cases)
 
 
@@ -179,6 +179,76 @@ def test_check_case_should_parse_false_passes_with_no_tree(tmp_path: Path) -> No
     )
 
     assert message is None
+
+
+def test_check_case_top_level_statement_mismatch(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.cmd"
+    input_path.write_text("echo hi\n", encoding="utf-8")
+    impl = _mock_impl(tree=object(), errors=[])
+
+    message = run_parser._check_case(
+        "stmt-case",
+        input_path,
+        {"parse": {"top_level_statement": "ifStmt"}},
+        impl,
+    )
+
+    assert message == "stmt-case: expected top-level statement 'ifStmt', got None"
+
+
+@pytest.mark.integration
+def test_top_level_statement_helpers_with_real_tree(
+    generated_parser: None,
+) -> None:
+    tree, errors = run_parser._parse_antlr(["if 1==1 echo yes"])
+    assert tree is not None
+    assert errors == []
+    assert run_parser._top_level_statement_name(tree) == "ifStmt"
+
+
+@pytest.mark.integration
+def test_check_case_top_level_statement_mismatch_with_real_tree(
+    generated_parser: None,
+    tmp_path: Path,
+) -> None:
+    input_path = tmp_path / "input.cmd"
+    input_path.write_text("echo hi\n", encoding="utf-8")
+
+    message = run_parser._check_case(
+        "stmt-case",
+        input_path,
+        {"parse": {"top_level_statement": "ifStmt"}},
+        run_parser._parse_antlr,
+    )
+
+    assert (
+        message == "stmt-case: expected top-level statement 'ifStmt', got 'genericCmd'"
+    )
+
+
+@pytest.mark.integration
+def test_check_case_top_level_statement_passes_with_real_tree(
+    generated_parser: None,
+    tmp_path: Path,
+) -> None:
+    input_path = tmp_path / "input.cmd"
+    input_path.write_text("if 1==1 echo yes\n", encoding="utf-8")
+
+    message = run_parser._check_case(
+        "stmt-case",
+        input_path,
+        {"parse": {"top_level_statement": "ifStmt"}},
+        run_parser._parse_antlr,
+    )
+
+    assert message is None
+
+
+def test_statement_rule_name_returns_none_for_empty_children() -> None:
+    class _EmptyStatement:
+        children: list[object] | None = []
+
+    assert run_parser._statement_rule_name(_EmptyStatement()) is None
 
 
 @pytest.mark.integration
