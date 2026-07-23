@@ -1,7 +1,7 @@
 version: 1
 
 # Percent-tilde (%~) expansion rules used by E017, E019, E024, E025
-# Authoritative syntax: spec/audit/cmd-help/call-help.txt (CALL /?)
+# Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
 
 valid_modifiers:
   n: name
