@@ -1,7 +1,8 @@
 {
   "description": "Caret escapes CRLF to continue on next line",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "continuation"

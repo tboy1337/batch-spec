@@ -1,7 +1,8 @@
 {
   "description": "Stdin redirection from file",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "redirection"

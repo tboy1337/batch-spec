@@ -1,7 +1,8 @@
 {
   "description": "Percent-tilde with multi-digit: %~10 is %~1 then literal 0",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "expansion"

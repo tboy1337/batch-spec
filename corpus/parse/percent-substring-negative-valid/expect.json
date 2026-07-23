@@ -1,7 +1,8 @@
 {
   "description": "Percent substring with negative offset and length",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "expansion"

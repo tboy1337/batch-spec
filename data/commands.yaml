@@ -183,6 +183,7 @@ common_external_tools:
   - vim
   - wget
   - winget
+  - wsl
   - yarn
   - zip
 

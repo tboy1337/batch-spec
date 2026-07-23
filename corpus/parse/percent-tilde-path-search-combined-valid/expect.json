@@ -1,7 +1,8 @@
 {
   "description": "Percent-tilde combined letter modifiers and path search",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "expansion"

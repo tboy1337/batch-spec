@@ -51,7 +51,8 @@
         },
         "substring_pattern": { "type": "string" },
         "replacement_pattern": { "type": "string" },
-        "digit_leading_names": { "type": "string" }
+        "digit_leading_names": { "type": "string" },
+        "exclamation_escaping": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -62,7 +63,36 @@
         "batch_file_prefix": { "type": "string", "const": "%%" },
         "command_line_prefix": { "type": "string", "const": "%" },
         "letter_charset": { "type": "string" },
-        "letter_charset_notes": { "type": "string" }
+        "letter_charset_notes": { "type": "string" },
+        "case_sensitive": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "for_forms": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "for_f": {
+      "type": "object",
+      "required": ["description", "options"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "options": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "option_details": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "useback_synonym": { "type": "string" },
+        "consecutive_delims": { "type": "string" },
+        "input_forms": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -128,9 +158,25 @@
           "type": "array",
           "items": { "type": "string" }
         },
+        "grouping": { "type": "string" },
+        "expression_separator": { "type": "string" },
         "hex_literal": { "type": "string" },
         "octal_literal": { "type": "string" },
-        "modulo_in_batch": { "type": "string" }
+        "modulo_in_batch": { "type": "string" },
+        "quoting_rule": { "type": "string" },
+        "undefined_as_zero": { "type": "string" },
+        "bare_names": { "type": "string" },
+        "integer_range": { "type": "string" },
+        "spaces_around_assignment": { "type": "string" },
+        "interactive_display": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "set_assignment": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 }
       },
       "additionalProperties": false
     },
@@ -142,7 +188,8 @@
           "items": { "type": "string" }
         },
         "nesting_limit": { "type": "string" },
-        "implied_endlocal": { "type": "string" }
+        "implied_endlocal": { "type": "string" },
+        "argument_errorlevel": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -150,7 +197,8 @@
       "type": "object",
       "properties": {
         "if_form": { "type": "string" },
-        "variable_form": { "type": "string" }
+        "variable_form": { "type": "string" },
+        "env_var_shadowing": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -188,11 +236,79 @@
       },
       "additionalProperties": false
     },
+    "if_forms": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "base_forms": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "extension_forms": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "compare_ops": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "compare_ops_notes": { "type": "string" },
+        "defined_notes": { "type": "string" },
+        "else_same_line": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
     "if_block_parentheses": {
       "type": "object",
       "required": ["description"],
       "properties": {
         "description": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "command_chaining": {
+      "type": "object",
+      "required": ["description", "operators"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "operators": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 },
+          "minProperties": 1
+        },
+        "grouping": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "batch_parameters": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "percent_star": { "type": "string" },
+        "percent_star_and_shift": { "type": "string" },
+        "shift_n": { "type": "string" },
+        "percent_zero": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "call_goto": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "call_label": { "type": "string" },
+        "goto_eof": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "exit_semantics": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "exit_b": { "type": "string" }
       },
       "additionalProperties": false
     },

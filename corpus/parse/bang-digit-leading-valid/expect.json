@@ -1,7 +1,8 @@
 {
   "description": "Delayed expansion of digit-leading env name",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "expansion",

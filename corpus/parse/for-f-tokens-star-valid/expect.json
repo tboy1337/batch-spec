@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F tokens with trailing star remainder",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

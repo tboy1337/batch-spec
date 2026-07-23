@@ -1,0 +1,11 @@
+{
+  "description": "SET /A treats undefined names as zero",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "set-a"
+  ]
+}

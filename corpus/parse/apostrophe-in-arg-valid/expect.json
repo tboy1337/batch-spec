@@ -1,7 +1,8 @@
 {
   "description": "Literal apostrophe in unquoted argument text",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "quoting"

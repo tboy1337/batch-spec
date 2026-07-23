@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F consecutive delimiters parse form",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

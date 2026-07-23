@@ -1,0 +1,10 @@
+{
+  "description": "Lonely closing parenthesis at script level is a syntax error",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "group",
+    "negative"
+  ]
+}

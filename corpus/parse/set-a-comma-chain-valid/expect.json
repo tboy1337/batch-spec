@@ -1,0 +1,11 @@
+{
+  "description": "SET /A comma expression separator",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "set-a"
+  ]
+}

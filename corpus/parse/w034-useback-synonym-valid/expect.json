@@ -1,5 +1,5 @@
 {
-  "description": "FOR /F usebackq",
+  "description": "FOR /F useback synonym for usebackq",
   "parse": {
     "should_parse": true,
     "top_level_statement": "forStmt"

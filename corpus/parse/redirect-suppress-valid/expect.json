@@ -1,7 +1,8 @@
 {
   "description": "Suppress stdout and stderr via nul",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "redirection"

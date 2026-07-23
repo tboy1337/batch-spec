@@ -1,7 +1,8 @@
 {
   "description": "Percent variable string replacement %var:old=new%",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "expansion",

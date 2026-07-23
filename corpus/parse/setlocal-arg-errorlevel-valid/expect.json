@@ -1,0 +1,11 @@
+{
+  "description": "SETLOCAL argument ERRORLEVEL probe pattern",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "setlocal",
+    "errorlevel"
+  ]
+}

@@ -1,7 +1,8 @@
 {
   "description": "Double-colon line comment at start of line",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
   },
   "tags": [
     "comment"

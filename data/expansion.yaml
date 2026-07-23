@@ -66,6 +66,11 @@ delayed_expansion:
   digit_leading_names: >-
     Environment names that start with a digit expand with delayed !name! forms;
     percent %1name% is parsed as argument %1 plus literal text.
+  exclamation_escaping: >-
+    With delayed expansion enabled, ! is special at execution time. Escaping !
+    typically needs caret doubling relative to the number of parse phases
+    (commonly ^^! for a literal ! in ECHO). Percent signs still use %% rather
+    than ^% for a literal %.
 
 for_loop_variables:
   batch_file_prefix: "%%"
@@ -76,15 +81,57 @@ for_loop_variables:
     single FOR variable letter. Operators that fail as FOR letters include
     % | & = ; < >. Tilde after %% starts %%~ modifier forms rather than a bare
     %%~ variable in the grammar. Prefer letters to avoid clashing with %0-%9.
+  case_sensitive: >-
+    FOR variable letters are case-sensitive (%i and %I are distinct). Up to 52
+    active FOR variables may be in use (a-z and A-Z).
+
+for_forms:
+  description: >-
+    With Command Extensions, FOR supports /D (directories only), /R (recursive
+    tree; optional root path, default current directory), /L (numeric
+    start,step,end), and /F (parse text from files, strings, or command output).
+    Source: FOR /?.
+
+for_f:
+  description: "FOR /F parsing options and input forms (FOR /?)"
+  options:
+    - eol
+    - skip
+    - delims
+    - tokens
+    - usebackq
+  option_details:
+    eol: "eol=c sets a single end-of-line comment character (default semicolon)"
+    skip: "skip=n skips the first n lines of each input"
+    delims: >-
+      delims=xxx replaces the default delimiter set (space and tab). An empty
+      delims= means no delimiters (whole line is one token).
+    tokens: >-
+      tokens=x,y,m-n selects token indexes; a trailing * assigns the remainder
+      of the line to one variable. Up to 26 tokens may be requested. Additional
+      FOR variables are implied alphabetically from the declared letter.
+    usebackq: >-
+      usebackq switches quoting: backtick `command` for command output, single
+      quotes for literal strings, and double quotes for filenames. Without
+      usebackq, single quotes wrap a command and double quotes wrap a string.
+  useback_synonym: >-
+    Live cmd.exe also accepts useback as a synonym for usebackq (trailing q
+    optional). Prefer the documented usebackq spelling in new scripts.
+  consecutive_delims: >-
+    Consecutive delimiter characters collapse to one delimiter; empty fields
+    between repeated delimiters are not preserved by default.
+  input_forms: >-
+    file-set; "string" (or 'string' with usebackq); 'command' (or `command`
+    with usebackq). Blank lines are skipped.
 
 caret_escape:
   description: >-
-    Caret escaping is phase-driven, not a fixed count sequence. Each CMD
-    parsing phase that re-processes a command line may consume one level of
-    carets before special characters. CALL performs an extra re-parse and
-    doubles every caret on its command tail (including carets inside double
-    quotes), so nested CALL or percent-expanded command execution requires
-    compensating caret counts per hop rather than a single 2^n-1 formula.
+    Caret escaping is phase-driven. For ordinary multilevel escaping without
+    CALL, each re-parse hop commonly needs 2^n-1 carets before a special
+    character. CALL adds an extra re-parse that doubles every caret on its
+    command tail (including carets inside double quotes), so nested CALL or
+    percent-expanded command execution requires compensating counts per hop
+    rather than relying on 2^n-1 alone across CALL boundaries.
   call_doubling: >-
     CALL doubles all carets once on its arguments before the line is parsed
     again; quoted carets are doubled even though quotes suppress escaping.
@@ -136,10 +183,36 @@ set_a:
     - "|="
     - "<<="
     - ">>="
+  grouping: "Parentheses () group subexpressions"
+  expression_separator: >-
+    Comma separates multiple expressions in one SET /A; the final expression
+    value is the overall result (and is printed when SET /A runs outside a script).
   hex_literal: "0x12 style hexadecimal integers"
   octal_literal: >-
     Leading-zero octal (022). Digits 08 and 09 are invalid octal and fail SET /A.
   modulo_in_batch: "Modulo uses %% in batch files (single % on the interactive command line)"
+  quoting_rule: >-
+    Logical operators and modulus that would be misparsed as command syntax
+    need the expression quoted (SET /?).
+  undefined_as_zero: >-
+    An environment name that is not defined is treated as numeric 0. Names may
+    appear without % percent signs inside the expression.
+  bare_names: "Variable names in SET /A expressions expand without requiring %name% wrappers"
+  integer_range: "Signed 32-bit integers (-2147483648 through 2147483647)"
+  spaces_around_assignment: >-
+    Unlike plain SET, SET /A allows spaces around = and other operators inside
+    the expression.
+  interactive_display: >-
+    When SET /A runs from the interactive command line outside a script, it
+    prints the final expression value.
+
+set_assignment:
+  description: >-
+    Without /A or /P, SET takes name=value where the name is everything after
+    SET up to the first = and the value is everything after that =. Spaces
+    adjacent to = become part of the name and/or value. Quoted forms like
+    SET "name=value" keep spaces out of the name when the quotes wrap the
+    assignment.
 
 setlocal_options:
   flags:
@@ -149,12 +222,25 @@ setlocal_options:
     - DISABLEDELAYEDEXPANSION
   nesting_limit: "SETLOCAL nesting is limited (commonly 32 levels)"
   implied_endlocal: "An unmatched SETLOCAL is ended when the batch script exits"
+  argument_errorlevel: >-
+    With extensions, SETLOCAL sets ERRORLEVEL to 0 when given a recognized
+    Enable/Disable argument and to 1 for an unrecognized argument. Classic
+    probe: VERIFY OTHER 2>nul & SETLOCAL ENABLEEXTENSIONS & IF ERRORLEVEL 1
+    (SETLOCAL /?).
 
 errorlevel:
   if_form: >-
     IF ERRORLEVEL n is true when the current exit code is greater than or equal
-    to n (not equality). Prefer IF %ERRORLEVEL% EQU n for exact tests.
+    to n (not equality). Prefer IF %ERRORLEVEL% EQU n for exact tests when the
+    dynamic ERRORLEVEL name is not shadowed.
   variable_form: "%ERRORLEVEL% / !ERRORLEVEL! hold the numeric exit code as text"
+  env_var_shadowing: >-
+    A user-defined environment variable named ERRORLEVEL (also CMDCMDLINE,
+    CMDEXTVERSION, and other dynamic names) overrides %name% expansion. Defining
+    ERRORLEVEL with SET prevents later commands from updating the dynamic
+    %ERRORLEVEL% value until that variable is cleared. IF ERRORLEVEL n still
+    reads the internal exit code, not the shadowed environment string. Prefer
+    cmd /C exit N (or EXIT /B) to set ERRORLEVEL rather than SET ERRORLEVEL=.
 
 cmdextversion:
   description: >-
@@ -189,12 +275,82 @@ keyword_boundaries:
     - "'"
     - "`"
 
+if_forms:
+  description: "IF predicates (IF /?)"
+  base_forms:
+    - "IF [NOT] ERRORLEVEL number command"
+    - "IF [NOT] string1==string2 command"
+    - "IF [NOT] EXIST filename command"
+  extension_forms:
+    - "IF [/I] string1 compare-op string2 command"
+    - "IF CMDEXTVERSION number command"
+    - "IF DEFINED variable command"
+  compare_ops:
+    - EQU
+    - NEQ
+    - LSS
+    - LEQ
+    - GTR
+    - GEQ
+  compare_ops_notes: >-
+    If both sides are all decimal digits, compare-ops perform a numeric
+    comparison; otherwise a string comparison. /I forces case-insensitive
+    string compares and also applies to the string1==string2 form.
+  defined_notes: "DEFINED takes a variable name without % percent signs"
+  else_same_line: >-
+    ELSE must appear on the same physical line as the end of the IF command
+    (after the THEN command or the closing ')' of a parenthesized block).
+
 if_block_parentheses:
   description: >-
-    A parenthesized THEN/ELSE block requires '(' immediately after the
-    predicate (or ELSE) on the same logical line. An unclosed '(' block is a
-    syntax error at runtime. ELSE must attach to the closing ')' without an
-    intervening newline (IF /? / SS64).
+    A parenthesized THEN/ELSE block requires '(' on the same logical line as
+    the predicate (or ELSE); intervening spaces before '(' are allowed. An
+    unclosed '(' block is a syntax error at runtime. ELSE must attach to the
+    closing ')' without an intervening newline (IF /?).
+
+command_chaining:
+  description: >-
+    Statement separators and conditionals compose commandLine forms in the
+    grammar and in cmd.exe.
+  operators:
+    "&": "Unconditional command separator; run the next statement regardless of ERRORLEVEL"
+    "&&": "Run the next statement only if the prior statement left ERRORLEVEL 0"
+    "||": "Run the next statement only if the prior statement left a non-zero ERRORLEVEL"
+    "|": "Pipe stdout of the left statement into stdin of the right (not a conditional)"
+  grouping: >-
+    Parentheses group a statement list so trailing && / || observe the group's
+    resulting ERRORLEVEL.
+
+batch_parameters:
+  description: "Batch argument references (CALL /?, SHIFT /?)"
+  percent_star: "%* expands to all arguments (%1 %2 ...)"
+  percent_star_and_shift: >-
+    SHIFT moves %1/%2/... but does not change the text expanded by %* (still
+    the original full argument list).
+  shift_n: >-
+    With extensions, SHIFT /n starts shifting at argument n where n is 0..8
+    (SHIFT /?).
+  percent_zero: >-
+    %0 / %~0 is the script path or, inside CALL :label, the :label identity —
+    not a user-supplied argument. Path modifiers such as %~dp0 apply.
+
+call_goto:
+  description: "CALL :label and GOTO :EOF (CALL /?, GOTO /?)"
+  call_label: >-
+    CALL :label arguments creates a new batch context at the label. Control
+    returns to the statement after CALL when the called context reaches EOF
+    (or GOTO :EOF). Reaching EOF a second time exits the script.
+  goto_eof: >-
+    GOTO :EOF transfers control to the end of the current batch script file
+    without requiring a user-defined label. A user label named :eof does not
+    replace this extension target.
+
+exit_semantics:
+  description: "EXIT [/B] [exitCode] (EXIT /?)"
+  exit_b: >-
+    EXIT /B exits the current batch script (or quits CMD when not in a script).
+    Optional exitCode sets ERRORLEVEL when using /B, or the process exit code
+    when quitting CMD.
 
 remarks:
   rem: "REM remarks out the remainder of the line when used as a command"

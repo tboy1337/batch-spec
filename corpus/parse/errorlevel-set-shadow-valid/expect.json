@@ -1,0 +1,11 @@
+{
+  "description": "SET ERRORLEVEL shadows dynamic percent expansion",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "errorlevel",
+    "set"
+  ]
+}

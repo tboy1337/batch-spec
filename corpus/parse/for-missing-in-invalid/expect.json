@@ -1,0 +1,10 @@
+{
+  "description": "FOR without IN is a syntax error",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "for",
+    "negative"
+  ]
+}

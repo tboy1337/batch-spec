@@ -1,0 +1,11 @@
+{
+  "description": "CALL :label with GOTO :EOF return",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "call",
+    "goto"
+  ]
+}
