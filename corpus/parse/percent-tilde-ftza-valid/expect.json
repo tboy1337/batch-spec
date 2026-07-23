@@ -1,0 +1,11 @@
+{
+  "description": "Combined %~ftza letter modifiers on parameter 1",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "percent-tilde"
+  ]
+}

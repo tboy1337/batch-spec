@@ -1,0 +1,11 @@
+{
+  "description": "SETLOCAL DisableDelayedExpansion flag",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setlocalStmt"
+  },
+  "tags": [
+    "setlocal",
+    "delayed"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F empty delims= keeps the whole line as one token",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "description": "SET /A modulo uses %% in a batch file",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "arithmetic",
+    "percent"
+  ]
+}

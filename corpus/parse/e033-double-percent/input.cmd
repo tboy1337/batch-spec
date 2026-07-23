@@ -1,2 +1,2 @@
 @echo off
-echo Progress: 50%
+echo Progress: 50%%

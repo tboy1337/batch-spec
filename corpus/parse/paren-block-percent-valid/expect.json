@@ -1,0 +1,11 @@
+{
+  "description": "Parenthesized block with percent expansion inside (parse structure)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "groupStmt"
+  },
+  "tags": [
+    "group",
+    "expansion"
+  ]
+}

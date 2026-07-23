@@ -57,10 +57,17 @@ delayed_expansion:
   enable_keywords:
     - "setlocal enabledelayedexpansion"
     - "setlocal enableextensions enabledelayedexpansion"
+  disable_keywords:
+    - "setlocal disabledelayedexpansion"
+    - "setlocal enableextensions disabledelayedexpansion"
   enable_paths:
     - "cmd /V:ON"
     - "SETLOCAL EnableDelayedExpansion"
     - "registry Command Processor DelayedExpansion"
+  disable_paths:
+    - "cmd /V:OFF"
+    - "SETLOCAL DisableDelayedExpansion"
+    - "registry Command Processor DelayedExpansion=0"
   substring_pattern: "!var:~start,length!"
   replacement_pattern: "!var:old=new!"
   digit_leading_names: >-
@@ -91,6 +98,18 @@ for_forms:
     tree; optional root path, default current directory), /L (numeric
     start,step,end), and /F (parse text from files, strings, or command output).
     Source: FOR /?.
+  slash_d: >-
+    FOR /D matches directory names only when the set contains wildcards.
+  slash_r: >-
+    FOR /R walks the directory tree rooted at an optional path (default: current
+    directory). A set that is only '.' enumerates the tree without an extra
+    file-set filter beyond the walk.
+  slash_l: >-
+    FOR /L iterates a numeric sequence (start,step,end), inclusive of endpoints
+    that the step reaches.
+  slash_f: >-
+    FOR /F parses text from a file-set, a quoted string, or command output; see
+    for_f for option details.
 
 for_f:
   description: "FOR /F parsing options and input forms (FOR /?)"
@@ -105,7 +124,8 @@ for_f:
     skip: "skip=n skips the first n lines of each input"
     delims: >-
       delims=xxx replaces the default delimiter set (space and tab). An empty
-      delims= means no delimiters (whole line is one token).
+      delims= means no delimiters (whole line is one token); confirmed for forms
+      such as FOR /F "delims=" %%a IN ("a b c").
     tokens: >-
       tokens=x,y,m-n selects token indexes; a trailing * assigns the remainder
       of the line to one variable. Up to 26 tokens may be requested. Additional
@@ -139,6 +159,12 @@ caret_escape:
 double_percent:
   for_body_rule: "FOR loop variables use %% in batch files"
   echo_literal_rule: "Literal % in ECHO often requires %% escaping"
+  batch_vs_cmdline: >-
+    Inside a .cmd/.bat file a literal percent is written as %% (for example
+    echo Progress: 50%% prints Progress: 50%). On the interactive command line
+    a single % is usually enough for a literal percent. FOR variables follow the
+    same split: %%i in batch files versus %i interactively. SET /A modulo also
+    uses %% in batch files (single % interactively).
 
 string_operations:
   substring_pattern: "%var:~start,length%"
@@ -353,8 +379,55 @@ exit_semantics:
     when quitting CMD.
 
 remarks:
-  rem: "REM remarks out the remainder of the line when used as a command"
+  rem: >-
+    REM remarks out the remainder of the physical line when used as a command.
+    Because the lexer consumes from REM through end-of-line, a trailing
+    `& command` on the same REM line is not a separate statement (it does not
+    run). Midline REM after other tokens is not special — only line-start REM
+    is recognized as a remark command.
   double_colon: >-
     A line starting with :: is a label whose second character is :, commonly
     used as a remark. Labels must not place : in the second character position
     for real jump targets. :: inside parenthesized blocks can be fragile at runtime.
+  rem_vs_label: >-
+    Prefer REM for portable remarks. :: is a label form and can break or
+    misparse inside parenthesized IF/FOR blocks.
+
+redirection:
+  description: >-
+    Cmd.exe I/O redirection attaches to a statement (or parenthesized group).
+    Handle numbers default to 1 (stdout) for > / >> and 0 (stdin) for <.
+  operators:
+    ">": "Overwrite redirect of stdout (or n>) to a file"
+    ">>": "Append redirect of stdout (or n>>) to a file"
+    "<": "Redirect stdin (or n<) from a file"
+    ">&": "Duplicate an output handle onto another handle (e.g. 2>&1, >&2)"
+    "<&": "Duplicate an input handle onto another handle"
+  examples:
+    - "echo ok >out.txt"
+    - "echo more >>out.txt"
+    - "sort <in.txt"
+    - "command 2>err.txt"
+    - "command >out.txt 2>&1"
+    - "command 1>nul 2>&1"
+    - "command >&2"
+  nul_suppress: >-
+    Redirecting to NUL discards that stream (commonly 1>nul, 2>nul, or
+    >nul 2>&1).
+  group_redirect: >-
+    A parenthesized group may take a trailing redirect that applies to the
+    whole group.
+
+paren_block_expansion:
+  description: >-
+    Parentheses group statements into a block. Percent (%) expansion for names
+    inside the block is performed when the block is parsed, not when each line
+    executes. Delayed expansion (!name!) is performed at execution time when
+    enabled. Therefore SET name=value followed by echo %name% inside the same
+    block typically still shows the pre-block value, while echo !name! shows
+    the updated value after SETLOCAL EnableDelayedExpansion.
+  percent_at_parse: >-
+    %var% inside ( ) expands with the value known when the block is read.
+  delayed_at_execution: >-
+    !var! inside ( ) expands when that line runs, seeing SET updates from
+    earlier lines in the same block.

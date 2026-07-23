@@ -1,10 +1,11 @@
 {
-  "description": "Input handle duplication with <&",
+  "description": "Dynamic %TIME% expansion tokenizes as percent var",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"
   },
   "tags": [
-    "redirection"
+    "expansion",
+    "dynamic"
   ]
 }

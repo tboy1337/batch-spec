@@ -1,0 +1,11 @@
+{
+  "description": "SET /A bitwise AND with quoted expression",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "arithmetic"
+  ]
+}

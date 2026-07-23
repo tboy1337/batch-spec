@@ -1,0 +1,11 @@
+{
+  "description": "REM line including trailing & is skipped by the lexer; parse continues",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "rem",
+    "remarks"
+  ]
+}

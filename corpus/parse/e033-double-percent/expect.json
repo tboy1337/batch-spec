@@ -1,10 +1,11 @@
 {
-  "description": "Double percent escaping",
+  "description": "Literal percent via doubled %% in a batch file (echo Progress: 50%%)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"
   },
   "tags": [
-    "percent"
+    "percent",
+    "escaping"
   ]
 }
