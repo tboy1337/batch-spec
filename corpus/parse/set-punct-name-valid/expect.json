@@ -1,0 +1,10 @@
+{
+  "description": "SET names with ~ and @ punctuation (broader charset in expansion.yaml)",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "set",
+    "expansion"
+  ]
+}

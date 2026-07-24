@@ -1,5 +1,5 @@
 {
-  "description": "Nested paren blocks: percent is outermost parse value, bang is current",
+  "description": "Indirect delayed expansion !%name%!",
   "parse": {
     "should_parse": true
   },

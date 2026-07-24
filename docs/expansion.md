@@ -3,17 +3,13 @@
 Machine-readable rules live in [`data/expansion.yaml`](../data/expansion.yaml)
 (schema: [`schema/expansion.schema.json`](../schema/expansion.schema.json)).
 
-Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
-(`call-help.txt`, `set-help.txt`, `for-help.txt`, `if-help.txt`, `setlocal-help.txt`,
-`shift-help.txt`, `exit-help.txt`, `goto-help.txt`, `cmd-help.txt`, `echo-help.txt`,
-`rem-help.txt`, `verify-help.txt`, `color-help.txt`, `date-help.txt`, `time-help.txt`,
-`path-help.txt`, `prompt-help.txt`, `choice-help.txt`).
+Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/) (`break-help.txt`, `call-help.txt`, `cd-help.txt`, `choice-help.txt`, `cmd-help.txt`, `color-help.txt`, `date-help.txt`, `echo-help.txt`, `endlocal-help.txt`, `exit-help.txt`, `for-help.txt`, `goto-help.txt`, `if-help.txt`, `move-help.txt`, `path-help.txt`, `popd-help.txt`, `prompt-help.txt`, `pushd-help.txt`, `rem-help.txt`, `ren-help.txt`, `set-help.txt`, `setlocal-help.txt`, `setx-help.txt`, `shift-help.txt`, `start-help.txt`, `subst-help.txt`, `time-help.txt`, `verify-help.txt`).
 
 ## Topics covered
 
-- **Percent-tilde (`%~`)** - requires Command Extensions; letter modifiers (order-independent, case-insensitive), path search (`%~$ENV:n`, empty on miss), bare quote-strip (`%~1`), and the multi-digit batveat (`%~10` is `%~1` plus literal `0`). With extensions off, `%~` forms are not expanded (literal `~...`). `%~*` is semantically invalid (CALL /?) even when the letter-regex does not match it.
+- **Percent-tilde (`%~`)** - requires Command Extensions; letter modifiers (order-independent, case-insensitive), path search (`%~$ENV:n`, empty on miss), bare quote-strip (`%~1`), attribute mask (`%~a`), short-name full paths (`%~sf`), locale timestamps (`%~t`), bare-vs-`f` qualification, and the multi-digit batveat (`%~10` is `%~1` plus literal `0`). With extensions off, `%~` forms are not expanded (literal `~...`). `%~*` is semantically invalid (CALL /?) even when the letter-regex does not match it.
 - **Percent expansion** - in scripts, undefined `%name%` / `!name!` expand to empty; on the interactive prompt undefined `%name%` often remains literal; incomplete unclosed `%` forms are not successful expansions (leading `%` typically stripped, leaving trailing text as literals).
-- **Delayed expansion (`!var!`)** - does *not* require SETLOCAL; can be enabled via cmd `/V:ON`, SETLOCAL flags, or the Command Processor registry value. Supports substring/replace peers of the percent forms (case-insensitive search). Digit-leading names need bang forms; `!` escaping under delayed expansion is phase-sensitive. Disable via SETLOCAL DisableDelayedExpansion or `cmd /V:OFF`.
+- **Delayed expansion (`!var!`)** - does *not* require SETLOCAL; can be enabled via cmd `/V:ON`, SETLOCAL flags, or the Command Processor registry value. Supports substring/replace peers of the percent forms (case-insensitive search). Supports indirect `!%name%!` (percent then delayed); digit-leading names need bang forms; `!` escaping under delayed expansion is phase-sensitive. Disable via SETLOCAL DisableDelayedExpansion or `cmd /V:OFF`.
 - **FOR variables / forms** - `%%i` in batch files, `%i` on the interactive command line; letter charset; `/D` `/R` `/L` `/F` forms (extensions); FOR `/R` with `(.)` includes the walk root; `/D /R` with `(*)` lists subdirs only; trailing `?` may match fewer characters; FOR `/R` without wildcards synthesizes `root\name` under each directory; FOR variables are global
 - **FOR /F** - `eol` / `skip` / `delims` / `tokens` / `usebackq` (and live `useback` synonym), quote forms, consecutive-delimiter collapse, empty `delims=`, space-must-be-last in `delims`, case-sensitive delimiter chars, default first token, z/Z token ceiling
 - **Caret escaping** - `2^n-1` for ordinary multilevel hops; CALL doubles carets on its tail (including inside quotes); line-continuation caret must be the last character of the physical line; caret does not escape `%` (percent expansion runs first; use `%%` for a literal percent in scripts)
@@ -38,6 +34,11 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 - **CALL / GOTO** - `CALL :label` return context; CALL requires colon for labels; missing CALL label continues with ERRORLEVEL 1; successful CALL without `EXIT /B` preserves prior ERRORLEVEL; bare script invoke does not return (CALL does); `GOTO :EOF` vs `GOTO EOF`; case-insensitive user labels
 - **EXIT** - bare `EXIT` ends the cmd process; `EXIT /B` ends the script/routine with optional exitCode
 - **Remarks** - `REM` vs `::` label-style remarks; REM consumes the rest of the physical line (including a trailing `&`); a `::` line containing `)` inside `( )` can close the block early ? prefer REM in paren blocks
+
+- **PROMPT `$` codes** - `$P$G`, `$T`, `$$`, and extensions `$+` / `$M` (PROMPT /?)
+- **Command-line length** - cmd.exe accepts at most 8191 characters on a command line
+- **Special devices** - `NUL`, `CON`, `PRN`, `AUX`, and COMn/LPTn as redirect targets
+- **Expansion phases** - percent first, then caret/tokenize/execute; delayed `!` at execution; CALL reparses its tail
 
 ## Parse vs catalog
 

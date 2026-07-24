@@ -1,4 +1,4 @@
-version: 7
+version: 8
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -71,6 +71,26 @@ percent_tilde_notes:
   modifier_case_insensitive: >-
     Letter modifiers are not case-sensitive (%~DPNX0 and %~dpnx0 are equivalent;
     FOR /?).
+  attribute_mask: >-
+    %~a / %%~a expands to a fixed-width attribute mask (commonly 11 characters)
+    using letters and dashes in DIR-like slots (for example --a-------- for an
+    archive file). Missing files expand the attribute field to empty (CALL /?).
+  bare_vs_f_qualification: >-
+    Bare %~1 / %%~ strips quotes but keeps the argument spelling (relative or
+    as given). The f modifier (%~f1 / %%~f) expands to a fully qualified path
+    based on the current directory when the argument has no drive/path; this
+    happens even when the target file does not exist. Combining F with other
+    letters (for example %~Ff1) is equivalent for qualification (CALL /?).
+  short_name_form: >-
+    The s modifier requests short (8.3) name components. %~s1 / %%~s and
+    combinations such as %~sf1 expand to a fully qualified path whose path
+    segments use short names where available (not a basename-only short name).
+    When short names are unavailable, cmd may still return a qualified path
+    (CALL /?; filesystem-dependent).
+  timestamp_format: >-
+    %~t / %%~t expands to the file's last-write date/time using the locale's
+    DATE/TIME formatting (separators and AM/PM style vary). Missing files
+    expand the timestamp field to empty (CALL /?).
 
 percent_expansion:
   undefined_is_empty: >-
@@ -116,6 +136,13 @@ delayed_expansion:
   case_insensitive_search: >-
     Delayed !var:old=new! search is case-insensitive, matching percent
     %var:old=new% behavior; replacement text is literal.
+  indirect_expansion: >-
+    With delayed expansion enabled, percent expansion runs before delayed
+    expansion, so !%name%! first substitutes %name% then expands the resulting
+    !value! at execution time (for example set Car=Toyota & set Toyota=Prius
+    yields !%Car%! -> Prius). Related forms such as !prefix%name%! /
+    !%name%suffix! follow the same two-phase substitution. Without delayed
+    expansion, !...! is literal text.
 
 for_loop_variables:
   batch_file_prefix: "%%"
@@ -402,21 +429,26 @@ set_p:
 environment_variable_names:
   description: >-
     SET /? forbids '=' inside a variable name. Live cmd.exe accepts a wider
-    charset than [A-Za-z_][A-Za-z0-9_]* — including '.', '-', and '~' (for
-    example %my.var%, %a-b%, %a~b%). Quoted SET "a b=value" can define names
-    that contain spaces; percent expansion then uses matching %a b% forms.
-    Prefer underscore-alnum names for portability.
+    charset than [A-Za-z_][A-Za-z0-9_]* — including '.', '-', '~', and many
+    punctuation characters (for example %a~b%, %var;x%, %var@x%, %var#x%,
+    and %var$with.odd[chars]% after a matching SET). Quoted SET "a b=value"
+    can define names that contain spaces; percent expansion then uses matching
+    %a b% forms. Prefer underscore-alnum names for portability.
   forbidden_in_name: "="
   accepted_examples:
     - "my.var"
     - "a-b"
     - "a~b"
     - "a b"
+    - "var;x"
+    - "var@x"
+    - "var#x"
+    - "var$with.odd[chars]"
   tokenizer_note: >-
     The ANTLR lexer treats %name% as a single PERCENT_VAR when the name uses
-    letters, digits, underscore, '.', '-', or '~'. Spaced names are accepted
-    at runtime but are not a single percent token (spaces remain separators);
-    prefer documenting them via quoted SET forms in the parse corpus.
+    letters, digits, underscore, '.', '-', or '~'. Spaced names and many
+    punctuation-heavy names are accepted at runtime but may not be a single
+    percent token; prefer documenting them via SET forms in the parse corpus.
 
 echo_forms:
   description: >-
@@ -737,6 +769,10 @@ batch_parameters:
   argument_delimiters: >-
     Unquoted argument tokens are split on space, tab, comma, semicolon, and
     equals. Quotes preserve those characters inside a single argument.
+  command_line_limit: >-
+    The maximum length of a command line that cmd.exe accepts is 8191
+    characters (Microsoft documentation for cmd.exe). Longer input is rejected
+    or truncated by the console host before normal parsing completes.
 
 call_goto:
   description: "CALL :label and GOTO :EOF (CALL /?, GOTO /?)"
@@ -776,6 +812,13 @@ call_goto:
   label_line_form: >-
     A label is a line beginning with a colon (GOTO /?). Indented labels are
     accepted by cmd; prefer a colon in column 0 for portable scripts.
+  label_charset: >-
+    User label names may include letters, digits, dots, spaces, and many
+    punctuation characters after the leading colon (for example :ok.label and
+    :has space). A second colon immediately after the first (::) is the
+    label-style remark form, not a normal jump target. Prefer simple
+    alphanumeric labels for portable scripts; avoid ')' inside labels used
+    within parenthesized blocks (see remarks.double_colon).
 
 exit_semantics:
   description: "EXIT [/B] [exitCode] (EXIT /?)"
@@ -838,6 +881,11 @@ redirection:
     stderr to file. command 2>&1 >file first duplicates stderr to the current
     stdout (often the console), then redirects stdout alone to file, so stderr
     may remain on the console.
+  special_devices: >-
+    In addition to NUL, Windows reserved device names such as CON, PRN, AUX,
+    and COM1/LPT1 may be used as redirect targets or sources (for example
+    >CON echo hi writes to the console device). Treat these as OS device
+    names, not ordinary files; availability depends on the host.
 
 paren_block_expansion:
   description: >-
@@ -862,3 +910,22 @@ paren_block_expansion:
     execution, a naked parenthesized block can observe both the pre-block and
     in-block values (for example swapping two variables with percent expansion
     inside one block).
+expansion_phases: >-
+  Approximate cmd parsing phases for a statement: (1) percent (%var%, %n, %*,
+  %~) expansion; (2) special-character / caret processing and tokenization
+  (including line-continuation caret); (3) command recognition and execution;
+  (4) when delayed expansion is enabled, !var! expansion at execution time
+  (including inside already-parsed parenthesized blocks). CALL re-parses its
+  argument tail (notably doubling carets and reducing %% pairs). Pipe sides
+  run in child cmd.exe contexts with their own defaults. See percent_expansion,
+  delayed_expansion, caret_escape, double_percent, paren_block_expansion, and
+  command_chaining for details.
+
+prompt_codes:
+  description: >-
+    PROMPT text may include $-codes that expand when the prompt is displayed
+    (PROMPT /?). Base codes include $A & $B | $C ( $D date $E ESC $F ) $G >
+    $H backspace $L < $N drive $P drive+path $Q = $S space $T time $V version
+    $_ CR+LF $$ literal $. With Command Extensions, $+ shows PUSHD stack depth
+    and $M shows the remote name for a network drive (or empty).
+  source: "PROMPT /? (audit/cmd-help/prompt-help.txt)"

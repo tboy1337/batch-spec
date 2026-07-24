@@ -1,0 +1,10 @@
+{
+  "description": "GOTO labels with dot and space in the name",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "goto",
+    "labels"
+  ]
+}

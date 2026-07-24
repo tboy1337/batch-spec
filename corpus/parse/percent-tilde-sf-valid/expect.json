@@ -1,11 +1,11 @@
 {
-  "description": "Mismatched quotes",
+  "description": "Percent-tilde short-name full path (%~sf)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"
   },
   "tags": [
-    "quoting",
-    "negative"
+    "expansion",
+    "percent-tilde"
   ]
 }

@@ -29,6 +29,8 @@ for new fixtures.
 
 `should_parse: true` must not be combined with `expect_syntax_errors: true`.
 `should_parse: false` must not be combined with `expect_syntax_errors: true`.
+Current negative fixtures use `expect_syntax_errors: true` (none use `should_parse: false`). Prefer `expect_syntax_errors` for live syntax-error cases; keep `should_parse: false` available for implementations that fail without a clean tree.
+
 
 ## Scope
 

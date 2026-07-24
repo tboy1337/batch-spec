@@ -4,7 +4,7 @@
     "should_parse": true
   },
   "tags": [
-    "delayed",
+    "delayed-expansion",
     "caret"
   ]
 }

@@ -1,11 +1,10 @@
 {
-  "description": "Mismatched quotes",
+  "description": "Redirect to CON device",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"
   },
   "tags": [
-    "quoting",
-    "negative"
+    "redirection"
   ]
 }
