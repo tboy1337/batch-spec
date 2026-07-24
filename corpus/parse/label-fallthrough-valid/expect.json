@@ -1,0 +1,12 @@
+{
+  "description": "Labels are not barriers; CALL returns then fallthrough continues",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "call",
+    "goto",
+    "label"
+  ]
+}

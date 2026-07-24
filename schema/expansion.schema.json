@@ -227,6 +227,9 @@
         },
         "input_forms": {
           "type": "string"
+        },
+        "unquoted_options_caret": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -445,6 +448,15 @@
         },
         "parameter_as_lhs": {
           "type": "string"
+        },
+        "integer_division_truncates": {
+          "type": "string"
+        },
+        "no_power_operator": {
+          "type": "string"
+        },
+        "failed_leaves_prior": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -576,6 +588,9 @@
           "type": "string"
         },
         "bare_or_whitespace_status": {
+          "type": "string"
+        },
+        "at_prefix": {
           "type": "string"
         }
       },
@@ -936,6 +951,9 @@
         },
         "empty_quoted_argument": {
           "type": "string"
+        },
+        "shift_vacates_high_slots": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -979,6 +997,9 @@
         },
         "label_charset": {
           "type": "string"
+        },
+        "label_fallthrough": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1015,6 +1036,9 @@
           "type": "string"
         },
         "rem_vs_label": {
+          "type": "string"
+        },
+        "echo_visibility": {
           "type": "string"
         }
       },
@@ -1105,6 +1129,9 @@
         },
         "source": {
           "type": "string"
+        },
+        "prompt_env": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1187,6 +1214,9 @@
         },
         "append_via_percent": {
           "type": "string"
+        },
+        "dircmd_env": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1211,6 +1241,18 @@
           "type": "string"
         },
         "env_and_associations": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "break_command": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "source": {
           "type": "string"
         }
       },

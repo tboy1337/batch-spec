@@ -1,0 +1,11 @@
+{
+  "description": "BREAK does not terminate FOR loops (DOS-compat no-op under Windows)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "break",
+    "for"
+  ]
+}

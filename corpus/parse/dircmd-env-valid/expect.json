@@ -1,0 +1,11 @@
+{
+  "description": "DIRCMD environment variable supplies default DIR switches",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "dir",
+    "env"
+  ]
+}

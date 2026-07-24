@@ -1,0 +1,11 @@
+{
+  "description": "CHOICE without /C uses default YN list",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "choice",
+    "errorlevel"
+  ]
+}

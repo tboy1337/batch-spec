@@ -1,0 +1,11 @@
+{
+  "description": "After SHIFT vacated high parameter slots expand empty",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "shift",
+    "parameters"
+  ]
+}

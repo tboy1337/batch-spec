@@ -17,6 +17,7 @@ Machine-readable catalog: [`data/commands.yaml`](../data/commands.yaml)
 
 ## Guidance
 
+- `builtin_commands` includes both cmd.exe internals (for example `set`, `call`, `break`) and stock Windows utilities resolved via PATH/`System32` (for example `curl`, `robocopy`, `choice`)
 - Prefer `builtin_commands` for "is this a Windows/cmd command?" checks
 - Use `common_external_tools` for optional recognition of developer tooling without implying cmd builtins
 - Read deprecation/removal strings carefully: some `removed_commands` entries are add-on Resource Kit / Sysinternals tools, or HELP-listed names whose binaries are no longer present on modern Windows (for example `graftabl`)

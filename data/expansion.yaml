@@ -1,4 +1,4 @@
-version: 9
+version: 10
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -129,10 +129,10 @@ delayed_expansion:
     Environment names that start with a digit expand with delayed !name! forms;
     percent %1name% is parsed as argument %1 plus literal text.
   exclamation_escaping: >-
-    With delayed expansion enabled, ! is special at execution time. Escaping !
-    typically needs caret doubling relative to the number of parse phases
-    (commonly ^^! for a literal ! in ECHO). Percent signs still use %% rather
-    than ^% for a literal %.
+    With delayed expansion enabled, a literal ! commonly needs caret escaping
+    such as ^^!. The same ^^ before a non-! character yields a single caret
+    (for example ^^2 becomes ^2), so bang escaping is phase-sensitive and not
+    identical to ordinary caret doubling for other characters.
   case_insensitive_search: >-
     Delayed !var:old=new! search is case-insensitive, matching percent
     %var:old=new% behavior; replacement text is literal.
@@ -227,6 +227,11 @@ for_f:
   useback_synonym: >-
     Live cmd.exe also accepts useback as a synonym for usebackq (trailing q
     optional). Prefer the documented usebackq spelling in new scripts.
+  unquoted_options_caret: >-
+    When an options string cannot use surrounding double quotes (for example
+    because delims must include a quote character), the options may be written
+    unquoted with caret-escaped equals and spaces, such as
+    tokens^=1-2^ delims^=^". Prefer quoted options whenever possible.
   consecutive_delims: >-
     Consecutive delimiter characters collapse to one delimiter; empty fields
     between repeated delimiters are not preserved by default.
@@ -234,8 +239,13 @@ for_f:
     By default, /F passes the first blank-separated token from each line
     (FOR /?).
   variables_are_global: >-
-    FOR variables are global for the cmd session (FOR /?): nested or sequential
-    FOR loops that reuse the same letter share that replaceable parameter.
+    FOR replaceable parameters are single-letter, case-sensitive, and drawn from
+    a shared session namespace of up to 52 active letters (FOR /?). Metavar
+    expansion applies in the FOR DO body (including &-chained commands on that
+    body), not in later unrelated statements or in a CALL :label body unless the
+    value is passed as an ordinary argument. Nested FOR loops may reuse the same
+    letter: during the inner loop the letter holds the inner value; after the
+    inner FOR completes, the outer value is restored on modern Windows.
   input_forms: >-
     file-set; "string" (or 'string' with usebackq); 'command' (or `command`
     with usebackq). Blank lines are skipped.
@@ -404,7 +414,18 @@ set_a:
     -2147483648) rather than failing the expression.
   divide_by_zero_errorlevel: >-
     Division by zero and other failed SET /A expressions leave a non-zero
-    ERRORLEVEL (exact code is implementation-defined).
+    ERRORLEVEL (exact code is implementation-defined; live Windows 10 cmd often
+    uses 1073750993 for divide-by-zero and 1073750991 for invalid numeric
+    literals such as 08 or 0b10).
+  integer_division_truncates: >-
+    The / operator performs signed integer division toward zero (for example
+    7/2 yields 3 and -7/2 yields -3). There is no floating-point result.
+  no_power_operator: >-
+    SET /A has no exponent/power operator. ^ is bitwise XOR, not power; forms
+    such as 2**3 are not valid SET /A syntax.
+  failed_leaves_prior: >-
+    When a SET /A assignment expression fails (divide-by-zero, invalid number,
+    etc.), the target variable is left unchanged (prior value or still unset).
   assignment_requires_name: >-
     Assignment operators require an environment variable name on the left
     (SET /?).
@@ -455,7 +476,7 @@ set_p:
     the prior value of var is left unchanged.
   blank_line_keeps_prior: >-
     A blank input line (the user presses Enter with no text, or a redirected
-    file whose next line is empty) leaves the prior value of var unchanged —
+    file whose next line is empty) leaves the prior value of var unchanged --
     the same keep-prior behavior as EOF/NUL. It does not assign an empty
     string. A line that contains only spaces assigns those spaces (the
     variable remains defined).
@@ -471,7 +492,7 @@ set_p:
 environment_variable_names:
   description: >-
     SET /? forbids '=' inside a variable name. Live cmd.exe accepts a wider
-    charset than [A-Za-z_][A-Za-z0-9_]* — including '.', '-', '~', and many
+    charset than [A-Za-z_][A-Za-z0-9_]* -- including '.', '-', '~', and many
     punctuation characters (for example %a~b%, %var;x%, %var@x%, %var#x%,
     and %var$with.odd[chars]% after a matching SET). Quoted SET "a b=value"
     can define names that contain spaces; percent expansion then uses matching
@@ -527,6 +548,9 @@ echo_forms:
   bare_or_whitespace_status: >-
     ECHO with no arguments, or with only whitespace arguments, prints the
     current ECHO is on/off status rather than a blank line.
+  at_prefix: >-
+    A leading @ suppresses echo of that one statement when ECHO is ON (not only
+    @echo off). It applies to arbitrary commands, not only ECHO.
 
 cmd_processor_switches:
   description: >-
@@ -651,10 +675,11 @@ errorlevel:
     cmd /C exit N (or EXIT /B) to set ERRORLEVEL rather than SET ERRORLEVEL=.
   choice_ordinal: >-
     CHOICE sets ERRORLEVEL to the 1-based index of the selected key in the /C
-    choice list (first choice → 1, second → 2, …). Error conditions return 255.
-    CTRL+C or CTRL+BREAK returns 0 (CHOICE /?). Optional switches include /CS
-    (case-sensitive choices), /N (hide choice list), /T timeout with /D default,
-    and /M message text.
+    choice list (first choice -> 1, second -> 2, ...). When /C is omitted the
+    default list is YN (CHOICE /?). Both /C ABC and /C:ABC forms are accepted.
+    Error conditions return 255. CTRL+C or CTRL+BREAK returns 0 (CHOICE /?).
+    Optional switches include /CS (case-sensitive choices), /N (hide choice
+    list), /T timeout with /D default, and /M message text.
   not_errorlevel_negative: >-
     IF ERRORLEVEL n means >= n. IF NOT ERRORLEVEL n means < n. Because of the
     >= test, IF NOT ERRORLEVEL 0 is true only when ERRORLEVEL is negative, not
@@ -694,7 +719,7 @@ dynamic_environment_variables:
   time_locale_delimiters: >-
     The TIME format (and therefore %TIME%) can use locale-specific separators.
     In some locales the separator may be a comma, which is also a command
-    argument delimiter — parse %TIME% carefully in portable scripts.
+    argument delimiter -- parse %TIME% carefully in portable scripts.
   cmdcmdline_shape: >-
     %CMDCMDLINE% expands to the original command line that started this cmd.exe
     process (SET /?). When a script is launched via cmd /C "script.cmd args",
@@ -765,7 +790,7 @@ if_forms:
     IF has no native boolean AND/OR keywords. Tokens such as and / or after a
     completed IF command are parsed as separate commands (often yielding
     "'and' is not recognized..."). Compose conditions with nested IF, chained
-    && / || on ERRORLEVEL, or other documented patterns — not IF ... and ....
+    && / || on ERRORLEVEL, or other documented patterns -- not IF ... and ....
 
 if_block_parentheses:
   description: >-
@@ -799,7 +824,7 @@ command_chaining:
   and_or_chain_trap: >-
     In A && (B) || (C), statement C runs when A fails or when B leaves a
     non-zero ERRORLEVEL. A successful A followed by a failing B still executes
-    C — this is not a boolean if/else. Group carefully or test ERRORLEVEL
+    C -- this is not a boolean if/else. Group carefully or test ERRORLEVEL
     explicitly when only one of B/C should run.
   trailing_ampersand_in_block: >-
     Inside a parenthesized block, a line that ends with a bare & (no following
@@ -821,8 +846,12 @@ batch_parameters:
   shift_default: >-
     Bare SHIFT (no /n) shifts starting at %0: the former %1 becomes the new %0,
     former %2 becomes %1, and so on.
+  shift_vacates_high_slots: >-
+    After SHIFT, the highest previously occupied %n slot becomes empty when there
+    is no further argument to shift into it (for example with args a b, after one
+    SHIFT %1 becomes b and %2 expands empty).
   percent_zero: >-
-    %0 is the script path or, inside CALL :label, the :label identity — not a
+    %0 is the script path or, inside CALL :label, the :label identity -- not a
     user-supplied argument. With extensions, path modifiers such as %~dp0
     apply; without extensions %~ forms are not expanded. The text of %0 mirrors
     the spelling/casing/quoting used to invoke the script or CALL :label (for
@@ -888,6 +917,11 @@ call_goto:
     label-style remark form, not a normal jump target. Prefer simple
     alphanumeric labels for portable scripts; avoid ')' inside labels used
     within parenthesized blocks (see remarks.double_colon).
+  label_fallthrough: >-
+    A label line is not a control-flow barrier. Execution falls through into
+    following statements unless a GOTO/EXIT (or similar) jumps away. After
+    CALL :label returns, a later encounter of the same :label as a line label
+    runs that body again unless fenced with GOTO :EOF or EXIT /B.
 
 exit_semantics:
   description: "EXIT [/B] [exitCode] (EXIT /?)"
@@ -909,17 +943,22 @@ remarks:
     REM remarks out the remainder of the physical line when used as a command.
     Because the lexer consumes from REM through end-of-line, a trailing
     `& command` on the same REM line is not a separate statement (it does not
-    run). Midline REM after other tokens is not special — only line-start REM
+    run). Midline REM after other tokens is not special -- only line-start REM
     is recognized as a remark command.
   double_colon: >-
     A line starting with :: is a label whose second character is :, commonly
     used as a remark. Labels must not place : in the second character position
-    for real jump targets. Inside parenthesized blocks, a :: line that contains
-    ')' can close the block early because ')' is still significant on that
-    label line. Prefer REM inside ( ) blocks.
+    for real jump targets. Inside parenthesized blocks, prefer REM: a :: line
+    that contains ')' has historically been able to close the block early
+    because ')' remains significant on label lines on some hosts/versions.
+    Prefer REM inside ( ) blocks for portable scripts.
   rem_vs_label: >-
     Prefer REM for portable remarks. :: is a label form and can break or
     misparse inside parenthesized IF/FOR blocks.
+  echo_visibility: >-
+    With ECHO ON, a REM remark is echoed to stdout like other commands. A ::
+    label-style remark is typically not echoed as a command line. Neither form
+    prints the remark text as output by itself when ECHO is OFF.
 
 redirection:
   description: >-
@@ -955,10 +994,11 @@ redirection:
     stdout (often the console), then redirects stdout alone to file, so stderr
     may remain on the console.
   special_devices: >-
-    In addition to NUL, Windows reserved device names such as CON, PRN, AUX,
-    and COM1/LPT1 may be used as redirect targets or sources (for example
-    >CON echo hi writes to the console device). Treat these as OS device
-    names, not ordinary files; availability depends on the host.
+    NUL and CON are reliable redirect targets/sources on modern Windows (for
+    example >nul, >CON). Other reserved device names such as PRN, AUX, COM1,
+    and LPT1 may fail as redirect targets with "The system cannot find the file
+    specified" depending on the host; treat them as OS device names, not
+    ordinary files.
 
 paren_block_expansion:
   description: >-
@@ -1038,6 +1078,10 @@ path_command:
   append_via_percent: >-
     Appending commonly uses PATH %PATH%;C:\more. Clearing with PATH ; removes
     all search directories until PATH is set again.
+  dircmd_env: >-
+    DIRCMD is an ordinary environment variable (not a SET-list dynamic name).
+    When set, its value supplies default switches for DIR (for example
+    SET DIRCMD=/B). A later DIR invocation can still pass overriding switches.
 
 start_command:
   description: >-
@@ -1066,4 +1110,16 @@ prompt_codes:
     $H backspace $L < $N drive $P drive+path $Q = $S space $T time $V version
     $_ CR+LF $$ literal $. With Command Extensions, $+ shows PUSHD stack depth
     and $M shows the remote name for a network drive (or empty).
+  prompt_env: >-
+    %PROMPT% expands to the current prompt template string. PROMPT without
+    arguments resets to the default ($P$G). Scripts can read and rewrite the
+    template via %PROMPT% (for example prompt %PROMPT%$S).
   source: "PROMPT /? (audit/cmd-help/prompt-help.txt)"
+
+break_command:
+  description: >-
+    BREAK is a DOS-compatibility internal. Under Windows it has no effect on
+    CTRL+C checking and does not terminate FOR/IF blocks (BREAK /?). With
+    Command Extensions on a debugger-attached process, BREAK may enter a
+    hardcoded breakpoint; otherwise treat it as a no-op for script control flow.
+  source: "BREAK /?"

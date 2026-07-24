@@ -1,0 +1,10 @@
+{
+  "description": "%PROMPT% expands to the current prompt template",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "prompt"
+  ]
+}

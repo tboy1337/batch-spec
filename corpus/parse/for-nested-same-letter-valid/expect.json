@@ -1,0 +1,10 @@
+{
+  "description": "Nested FOR may reuse the same letter; outer value restores after inner",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for"
+  ]
+}

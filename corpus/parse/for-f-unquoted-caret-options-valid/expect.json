@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F unquoted options with caret-escaped equals and spaces",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

@@ -10,7 +10,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 - **Percent-tilde (`%~`)** - requires Command Extensions; letter modifiers (order-independent, case-insensitive), path search (`%~$ENV:n`, empty on miss), bare quote-strip (`%~1`), attribute mask (`%~a`), short-name full paths (`%~sf`), locale timestamps (`%~t`), bare-vs-`f` qualification, and the multi-digit batveat (`%~10` is `%~1` plus literal `0`). With extensions off, `%~` forms are not expanded (literal `~...`). `%~*` is semantically invalid (CALL /?) even when the letter-regex does not match it.
 - **Percent expansion** - in scripts, undefined `%name%` / `!name!` expand to empty; on the interactive prompt undefined `%name%` often remains literal; incomplete unclosed `%` forms are not successful expansions (leading `%` typically stripped, leaving trailing text as literals).
 - **Delayed expansion (`!var!`)** - does *not* require SETLOCAL; can be enabled via cmd `/V:ON`, SETLOCAL flags, or the Command Processor registry value. Supports substring/replace peers of the percent forms (case-insensitive search). Supports indirect `!%name%!` (percent then delayed); digit-leading names need bang forms; `!` escaping under delayed expansion is phase-sensitive. Disable via SETLOCAL DisableDelayedExpansion or `cmd /V:OFF`.
-- **FOR variables / forms** - `%%i` in batch files, `%i` on the interactive command line; letter charset; `/D` `/R` `/L` `/F` forms (extensions); FOR `/R` with `(.)` includes the walk root; `/D /R` with `(*)` lists subdirs only; trailing `?` may match fewer characters; FOR `/R` without wildcards synthesizes `root\name` under each directory; FOR variables are global; classic FOR non-wildcard set members are literals even when missing
+- **FOR variables / forms** - `%%i` in batch files, `%i` on the interactive command line; letter charset; `/D` `/R` `/L` `/F` forms (extensions); FOR `/R` with `(.)` includes the walk root; `/D /R` with `(*)` lists subdirs only; trailing `?` may match fewer characters; FOR `/R` without wildcards synthesizes `root\name` under each directory; FOR metavars expand in the DO body and share a session letter namespace (nested same-letter restores after inner); classic FOR non-wildcard set members are literals even when missing
 - **FOR /F** - `eol` / `skip` / `delims` / `tokens` / `usebackq` (and live `useback` synonym), quote forms, consecutive-delimiter collapse, empty `delims=`, space-must-be-last in `delims`, case-sensitive delimiter chars, default first token, z/Z token ceiling
 - **Caret escaping** - `2^n-1` for ordinary multilevel hops; CALL doubles carets on its tail (including inside quotes); line-continuation caret must be the last character of the physical line; caret does not escape `%` (percent expansion runs first; use `%%` for a literal percent in scripts)
 - **Double percent** - batch `%%` literals; CALL also reduces `%%` pairs to `%` on its argument tail
@@ -44,6 +44,18 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 - **PATH command** - display/set path; `PATH ;` clears the search path
 - **START** - quoted title, `/WAIT`, `/B`, `/I`; batch/internal often via new cmd; associations for non-executables
 - **Expansion phases** - percent first, then caret/tokenize/execute; delayed `!` at execution; CALL reparses its tail
+
+- **SET /A arithmetic details** -- integer `/` truncates toward zero; no `**` power operator (`^` is XOR); failed assignments leave the prior value; ERRORLEVEL codes for failures are implementation-defined
+- **BREAK** -- DOS-compat internal; no-op for script control flow under Windows (does not break FOR/IF)
+- **CHOICE defaults** -- omitted `/C` uses `YN`; `/C ABC` and `/C:ABC` both accepted
+- **FOR /F unquoted options** -- caret-escaped `tokens^=...^ delims^=...` when quotes cannot wrap options
+- **Label fallthrough** -- labels are not barriers; fence with `GOTO :EOF` / `EXIT /B`
+- **@ prefix** -- suppresses echo of that one statement when ECHO is ON
+- **SHIFT vacates** -- after SHIFT, vacated high `%n` slots expand empty
+- **Remarks echo visibility** -- with ECHO ON, `REM` is echoed; `::` label-remarks typically are not
+- **DIRCMD** -- ordinary env var supplying default `DIR` switches
+- **%PROMPT%** -- expands to the current prompt template
+- **Special devices** -- `NUL`/`CON` reliable; `PRN`/`AUX`/`COM1`/`LPT1` redirects may fail on modern hosts
 
 ## Parse vs catalog
 

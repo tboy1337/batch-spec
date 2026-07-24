@@ -1,0 +1,11 @@
+{
+  "description": "REM vs :: remark forms under ECHO ON",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "rem",
+    "echo"
+  ]
+}
