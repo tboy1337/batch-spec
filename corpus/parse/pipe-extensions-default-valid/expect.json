@@ -1,5 +1,5 @@
 {
-  "description": "Pipe child does not inherit parent SETLOCAL DisableExtensions (defaults independently)",
+  "description": "Parse pipe chain after setlocal DisableExtensions (child inheritance semantics in expansion.yaml command_chaining)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"

@@ -1,5 +1,5 @@
 {
-  "description": "SET name-only query for missing prefix (ERRORLEVEL 1 at runtime)",
+  "description": "Parse SET name-only prefix query for a missing name (runtime ERRORLEVEL 1 is in expansion.yaml set_assignment)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "setStmt"

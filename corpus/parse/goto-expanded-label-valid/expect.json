@@ -1,0 +1,11 @@
+{
+  "description": "Parse GOTO with percent-expanded label target",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "goto",
+    "expansion"
+  ]
+}

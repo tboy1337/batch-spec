@@ -1,5 +1,5 @@
 {
-  "description": "IF OR/AND valid",
+  "description": "Parse IF string compare where the compared value contains the letters OR (not boolean OR/AND keywords)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "ifStmt"

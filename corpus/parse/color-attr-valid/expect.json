@@ -1,11 +1,11 @@
 {
-  "description": "Parse CMD /V:ON child invocation switch form",
+  "description": "Parse COLOR with two hex attribute digits (COLOR /?)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"
   },
   "tags": [
-    "cmd",
-    "delayed-expansion"
+    "color",
+    "extensions"
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "description": "CALL :label that falls through preserves prior ERRORLEVEL (semantic; parses)",
+  "description": "Parse CALL :label that returns by falling through without EXIT /B (ERRORLEVEL preserve semantics in expansion.yaml call_goto)",
   "parse": {
     "top_level_statement": "gotoStmt",
     "should_parse": true

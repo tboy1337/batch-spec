@@ -1,4 +1,4 @@
-version: 12
+version: 13
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -1020,6 +1020,13 @@ call_goto:
     following statements unless a GOTO/EXIT (or similar) jumps away. After
     CALL :label returns, a later encounter of the same :label as a line label
     runs that body again unless fenced with GOTO :EOF or EXIT /B.
+  expanded_label_target: >-
+    Percent (and delayed) expansion runs before GOTO/CALL execute, so a target
+    may come from a variable: goto %name% jumps to :value when name expands to
+    value (with or without a leading colon in the expanded text). CALL :%name%
+    likewise resolves the label after expansion. A missing expanded label
+    follows the same missing-label rules as a literal target (GOTO aborts;
+    CALL :missing continues with ERRORLEVEL 1).
 
 exit_semantics:
   description: "EXIT [/B] [exitCode] (EXIT /?)"
@@ -1187,6 +1194,30 @@ mkdir_command:
     as needed) (MD /?). Without extensions, each level must already exist or be
     created separately; a multi-level path fails if parents are missing.
 
+rmdir_command:
+  description: >-
+    RMDIR/RD directory removal (RD /?). Tree deletion uses /S; quiet mode uses
+    /Q. Unlike MKDIR intermediate creation, /S tree removal remains available
+    when Command Extensions are disabled.
+  slash_s_tree: >-
+    RD /S (or RMDIR /S) removes the specified directory and all files and
+    subdirectories under it (RD /?). /Q suppresses the confirmation prompt for
+    /S tree removal.
+  source: "RD /? (audit/cmd-help/rd-help.txt)"
+
+color_command:
+  description: >-
+    COLOR sets the console foreground/background attributes (COLOR /?). COLOR
+    requires Command Extensions (see command_extensions_off.assoc_ftype_color_gated).
+  attr_hex: >-
+    COLOR [attr] takes two hex digits: background then foreground (0-9, A-F).
+    With no argument, COLOR restores the colors from cmd.exe startup (/T,
+    console, or DefaultColor registry) (COLOR /?).
+  same_color_errorlevel: >-
+    COLOR sets ERRORLEVEL to 1 when foreground and background are the same
+    (for example COLOR 00) (COLOR /?).
+  source: "COLOR /? (audit/cmd-help/color-help.txt)"
+
 del_erase_command:
   description: >-
     DEL/ERASE file deletion (DEL /?). Attribute filters and recursion switches
@@ -1220,7 +1251,8 @@ path_command:
   dircmd_env: >-
     DIRCMD is an ordinary environment variable (not a SET-list dynamic name).
     When set, its value supplies default switches for DIR (for example
-    SET DIRCMD=/B). A later DIR invocation can still pass overriding switches.
+    SET DIRCMD=/B). A later DIR invocation can still pass overriding switches
+    (DIR /?; audit/cmd-help/dir-help.txt).
 
 start_command:
   description: >-

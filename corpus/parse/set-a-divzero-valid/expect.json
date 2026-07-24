@@ -1,5 +1,5 @@
 {
-  "description": "SET /A divide-by-zero leaves non-zero ERRORLEVEL",
+  "description": "Parse SET /A divide-by-zero expression (non-zero ERRORLEVEL on failure is in expansion.yaml set_a)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "setStmt"

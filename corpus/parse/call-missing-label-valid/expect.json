@@ -1,5 +1,5 @@
 {
-  "description": "CALL to a missing label parses; runtime sets ERRORLEVEL 1 and continues",
+  "description": "Parse CALL to a missing label (runtime ERRORLEVEL 1 / continue is in expansion.yaml call_goto)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "callStmt"

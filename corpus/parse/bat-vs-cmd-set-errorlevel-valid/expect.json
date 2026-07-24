@@ -1,5 +1,5 @@
 {
-  "description": "Successful SET after cmd /C exit 42: .bat preserves ERRORLEVEL, .cmd clears to 0 (runtime; parse documents the probe form)",
+  "description": "Parse SET after cmd /C exit; .bat vs .cmd ERRORLEVEL clear-vs-preserve is documented in expansion.yaml set_assignment (not asserted by this parse fixture)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "setStmt"

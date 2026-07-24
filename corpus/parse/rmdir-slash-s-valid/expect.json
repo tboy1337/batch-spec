@@ -1,11 +1,10 @@
 {
-  "description": "Parse CMD /V:ON child invocation switch form",
+  "description": "Parse RD /S /Q directory tree removal (RD /?)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"
   },
   "tags": [
-    "cmd",
-    "delayed-expansion"
+    "rmdir"
   ]
 }

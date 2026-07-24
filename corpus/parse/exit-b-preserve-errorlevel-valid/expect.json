@@ -1,5 +1,5 @@
 {
-  "description": "EXIT /B with no code preserves prior ERRORLEVEL from CALL :label",
+  "description": "Parse EXIT /B with no code after seeding ERRORLEVEL in a CALLed label (preserve semantics in expansion.yaml exit_semantics)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "exitStmt"

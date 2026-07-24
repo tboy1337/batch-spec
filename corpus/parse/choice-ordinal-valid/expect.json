@@ -1,5 +1,5 @@
 {
-  "description": "CHOICE sets ERRORLEVEL to 1-based choice ordinal",
+  "description": "Parse CHOICE with /C option list (1-based ERRORLEVEL ordinal semantics in expansion.yaml errorlevel)",
   "parse": {
     "top_level_statement": "genericCmd",
     "should_parse": true

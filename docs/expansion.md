@@ -3,7 +3,7 @@
 Machine-readable rules live in [`data/expansion.yaml`](../data/expansion.yaml)
 (schema: [`schema/expansion.schema.json`](../schema/expansion.schema.json)).
 
-Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/) (`assoc-help.txt`, `break-help.txt`, `call-help.txt`, `cd-help.txt`, `choice-help.txt`, `cmd-help.txt`, `color-help.txt`, `date-help.txt`, `del-help.txt`, `echo-help.txt`, `endlocal-help.txt`, `exit-help.txt`, `for-help.txt`, `ftype-help.txt`, `goto-help.txt`, `if-help.txt`, `md-help.txt`, `move-help.txt`, `path-help.txt`, `popd-help.txt`, `prompt-help.txt`, `pushd-help.txt`, `rem-help.txt`, `ren-help.txt`, `set-help.txt`, `setlocal-help.txt`, `setx-help.txt`, `shift-help.txt`, `start-help.txt`, `subst-help.txt`, `time-help.txt`, `verify-help.txt`).
+Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/) (`assoc-help.txt`, `break-help.txt`, `call-help.txt`, `cd-help.txt`, `choice-help.txt`, `cmd-help.txt`, `color-help.txt`, `date-help.txt`, `del-help.txt`, `dir-help.txt`, `echo-help.txt`, `endlocal-help.txt`, `exit-help.txt`, `for-help.txt`, `ftype-help.txt`, `goto-help.txt`, `if-help.txt`, `md-help.txt`, `move-help.txt`, `path-help.txt`, `popd-help.txt`, `prompt-help.txt`, `pushd-help.txt`, `rd-help.txt`, `rem-help.txt`, `ren-help.txt`, `set-help.txt`, `setlocal-help.txt`, `setx-help.txt`, `shift-help.txt`, `start-help.txt`, `subst-help.txt`, `time-help.txt`, `verify-help.txt`).
 
 ## Topics covered
 
@@ -32,6 +32,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 - **Parenthesis-block expansion** - `%var%` expands when the block is parsed; `!var!` expands at execution when delayed expansion is on; nested blocks still expose only outermost-parse and current values; dual pre-block / in-block values enable swap patterns
 - **Batch parameters** - `%*` and `%~` require Command Extensions (literal `*` / `~...` when off); base `%0`-`%9` work without extensions; `%10` is `%1` plus literal `0`; `%0` spelling mirrors CALL text; SHIFT `/n` and bare SHIFT; `%*` unaffected by SHIFT; unquoted args split on space/tab/comma/semicolon/equals
 - **CALL / GOTO** - `CALL :label` return context; CALL requires colon for labels; missing CALL label continues with ERRORLEVEL 1; successful CALL without `EXIT /B` preserves prior ERRORLEVEL; bare script invoke does not return (CALL does); `GOTO :EOF` vs `GOTO EOF`; case-insensitive user labels
+- **Expanded GOTO/CALL targets** - `goto %name%` / `CALL :%name%` resolve after percent (or delayed) expansion; missing targets follow ordinary GOTO/CALL missing-label rules
 - **Label charset vs grammar** - live cmd accepts spaces in labels; the ANTLR LABEL token stops at whitespace (stricter than runtime)
 - **EXIT** - bare `EXIT` ends the cmd process; `EXIT /B` ends the script/routine; omit exitCode to preserve ERRORLEVEL, or pass n to set it
 - **Remarks** - `REM` vs `::` label-style remarks; REM consumes the rest of the physical line (including a trailing `&`); a `::` line containing `)` inside `( )` can close the block early -- prefer REM in paren blocks
@@ -42,6 +43,8 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 - **Command resolution** - cwd then PATH with PATHEXT; missing external name sets ERRORLEVEL 9009
 - **Directory commands** - CD `/D` changes drive; with extensions, CD normalizes case and accepts unquoted paths with spaces; PUSHD/POPD stack; UNC temp drives from Z: down (PUSHD /?)
 - **MKDIR/MD** - with extensions, creates missing intermediate directories; without extensions parents must exist (MD /?)
+- **RMDIR/RD** - `/S` removes a directory tree; `/Q` quiets `/S`; tree removal remains available with extensions off (RD /?)
+- **COLOR** - two hex digits for background/foreground; same colors set ERRORLEVEL 1; unavailable when extensions are off (COLOR /?)
 - **DEL/ERASE** - `/S` display shows only deleted files when extensions are on (DEL /?)
 - **ASSOC/FTYPE** - extension associations and open-command strings; unavailable when extensions are off (ASSOC /?, FTYPE /?)
 - **PATH command** - display/set path; `PATH ;` clears the search path
@@ -56,7 +59,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 - **@ prefix** -- suppresses echo of that one statement when ECHO is ON
 - **SHIFT vacates** -- after SHIFT, vacated high `%n` slots expand empty
 - **Remarks echo visibility** -- with ECHO ON, `REM` is echoed; `::` label-remarks typically are not
-- **DIRCMD** -- ordinary env var supplying default `DIR` switches
+- **DIRCMD** -- ordinary env var supplying default `DIR` switches (DIR /?; `dir-help.txt`)
 - **%PROMPT%** -- expands to the current prompt template
 - **Special devices** -- `NUL`/`CON` reliable; `PRN`/`AUX`/`COM1`/`LPT1` redirects may fail on modern hosts
 

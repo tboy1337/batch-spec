@@ -1,5 +1,5 @@
 {
-  "description": "Nested SETLOCAL forms parse (runtime nesting limit is 32)",
+  "description": "Parse nested SETLOCAL statements (runtime nesting limit 32 is documented in expansion.yaml setlocal_options)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "setlocalStmt"

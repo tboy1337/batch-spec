@@ -1,5 +1,5 @@
 {
-  "description": "SETLOCAL argument ERRORLEVEL probe pattern",
+  "description": "Parse VERIFY + SETLOCAL + IF ERRORLEVEL probe pattern for SETLOCAL argument acceptance",
   "parse": {
     "should_parse": true,
     "top_level_statement": "ifStmt"

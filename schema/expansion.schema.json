@@ -1061,6 +1061,9 @@
         },
         "label_fallthrough": {
           "type": "string"
+        },
+        "expanded_label_target": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1277,6 +1280,47 @@
           "minLength": 1
         },
         "intermediate_directories": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rmdir_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slash_s_tree": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "color_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attr_hex": {
+          "type": "string"
+        },
+        "same_color_errorlevel": {
+          "type": "string"
+        },
+        "source": {
           "type": "string"
         }
       },
