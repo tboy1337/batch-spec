@@ -1,0 +1,10 @@
+{
+  "description": "SHIFT /0 valid boundary (shift from percent-0)",
+  "parse": {
+    "top_level_statement": "shiftStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "shift"
+  ]
+}

@@ -84,8 +84,10 @@
         "description": { "type": "string", "minLength": 1 },
         "slash_d": { "type": "string", "minLength": 1 },
         "slash_r": { "type": "string", "minLength": 1 },
+        "slash_d_r": { "type": "string", "minLength": 1 },
         "slash_l": { "type": "string", "minLength": 1 },
-        "slash_f": { "type": "string", "minLength": 1 }
+        "slash_f": { "type": "string", "minLength": 1 },
+        "wildcard_question_trailing": { "type": "string", "minLength": 1 }
       },
       "additionalProperties": false
     },
@@ -191,6 +193,7 @@
         "expression_separator": { "type": "string" },
         "hex_literal": { "type": "string" },
         "octal_literal": { "type": "string" },
+        "no_binary_literal": { "type": "string" },
         "modulo_in_batch": { "type": "string" },
         "quoting_rule": { "type": "string" },
         "undefined_as_zero": { "type": "string" },
@@ -225,7 +228,8 @@
         "description": { "type": "string", "minLength": 1 },
         "eof_keeps_prior": { "type": "string" },
         "blank_line_keeps_prior": { "type": "string" },
-        "pipe_child_isolation": { "type": "string" }
+        "pipe_child_isolation": { "type": "string" },
+        "redirect_from_file": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -328,7 +332,8 @@
       "properties": {
         "if_form": { "type": "string" },
         "variable_form": { "type": "string" },
-        "env_var_shadowing": { "type": "string" }
+        "env_var_shadowing": { "type": "string" },
+        "choice_ordinal": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -418,7 +423,8 @@
         "grouping": { "type": "string" },
         "pipe_child_process": { "type": "string" },
         "pipe_delayed_expansion_default": { "type": "string" },
-        "and_or_chain_trap": { "type": "string" }
+        "and_or_chain_trap": { "type": "string" },
+        "trailing_ampersand_in_block": { "type": "string" }
       },
       "additionalProperties": false
     },
@@ -445,6 +451,7 @@
         "call_label": { "type": "string" },
         "call_requires_colon_for_label": { "type": "string" },
         "call_missing_label": { "type": "string" },
+        "call_preserves_prior_errorlevel": { "type": "string" },
         "call_script_returns": { "type": "string" },
         "goto_eof": { "type": "string" },
         "goto_eof_vs_label": { "type": "string" },
@@ -500,6 +507,7 @@
         "description": { "type": "string", "minLength": 1 },
         "percent_at_parse": { "type": "string" },
         "delayed_at_execution": { "type": "string" },
+        "nested_blocks_two_values": { "type": "string" },
         "dual_value_swap": { "type": "string" }
       },
       "additionalProperties": false

@@ -1,0 +1,10 @@
+{
+  "description": "FOR /D /R recursive directory enumeration",
+  "parse": {
+    "top_level_statement": "forStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

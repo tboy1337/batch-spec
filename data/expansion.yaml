@@ -1,4 +1,4 @@
-version: 6
+version: 7
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -140,17 +140,29 @@ for_forms:
     FOR /D matches directory names only when the set contains wildcards.
   slash_r: >-
     FOR /R walks the directory tree rooted at an optional path (default: current
-    directory). A set that is only '.' enumerates the tree without an extra
-    file-set filter beyond the walk. When the set has no wildcards (* or ?),
+    directory). A set that is only '.' enumerates each directory visited
+    (including the root of the walk). When the set has no wildcards (* or ?),
     FOR /R synthesizes a candidate path of root\setname under each directory
     visited (even when that file does not exist) rather than matching existing
     files by wildcard (FOR /?).
+  slash_d_r: >-
+    FOR /D /R (directories recursively) with a wildcard set such as (*) lists
+    matching subdirectory names under the walk and does not emit the walk root
+    itself as a match. Prefer FOR /R %%D in (.) when the root directory must be
+    included in the enumeration.
   slash_l: >-
     FOR /L iterates a numeric sequence (start,step,end), inclusive of endpoints
-    that the step reaches.
+    that the step reaches. The end need not be hit exactly; iteration stops once
+    the index passes the end in the step direction.
   slash_f: >-
     FOR /F parses text from a file-set, a quoted string, or command output; see
     for_f for option details.
+  wildcard_question_trailing: >-
+    In FOR file-set masks, a trailing ? (or ? immediately before a dot) can match
+    fewer characters than the number of question marks, including matching a
+    shorter basename (for example ???.txt may match a.txt as well as ab.txt).
+    Short 8.3 names can also satisfy masks that the long name alone would not;
+    treat mask matching as filesystem-dependent.
 
 for_f:
   description: "FOR /F parsing options and input forms (FOR /?)"
@@ -303,6 +315,11 @@ set_a:
   hex_literal: "0x12 style hexadecimal integers"
   octal_literal: >-
     Leading-zero octal (022). Digits 08 and 09 are invalid octal and fail SET /A.
+  no_binary_literal: >-
+    SET /A does not accept 0b-style binary integer literals. Only decimal,
+    0x hexadecimal, and leading-zero octal forms are recognized (SET /?). A
+    form such as 0b10 fails the expression (non-zero ERRORLEVEL; the target
+    variable is left unset/unchanged for a failed assignment).
   modulo_in_batch: "Modulo uses %% in batch files (single % on the interactive command line)"
   quoting_rule: >-
     Logical operators and modulus that would be misparsed as command syntax
@@ -377,6 +394,10 @@ set_p:
     The right-hand side of a pipe runs in a child cmd.exe context, so
     echo text| set /p var= updates var only in that child; the parent
     environment is unchanged (same isolation as other pipe-side mutations).
+  redirect_from_file: >-
+    SET /P var=<file reads the first line of file into var (stdin redirect).
+    Later lines are not consumed by that SET /P. Combined with eof_keeps_prior
+    and blank_line_keeps_prior when the file is empty or the next line is blank.
 
 environment_variable_names:
   description: >-
@@ -543,6 +564,11 @@ errorlevel:
     %ERRORLEVEL% value until that variable is cleared. IF ERRORLEVEL n still
     reads the internal exit code, not the shadowed environment string. Prefer
     cmd /C exit N (or EXIT /B) to set ERRORLEVEL rather than SET ERRORLEVEL=.
+  choice_ordinal: >-
+    CHOICE sets ERRORLEVEL to the 1-based index of the selected key in the /C
+    choice list (first choice → 1, second → 2, …). Error conditions return 255
+    (CHOICE /?). This is a dual use of ERRORLEVEL distinct from ordinary command
+    failure codes.
 
 cmdextversion:
   description: >-
@@ -677,6 +703,10 @@ command_chaining:
     non-zero ERRORLEVEL. A successful A followed by a failing B still executes
     C — this is not a boolean if/else. Group carefully or test ERRORLEVEL
     explicitly when only one of B/C should run.
+  trailing_ampersand_in_block: >-
+    Inside a parenthesized block, a line that ends with a bare & (no following
+    command on that physical line) is a syntax error. Terminate with & rem, or
+    escape a literal ampersand as ^&, rather than leaving a dangling separator.
 
 batch_parameters:
   description: "Batch argument references (CALL /?, SHIFT /?)"
@@ -721,6 +751,12 @@ call_goto:
   call_missing_label: >-
     CALL :missinglabel sets ERRORLEVEL to 1 and continues with the next
     statement (it does not abort the script).
+  call_preserves_prior_errorlevel: >-
+    A successful CALL :label that returns without EXIT /B (falling through to
+    EOF of the routine) does not clear ERRORLEVEL to 0; the prior exit code
+    remains. EXIT /B n from the called context sets ERRORLEVEL to n on return.
+    Prefer an explicit EXIT /B 0 at the end of routines when a clean success
+    code is required.
   call_script_returns: >-
     CALL other.cmd (or other.bat) runs the script and returns to the caller.
     Invoking other.cmd as a bare command transfers control permanently and does
@@ -816,6 +852,11 @@ paren_block_expansion:
   delayed_at_execution: >-
     !var! inside ( ) expands when that line runs, seeing SET updates from
     earlier lines in the same block.
+  nested_blocks_two_values: >-
+    Nested parenthesized blocks still expose only two values for a given name:
+    the value captured when the outermost block was parsed (%var%), and the
+    current value at execution (!var!). Inner blocks do not create an additional
+    percent-expansion snapshot layer.
   dual_value_swap: >-
     Because %var% is captured when the block is parsed and !var! updates at
     execution, a naked parenthesized block can observe both the pre-block and

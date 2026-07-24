@@ -1,0 +1,10 @@
+{
+  "description": "FOR /F delims with space as last delimiter character",
+  "parse": {
+    "top_level_statement": "forStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

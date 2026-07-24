@@ -1,0 +1,10 @@
+{
+  "description": "Caret-escaped exclamation under delayed expansion",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "delayed",
+    "caret"
+  ]
+}

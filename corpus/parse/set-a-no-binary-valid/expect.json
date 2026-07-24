@@ -1,0 +1,12 @@
+{
+  "description": "SET /A 0b binary literal form parses (semantically invalid; see expansion set_a.no_binary_literal)",
+  "parse": {
+    "top_level_statement": "setStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "set",
+    "arithmetic",
+    "negative"
+  ]
+}

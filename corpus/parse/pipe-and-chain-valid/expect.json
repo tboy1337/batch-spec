@@ -1,0 +1,9 @@
+{
+  "description": "Pipe combined with conditional AND chaining",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "pipe"
+  ]
+}

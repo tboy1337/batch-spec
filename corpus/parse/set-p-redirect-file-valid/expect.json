@@ -1,0 +1,11 @@
+{
+  "description": "SET /P reads first line from redirected stdin file",
+  "parse": {
+    "top_level_statement": "setStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "set",
+    "expansion"
+  ]
+}

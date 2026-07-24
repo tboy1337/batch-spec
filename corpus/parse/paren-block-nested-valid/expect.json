@@ -1,0 +1,10 @@
+{
+  "description": "Nested paren blocks: percent is outermost parse value, bang is current",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "expansion",
+    "delayed"
+  ]
+}

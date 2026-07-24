@@ -1,0 +1,11 @@
+{
+  "description": "CALL :label that falls through preserves prior ERRORLEVEL (semantic; parses)",
+  "parse": {
+    "top_level_statement": "gotoStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "call",
+    "errorlevel"
+  ]
+}
