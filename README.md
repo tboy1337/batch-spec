@@ -4,7 +4,7 @@ Single source of truth for the Windows batch/cmd.exe **language** structure used
 [Blinter](https://github.com/tboy1337/Blinter) and other conforming tools.
 
 This repository defines grammar, expansion rules, and command catalogs. It does **not**
-define linter rules (E/W/S/SEC/P codes) â€” those live in Blinter's `spec/` tree.
+define linter rules (E/W/S/SEC/P codes) -- those live in Blinter's `spec/` tree.
 
 ## Layout
 
@@ -22,7 +22,7 @@ define linter rules (E/W/S/SEC/P codes) â€” those live in Blinter's `spec/`
 
 ## Versioning
 
-The package version is the contents of [`VERSION`](VERSION) (currently **0.20.0**).
+The package version is the contents of [`VERSION`](VERSION) (currently **0.20.1**).
 Releases are intended to be tagged `vMAJOR.MINOR.PATCH` matching that file. Pin a
 published tag via git submodule or lock file once it exists; do not depend on `main`
 directly in production CI.
@@ -69,4 +69,4 @@ python scripts/verify.py --skip-format --skip-conformance --skip-audit
 
 ## License
 
-AGPL-3.0-or-later â€” see [COPYING](COPYING).
+AGPL-3.0-or-later -- see [COPYING](COPYING).

@@ -1,0 +1,10 @@
+{
+  "description": "CD without /D changes directory on a drive for same-drive paths",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "cd"
+  ]
+}

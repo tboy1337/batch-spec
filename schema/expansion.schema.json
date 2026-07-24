@@ -179,6 +179,10 @@
         "wildcard_question_trailing": {
           "type": "string",
           "minLength": 1
+        },
+        "classic_literal_set": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "additionalProperties": false
@@ -245,6 +249,9 @@
           "type": "string"
         },
         "percent_not_escaped": {
+          "type": "string"
+        },
+        "metachar_inventory": {
           "type": "string"
         }
       },
@@ -435,6 +442,9 @@
         },
         "assignment_requires_name": {
           "type": "string"
+        },
+        "parameter_as_lhs": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -459,6 +469,12 @@
           "type": "string"
         },
         "bat_vs_cmd_errorlevel": {
+          "type": "string"
+        },
+        "bare_set_lists_all": {
+          "type": "string"
+        },
+        "ampersand_terminator": {
           "type": "string"
         }
       },
@@ -525,6 +541,12 @@
           }
         },
         "tokenizer_note": {
+          "type": "string"
+        },
+        "case_insensitive_names": {
+          "type": "string"
+        },
+        "paren_names": {
           "type": "string"
         }
       },
@@ -696,6 +718,9 @@
         },
         "choice_ordinal": {
           "type": "string"
+        },
+        "not_errorlevel_negative": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -739,6 +764,9 @@
         },
         "extensions_required": {
           "type": "boolean"
+        },
+        "cmdcmdline_shape": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -905,6 +933,9 @@
         },
         "command_line_limit": {
           "type": "string"
+        },
+        "empty_quoted_argument": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -966,6 +997,9 @@
           "type": "string"
         },
         "exit_b": {
+          "type": "string"
+        },
+        "exit_b_preserves_without_code": {
           "type": "string"
         }
       },
@@ -1070,6 +1104,113 @@
           "minLength": 1
         },
         "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "quoting": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "suppress_metacharacters": {
+          "type": "string"
+        },
+        "no_suppress_percent_or_delayed": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "command_resolution": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "search_order": {
+          "type": "string"
+        },
+        "not_found_errorlevel": {
+          "type": "string"
+        },
+        "call_missing_script": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "directory_commands": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cd_slash_d": {
+          "type": "string"
+        },
+        "cd_drive_query": {
+          "type": "string"
+        },
+        "pushd_popd_stack": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "path_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_or_set": {
+          "type": "string"
+        },
+        "append_via_percent": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "start_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quoted_title": {
+          "type": "string"
+        },
+        "wait_and_b": {
+          "type": "string"
+        },
+        "batch_and_internal": {
+          "type": "string"
+        },
+        "env_and_associations": {
           "type": "string"
         }
       },

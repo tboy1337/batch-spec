@@ -1,0 +1,10 @@
+{
+  "description": "CMDCMDLINE dynamic env name expands in scripts",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "expansion"
+  ]
+}

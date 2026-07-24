@@ -1,0 +1,11 @@
+{
+  "description": "Empty quoted argument still occupies a parameter slot",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "call",
+    "expansion"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Double quotes suppress & and | metacharacters inside an argument",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "quoting",
+    "expansion"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Missing external command name is a parseable genericCmd (runtime ERRORLEVEL 9009)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cmd",
+    "errorlevel"
+  ]
+}

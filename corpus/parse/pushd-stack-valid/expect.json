@@ -1,0 +1,10 @@
+{
+  "description": "PUSHD/POPD directory stack smoke",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "directory"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "PATH ; clears the executable search path",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "path"
+  ]
+}

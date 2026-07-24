@@ -1,0 +1,10 @@
+{
+  "description": "Caret escapes command metacharacters such as &",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "expansion"
+  ]
+}

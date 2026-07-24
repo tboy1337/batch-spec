@@ -1,0 +1,11 @@
+{
+  "description": "IF NOT ERRORLEVEL 0 is the < 0 form of the >= test",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "if",
+    "errorlevel"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Classic FOR non-wildcard set members are literals even if missing",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for"
+  ]
+}

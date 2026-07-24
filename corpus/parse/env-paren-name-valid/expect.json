@@ -1,0 +1,10 @@
+{
+  "description": "Environment names may include parentheses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "set"
+  ]
+}

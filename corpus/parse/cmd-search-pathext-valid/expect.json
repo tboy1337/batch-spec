@@ -1,0 +1,11 @@
+{
+  "description": "PATHEXT is consulted when resolving extensionless command names",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "cmd",
+    "expansion"
+  ]
+}

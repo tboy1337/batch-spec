@@ -1,0 +1,11 @@
+{
+  "description": "CHOICE /T with /D selects a default without waiting when timeout is 0",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "errorlevel",
+    "choice"
+  ]
+}

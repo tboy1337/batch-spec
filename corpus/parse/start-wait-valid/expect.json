@@ -1,0 +1,10 @@
+{
+  "description": "START /WAIT with explicit empty title",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "start"
+  ]
+}

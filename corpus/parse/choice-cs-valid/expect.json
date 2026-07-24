@@ -1,0 +1,11 @@
+{
+  "description": "CHOICE /CS enables case-sensitive choices",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "errorlevel",
+    "choice"
+  ]
+}

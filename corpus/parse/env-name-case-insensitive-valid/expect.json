@@ -1,0 +1,11 @@
+{
+  "description": "Environment variable names are case-insensitive",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "set",
+    "expansion"
+  ]
+}

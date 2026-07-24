@@ -1,0 +1,10 @@
+{
+  "description": "Bare SET lists the entire environment",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "set"
+  ]
+}

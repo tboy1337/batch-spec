@@ -1,0 +1,11 @@
+{
+  "description": "SET /A can take a percent-expanded parameter as the LHS name",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "set",
+    "arithmetic"
+  ]
+}

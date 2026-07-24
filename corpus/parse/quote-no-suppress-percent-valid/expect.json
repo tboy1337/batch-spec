@@ -1,0 +1,11 @@
+{
+  "description": "Percent expansion still occurs inside double quotes",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "quoting",
+    "expansion"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "START /B without a new window",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "start"
+  ]
+}

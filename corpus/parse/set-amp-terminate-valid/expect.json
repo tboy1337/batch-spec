@@ -1,0 +1,10 @@
+{
+  "description": "Unquoted & terminates SET; trailing spaces remain in the value",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "set"
+  ]
+}

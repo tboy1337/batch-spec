@@ -1,0 +1,11 @@
+{
+  "description": "EXIT /B with no code preserves prior ERRORLEVEL from CALL :label",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "exit",
+    "errorlevel"
+  ]
+}

@@ -1,4 +1,4 @@
-version: 8
+version: 9
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -184,6 +184,11 @@ for_forms:
   slash_f: >-
     FOR /F parses text from a file-set, a quoted string, or command output; see
     for_f for option details.
+  classic_literal_set: >-
+    In the classic FOR %%i IN (set) DO form, set members without wildcards (* or
+    ?) are treated as literal strings and are iterated even when no matching
+    file exists (for example FOR %%i IN (nosuch.xyz) DO ... runs once with
+    %%i=nosuch.xyz). Wildcards match existing filesystem entries (FOR /?).
   wildcard_question_trailing: >-
     In FOR file-set masks, a trailing ? (or ? immediately before a dot) can match
     fewer characters than the number of question marks, including matching a
@@ -255,6 +260,29 @@ caret_escape:
     processing, so ^%name% still expands %name% (use %% in scripts for a
     literal percent). Escaping ! under delayed expansion is a separate
     phase-sensitive rule (see delayed_expansion.exclamation_escaping).
+  metachar_inventory: >-
+    Characters that commonly require caret escaping outside quotes include
+    & | < > ^ and sometimes (). Double quotes suppress those metacharacters
+    for command parsing but do not suppress percent expansion or delayed
+    ! expansion (see quoting). Literal % uses %% in scripts; literal ! under
+    delayed expansion commonly needs caret doubling such as ^^!. Multilevel
+    re-parse uses 2^n-1 carets (or CALL doubling) rather than a single ^
+    always being enough.
+
+quoting:
+  description: >-
+    Double quotes group an argument and suppress command metacharacters, but
+    they do not disable percent or delayed-expansion parsing.
+  suppress_metacharacters: >-
+    Inside double quotes, & | < > ^ and () lose their command-separator /
+    redirect / escape meaning for that quoted span (they may appear as literal
+    text in the argument). Quotes themselves are stripped from %~1 bare
+    quote-strip forms.
+  no_suppress_percent_or_delayed: >-
+    Percent expansion (%name%, %1, %~...) still runs inside double quotes.
+    When delayed expansion is enabled, !name! also expands inside quotes.
+    Use %% / phase-aware ! escaping when a literal percent or exclamation
+    mark must survive.
 
 double_percent:
   for_body_rule: "FOR loop variables use %% in batch files"
@@ -380,6 +408,10 @@ set_a:
   assignment_requires_name: >-
     Assignment operators require an environment variable name on the left
     (SET /?).
+  parameter_as_lhs: >-
+    With extensions, a percent-expanded argument can supply the left-hand
+    variable name (for example set /A %~1=%~2+%~3 after CALL :Add out 1 2).
+    The name must expand before SET /A evaluates the expression.
 
 set_assignment:
   description: >-
@@ -399,10 +431,20 @@ set_assignment:
     SET name= or SET "name=" removes the variable (IF DEFINED name is false).
     A value that is only spaces (SET "name= ") remains defined.
   bat_vs_cmd_errorlevel: >-
-    After a successful plain SET (also PATH/PROMPT), a .cmd script typically
-    clears ERRORLEVEL to 0, while the same statement in a .bat script often
-    preserves the prior ERRORLEVEL. Prefer EXIT /B or cmd /C exit N when the
-    exit code must be set explicitly.
+    With Command Extensions enabled, successful SET, PATH, PROMPT, ASSOC,
+    FTYPE, and APPEND in a .cmd script set ERRORLEVEL to 0. The same commands
+    in a .bat script update ERRORLEVEL only on error and otherwise preserve
+    the prior value. Prefer EXIT /B or cmd /C exit N when the exit code must
+    be set explicitly.
+  bare_set_lists_all: >-
+    SET with no arguments lists the entire environment (SET /?). Dynamic
+    names such as CD/DATE/TIME are omitted unless the user defined ordinary
+    variables with those names.
+  ampersand_terminator: >-
+    An unquoted & ends the SET statement. Trailing spaces before & remain part
+    of the value (for example set name=value   & rem keeps the trailing
+    spaces). Use this to terminate a value that would otherwise include the
+    rest of a chained line.
 
 set_p:
   description: >-
@@ -449,6 +491,15 @@ environment_variable_names:
     letters, digits, underscore, '.', '-', or '~'. Spaced names and many
     punctuation-heavy names are accepted at runtime but may not be a single
     percent token; prefer documenting them via SET forms in the parse corpus.
+  case_insensitive_names: >-
+    Environment variable names are case-insensitive for lookup and assignment
+    (%abc% and %AbC% refer to the same variable). Values are stored with the
+    casing used in the SET that defined them.
+  paren_names: >-
+    Names may include parentheses (for example ProgramFiles(x86)). Prefer
+    quoted SET "ProgramFiles(x86)=..." forms. Percent expansion of such names
+    can interact with parenthesized blocks; keep expansions simple or use
+    delayed expansion carefully.
 
 echo_forms:
   description: >-
@@ -562,9 +613,11 @@ setlocal_options:
     - ENABLEDELAYEDEXPANSION
     - DISABLEDELAYEDEXPANSION
   nesting_limit: >-
-    SETLOCAL nesting is limited to 32 levels. Exceeding the limit prints
-    "Maximum setlocal recursion level reached." (SETLOCAL /?; commonly cited
-    as 32 levels).
+    Up to 32 active SETLOCAL instantiations are allowed per CALL level.
+    Exceeding that limit prints "Maximum setlocal recursion level reached."
+    Each CALL :label (or CALLed script) receives its own independent allocation
+    of up to 32 levels. SETLOCAL /? documents implied ENDLOCAL at script end
+    but does not state the numeric limit.
   implied_endlocal: "An unmatched SETLOCAL is ended when the batch script exits"
   argument_errorlevel: >-
     With extensions, SETLOCAL sets ERRORLEVEL to 0 when given a recognized
@@ -598,9 +651,15 @@ errorlevel:
     cmd /C exit N (or EXIT /B) to set ERRORLEVEL rather than SET ERRORLEVEL=.
   choice_ordinal: >-
     CHOICE sets ERRORLEVEL to the 1-based index of the selected key in the /C
-    choice list (first choice → 1, second → 2, …). Error conditions return 255
-    (CHOICE /?). This is a dual use of ERRORLEVEL distinct from ordinary command
-    failure codes.
+    choice list (first choice → 1, second → 2, …). Error conditions return 255.
+    CTRL+C or CTRL+BREAK returns 0 (CHOICE /?). Optional switches include /CS
+    (case-sensitive choices), /N (hide choice list), /T timeout with /D default,
+    and /M message text.
+  not_errorlevel_negative: >-
+    IF ERRORLEVEL n means >= n. IF NOT ERRORLEVEL n means < n. Because of the
+    >= test, IF NOT ERRORLEVEL 0 is true only when ERRORLEVEL is negative, not
+    when ERRORLEVEL is any non-zero value. Prefer IF %ERRORLEVEL% NEQ 0 (with
+    extensions) for a non-zero test when the dynamic name is not shadowed.
 
 cmdextversion:
   description: >-
@@ -636,6 +695,11 @@ dynamic_environment_variables:
     The TIME format (and therefore %TIME%) can use locale-specific separators.
     In some locales the separator may be a comma, which is also a command
     argument delimiter — parse %TIME% carefully in portable scripts.
+  cmdcmdline_shape: >-
+    %CMDCMDLINE% expands to the original command line that started this cmd.exe
+    process (SET /?). When a script is launched via cmd /C "script.cmd args",
+    the expanded value typically includes the /C switch and the quoted script
+    invocation text rather than only the script's own arguments.
   extensions_required: true
 
 keyword_boundaries:
@@ -680,7 +744,9 @@ if_forms:
     (after the THEN command or the closing ')' of a parenthesized block).
   exist_files_and_directories: >-
     IF EXIST tests whether a file or directory path exists (trailing backslash
-    forms commonly target directories).
+    forms commonly target directories). Wildcard masks in the EXIST operand
+    are accepted and succeed when at least one matching filesystem entry
+    exists (for example IF EXIST *.txt).
   empty_unquoted_operands: >-
     Unquoted empty IF operands cause a syntax error (for example IF == text or
     IF %EMPTY%==x when EMPTY is undefined and expands to nothing). Prefer
@@ -769,6 +835,9 @@ batch_parameters:
   argument_delimiters: >-
     Unquoted argument tokens are split on space, tab, comma, semicolon, and
     equals. Quotes preserve those characters inside a single argument.
+  empty_quoted_argument: >-
+    An explicitly empty quoted argument ("") still occupies a parameter slot.
+    For example call :label "" hop leaves %1 as an empty argument and %2=hop.
   command_line_limit: >-
     The maximum length of a command line that cmd.exe accepts is 8191
     characters (Microsoft documentation for cmd.exe). Longer input is rejected
@@ -830,6 +899,10 @@ exit_semantics:
     EXIT /B exits the current batch script context (returns from a CALL :label
     routine, or ends the script) without necessarily closing the parent cmd.exe
     window. Optional exitCode sets ERRORLEVEL when using /B.
+  exit_b_preserves_without_code: >-
+    EXIT /B with no exitCode leaves the prior ERRORLEVEL unchanged (both when
+    returning from CALL :label and when ending a CALLed script). Use EXIT /B n
+    when a specific code must be returned.
 
 remarks:
   rem: >-
@@ -920,6 +993,71 @@ expansion_phases: >-
   run in child cmd.exe contexts with their own defaults. See percent_expansion,
   delayed_expansion, caret_escape, double_percent, paren_block_expansion, and
   command_chaining for details.
+
+command_resolution:
+  description: >-
+    How cmd.exe finds an external command name that is not an internal command
+    (PATH /?, PATHEXT, and live cmd behavior).
+  search_order: >-
+    For a name without a directory path, cmd searches the current directory,
+    then each directory listed in %PATH%. In each directory it tries the
+    extensions listed in %PATHEXT% in order (default commonly includes
+    .COM;.EXE;.BAT;.CMD and may include scripting extensions). An explicit
+    extension on the name restricts the search to that extension.
+  not_found_errorlevel: >-
+    When no matching program or script is found, cmd prints that the name is
+    not recognized and sets ERRORLEVEL to 9009.
+  call_missing_script: >-
+    CALL of a missing label sets ERRORLEVEL to 1 and continues (see
+    call_goto.call_missing_label). CALL of a missing external script/program
+    follows normal command-resolution failure (typically ERRORLEVEL 9009 for a
+    bare missing name).
+
+directory_commands:
+  description: >-
+    CD/CHDIR and PUSHD/POPD directory language (CD /?, PUSHD /?, POPD /?).
+  cd_slash_d: >-
+    CD /D (or CHDIR /D) changes the current drive as well as the directory.
+    Without /D, CD D:\path sets that drive's current directory but does not
+    switch the process to drive D: (CD /?).
+  cd_drive_query: >-
+    CD drive: with no path displays the current directory on that drive.
+    CD with no arguments displays the current drive and directory.
+  pushd_popd_stack: >-
+    PUSHD path stores the current directory then changes to path. POPD returns
+    to the pushed directory. With extensions, PUSHD accepts UNC paths and maps
+    a temporary drive letter from Z: downward for the network resource; POPD
+    can unmap that temporary drive (PUSHD /?, POPD /?).
+
+path_command:
+  description: >-
+    The PATH command displays or sets the executable search path (PATH /?).
+  display_or_set: >-
+    PATH with no arguments displays the current path. PATH value sets the path
+    for the session. PATH ; clears the path to empty (PATH /?).
+  append_via_percent: >-
+    Appending commonly uses PATH %PATH%;C:\more. Clearing with PATH ; removes
+    all search directories until PATH is set again.
+
+start_command:
+  description: >-
+    START launches a separate process/window (START /?). Grammar treats START
+    as a generic command; these notes capture language-relevant switches.
+  quoted_title: >-
+    The first quoted argument is the window title (START "title" command ...).
+    Always include an explicit title when the command path is quoted so START
+    does not treat the command string as the title.
+  wait_and_b: >-
+    /WAIT waits for the started process to terminate. /B starts without a new
+    window and with default ^C handling ignored for that application.
+  batch_and_internal: >-
+    When command is a batch script or internal cmd command, START typically
+    invokes a new cmd.exe (commonly with /K for batch) rather than replacing
+    the current interpreter. Prefer CALL to run another batch and return.
+  env_and_associations: >-
+    /I starts with the original environment passed to cmd.exe rather than the
+    current environment. With extensions, starting a non-executable file uses
+    file associations (ASSOC/FTYPE).
 
 prompt_codes:
   description: >-
