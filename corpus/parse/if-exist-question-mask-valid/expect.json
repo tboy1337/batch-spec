@@ -1,0 +1,11 @@
+{
+  "description": "IF EXIST with single-character ? wildcard in the path mask",
+  "parse": {
+    "top_level_statement": "ifStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "if",
+    "expansion"
+  ]
+}

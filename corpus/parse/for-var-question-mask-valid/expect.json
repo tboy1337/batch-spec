@@ -1,0 +1,11 @@
+{
+  "description": "FOR file-set mask with trailing question-mark wildcards (may match fewer chars at runtime)",
+  "parse": {
+    "top_level_statement": "forStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "for",
+    "expansion"
+  ]
+}

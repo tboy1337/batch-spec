@@ -1,0 +1,10 @@
+{
+  "description": "FOR file-set mask mixing a literal prefix with ?",
+  "parse": {
+    "top_level_statement": "forStmt",
+    "should_parse": true
+  },
+  "tags": [
+    "for"
+  ]
+}

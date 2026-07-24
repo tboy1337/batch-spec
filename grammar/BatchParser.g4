@@ -122,6 +122,8 @@ ifCmdextversionStmt
 ifExistOperand
     : DQ_STRING
     | WORD
+    | ASTERISK (DOT argWord)?
+    | QUESTION+ (DOT argWord)?
     | PERCENT_VAR
     | PERCENT_TILDE
     | PERCENT_ARG
@@ -211,6 +213,7 @@ forFOptionExtra
     | NUMBER
     | COMMA
     | ASTERISK
+    | QUESTION
     | MINUS
     | PLUS
     | PERCENT
@@ -235,6 +238,10 @@ forListItem
     | PERCENT_TILDE
     | PERCENT_ARG
     | ASTERISK (DOT argWord)?
+    // ???.txt is QUESTION+ then DOT argWord via forListItem+; a?.txt is
+    // argWord then QUESTION then DOT argWord. Trailing ? may match fewer
+    // characters at runtime (see expansion for_forms.wildcard_question_trailing).
+    | QUESTION+ (DOT argWord)?
     | DOT argWord?
     | argWord
     | MINUS? NUMBER
@@ -347,6 +354,7 @@ token
     | CARET_ESCAPE
     | CARET
     | ASTERISK
+    | QUESTION
     | LPAREN
     | {self._notLonelyParen()}? RPAREN
     | APPEND

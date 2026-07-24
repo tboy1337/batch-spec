@@ -83,6 +83,9 @@ GTR            : [gG][tT][rR] ;
 GEQ            : [gG][eE][qQ] ;
 CARET          : '^' ;
 ASTERISK       : '*' ;
+// Single-character wildcard in file-set masks (FOR /?, DIR, IF EXIST, etc.).
+// Distinct from FOR_VAR_LETTER '?' which only applies inside %%? forms.
+QUESTION       : '?' ;
 
 LINE_CONTINUATION
     : '^' '\r'? '\n' -> skip
