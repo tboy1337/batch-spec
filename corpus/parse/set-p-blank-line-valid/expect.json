@@ -1,0 +1,10 @@
+{
+  "description": "SET /P redirected from empty/blank input (keep-prior semantics)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set"
+  ]
+}

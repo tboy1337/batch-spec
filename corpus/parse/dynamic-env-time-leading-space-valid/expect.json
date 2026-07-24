@@ -1,0 +1,11 @@
+{
+  "description": "Capture dynamic %TIME% (hours 0-9 may be space-padded)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "dynamic"
+  ]
+}

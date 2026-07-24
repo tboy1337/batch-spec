@@ -1,0 +1,10 @@
+{
+  "description": "Nested SETLOCAL forms parse (runtime nesting limit is 32)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setlocalStmt"
+  },
+  "tags": [
+    "setlocal"
+  ]
+}

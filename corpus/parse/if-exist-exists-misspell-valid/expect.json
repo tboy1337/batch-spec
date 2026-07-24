@@ -1,0 +1,11 @@
+{
+  "description": "IF EXISTS misspelling is not EXIST; still parse-accepted",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "negative"
+  ]
+}

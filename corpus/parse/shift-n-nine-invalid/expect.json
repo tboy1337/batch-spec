@@ -1,0 +1,11 @@
+{
+  "description": "SHIFT /9 is invalid (n must be 0..8); parse acceptance",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "shiftStmt"
+  },
+  "tags": [
+    "shift",
+    "negative"
+  ]
+}

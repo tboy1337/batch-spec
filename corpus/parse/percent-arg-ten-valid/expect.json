@@ -1,0 +1,11 @@
+{
+  "description": "Bare %10 is %1 plus literal 0 (single-digit parameter slots)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "parameters"
+  ]
+}

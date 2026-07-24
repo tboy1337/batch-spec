@@ -1,0 +1,11 @@
+{
+  "description": "SET /A signed 32-bit overflow wraps (2147483647+1)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "arithmetic"
+  ]
+}

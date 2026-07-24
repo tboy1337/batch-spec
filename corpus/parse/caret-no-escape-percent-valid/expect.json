@@ -1,0 +1,11 @@
+{
+  "description": "Caret does not escape percent (% still expands)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "escaping"
+  ]
+}

@@ -1,4 +1,4 @@
-version: 5
+version: 6
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -211,6 +211,11 @@ caret_escape:
     A caret as the last character of a physical line continues onto the next
     line (the CRLF is escaped). A trailing space after ^ escapes the space
     instead, so the next line is not a continuation.
+  percent_not_escaped: >-
+    Caret does not escape percent. Percent expansion runs before caret-escape
+    processing, so ^%name% still expands %name% (use %% in scripts for a
+    literal percent). Escaping ! under delayed expansion is a separate
+    phase-sensitive rule (see delayed_expansion.exclamation_escaping).
 
 double_percent:
   for_body_rule: "FOR loop variables use %% in batch files"
@@ -362,6 +367,12 @@ set_p:
   eof_keeps_prior: >-
     If input ends immediately (EOF) or is redirected from NUL with no data,
     the prior value of var is left unchanged.
+  blank_line_keeps_prior: >-
+    A blank input line (the user presses Enter with no text, or a redirected
+    file whose next line is empty) leaves the prior value of var unchanged —
+    the same keep-prior behavior as EOF/NUL. It does not assign an empty
+    string. A line that contains only spaces assigns those spaces (the
+    variable remains defined).
   pipe_child_isolation: >-
     The right-hand side of a pipe runs in a child cmd.exe context, so
     echo text| set /p var= updates var only in that child; the parent
@@ -554,6 +565,19 @@ dynamic_environment_variables:
     CMDEXTVERSION: Command Processor Extensions version number
     CMDCMDLINE: original command line that invoked the Command Processor
     HIGHESTNUMANODENUMBER: highest NUMA node number on this machine
+  time_leading_space: >-
+    %TIME% uses the same format as the TIME command. For hours 0-9 the hour
+    field is commonly space-padded (a leading space before the digit), so the
+    expanded string can begin with whitespace. Prefer replacing spaces or
+    zero-padding before parsing time fields.
+  date_locale_format: >-
+    %DATE% uses the same region-specific format as the DATE command (order of
+    day/month/year, separators, and optional weekday text vary by locale). Do
+    not assume a fixed layout such as MM/DD/YYYY.
+  time_locale_delimiters: >-
+    The TIME format (and therefore %TIME%) can use locale-specific separators.
+    In some locales the separator may be a comma, which is also a command
+    argument delimiter — parse %TIME% carefully in portable scripts.
   extensions_required: true
 
 keyword_boundaries:
@@ -604,6 +628,15 @@ if_forms:
     IF %EMPTY%==x when EMPTY is undefined and expands to nothing). Prefer
     quoted compares such as IF "%var%"=="value" or IF DEFINED for presence
     tests.
+  exist_spelling: >-
+    The file/directory test keyword is EXIST (IF /?), not EXISTS. A misspelled
+    IF EXISTS ... is not recognized as the EXIST form and typically fails as a
+    syntax error at runtime (for example 'nul was unexpected at this time').
+  operand_padding: >-
+    Classic unquoted padding such as IF .%var%.==.value. can guard against
+    empty expansion for simple values, but breaks when the expanded text
+    contains spaces or IF metacharacters (the line re-tokenizes). Prefer
+    quoted compares or IF DEFINED for robust empty/undefined handling.
   no_and_or_keywords: >-
     IF has no native boolean AND/OR keywords. Tokens such as and / or after a
     completed IF command are parsed as separate commands (often yielding
@@ -666,6 +699,11 @@ batch_parameters:
     apply; without extensions %~ forms are not expanded. The text of %0 mirrors
     the spelling/casing/quoting used to invoke the script or CALL :label (for
     example CALL :MiXeD yields %0=':MiXeD').
+  multi_digit_percent: >-
+    Only %0 through %9 are parameter slots. %10 is %1 followed by literal 0
+    (for example with %1=one, %10 expands to one0). The same single-digit
+    termination applies to percent-tilde forms (%~10 is %~1 plus literal 0;
+    see percent_tilde_notes.multi_digit_parameter).
   argument_delimiters: >-
     Unquoted argument tokens are split on space, tab, comma, semicolon, and
     equals. Quotes preserve those characters inside a single argument.
