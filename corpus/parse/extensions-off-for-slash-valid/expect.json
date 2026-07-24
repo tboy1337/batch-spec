@@ -1,5 +1,5 @@
 {
-  "description": "Parse FOR /F; slash forms require Command Extensions at runtime",
+  "description": "Parse FOR /F after setlocal DisableExtensions; slash forms require Command Extensions at runtime",
   "parse": {
     "should_parse": true,
     "top_level_statement": "forStmt"

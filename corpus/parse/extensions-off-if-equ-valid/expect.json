@@ -1,5 +1,5 @@
 {
-  "description": "Parse IF EQU under default extensions ON; at runtime EQU requires extensions (cmd /E:OFF yields 'EQU was unexpected')",
+  "description": "Parse IF EQU after setlocal DisableExtensions; at runtime EQU requires extensions",
   "parse": {
     "should_parse": true,
     "top_level_statement": "ifStmt"

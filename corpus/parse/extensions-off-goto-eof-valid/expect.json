@@ -1,5 +1,5 @@
 {
-  "description": "Parse GOTO :EOF; at runtime without extensions EOF is an ordinary label name, not end-of-file",
+  "description": "Parse GOTO :EOF after setlocal DisableExtensions; at runtime without extensions EOF is an ordinary label name, not end-of-file",
   "parse": {
     "should_parse": true,
     "top_level_statement": "gotoStmt"

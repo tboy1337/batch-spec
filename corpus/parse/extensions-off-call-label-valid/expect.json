@@ -1,5 +1,5 @@
 {
-  "description": "Parse CALL :label; without extensions CALL does not jump to the label at runtime",
+  "description": "Parse CALL :label after setlocal DisableExtensions; without extensions CALL does not jump to the label at runtime",
   "parse": {
     "should_parse": true,
     "top_level_statement": "callStmt"

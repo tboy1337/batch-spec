@@ -1,5 +1,5 @@
 {
-  "description": "Parse SET /P; requires Command Extensions at runtime (OFF treats /P as part of the name)",
+  "description": "Parse SET /P after setlocal DisableExtensions; OFF treats /P as part of the name",
   "parse": {
     "should_parse": true,
     "top_level_statement": "setStmt"

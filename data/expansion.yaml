@@ -1,4 +1,4 @@
-version: 11
+version: 12
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -361,8 +361,12 @@ string_operations:
 set_a:
   description: "SET /A arithmetic expression operators (SET /?)"
   requires_command_extensions: >-
-    SET /A requires Command Extensions (SET /?). With extensions disabled,
-    SET /A is a syntax error.
+    SET /A requires Command Extensions (SET /?). With extensions disabled, an
+    unquoted form such as set /A N=1+1 is treated as a plain assignment whose
+    variable name includes the /A token (for example name "/A N" with value
+    "1+1"), not as arithmetic (see command_extensions_off.set_a_and_string_ops).
+    Quoted forms such as set /A "N=1+1" are a syntax error when extensions are
+    off (same family as quoted SET "name=value" under OFF).
   unary_operators:
     - "!"
     - "~"
@@ -478,9 +482,9 @@ set_assignment:
       FTYPE in a .cmd script set ERRORLEVEL to 0. The same successful commands
       in a .bat script leave the prior ERRORLEVEL unchanged. Live Windows 10/11
       cmd also applies this clear-vs-preserve rule to successful SET /A and
-      SET /P (redirect/file input). APPEND is historically grouped with these
-      commands but is often absent from modern installs (not verified when the
-      APPEND command is missing).
+      SET /P (redirect/file input). APPEND is not part of this live-verified
+      matrix: modern hosts typically lack APPEND as an internal or PATH command
+      (see commands.yaml removed_commands.append).
     failure_still_sets: >-
       Failures still set a non-zero ERRORLEVEL in both .bat and .cmd (for
       example SET with a missing prefix name sets ERRORLEVEL 1).
@@ -667,6 +671,8 @@ command_extensions_off:
     equivalents) require extensions. With extensions off, a line such as
     set /A N=1+1 is treated as a plain assignment whose variable name includes
     the /A token (for example name "/A N" with value "1+1"), not as arithmetic.
+    Quoted set /A "N=1+1" is a syntax error under OFF (quoted SET requires
+    extensions).
   set_p_requires_extensions: >-
     SET /P requires extensions. With extensions off, set /P var=text is treated
     as a plain assignment whose variable name includes the /P token (for
@@ -691,7 +697,11 @@ command_extensions_off:
   directory_and_prompt_gated: >-
     CD /D (other-drive change), PUSHD UNC temp-drive mapping / POPD unmap, and
     PROMPT $+ / $M codes require extensions. Plain CD, PUSHD/POPD for ordinary
-    paths, and basic PROMPT codes remain.
+    paths, and basic PROMPT codes remain. With extensions, CD also normalizes
+    case to on-disk names and does not treat spaces as delimiters; without
+    extensions, paths with spaces need quotes (see directory_commands). Nested
+    MKDIR intermediate-directory creation also requires extensions (see
+    mkdir_command).
   assoc_ftype_color_gated: >-
     ASSOC, FTYPE, and COLOR are unavailable when extensions are disabled
     (reported as not recognized internal/external commands).
@@ -715,9 +725,16 @@ setlocal_options:
   implied_endlocal: "An unmatched SETLOCAL is ended when the batch script exits"
   argument_errorlevel: >-
     With extensions, SETLOCAL sets ERRORLEVEL to 0 when given a recognized
-    Enable/Disable argument and to 1 for an unrecognized argument. Classic
-    probe: VERIFY OTHER 2>nul & SETLOCAL ENABLEEXTENSIONS & IF ERRORLEVEL 1
-    (SETLOCAL /?).
+    Enable/Disable argument (ENABLEEXTENSIONS, DISABLEEXTENSIONS,
+    ENABLEDELAYEDEXPANSION, or DISABLEDELAYEDEXPANSION) and to 1 for an
+    unrecognized argument. SETLOCAL /? lists all four flags but still says
+    "two valid arguments"; live cmd treats all four as valid (ERRORLEVEL 0).
+    Classic probe: VERIFY OTHER 2>nul & SETLOCAL ENABLEEXTENSIONS & IF
+    ERRORLEVEL 1 (SETLOCAL /?).
+  help_text_two_arguments: >-
+    Captured SETLOCAL /? wording about "two valid arguments" is incomplete
+    relative to the four Enable/Disable flags it documents and that live cmd
+    accepts; prefer the flags list and live ERRORLEVEL behavior over that count.
   survive_via_percent_on_same_line: >-
     Percent expansion happens before ENDLOCAL runs on a chained line, so
     endlocal & set "out=%in%" can export in into out after the local scope
@@ -994,7 +1011,10 @@ call_goto:
     :has space). A second colon immediately after the first (::) is the
     label-style remark form, not a normal jump target. Prefer simple
     alphanumeric labels for portable scripts; avoid ')' inside labels used
-    within parenthesized blocks (see remarks.double_colon).
+    within parenthesized blocks (see remarks.double_colon). The ANTLR LABEL
+    lexer token is stricter than live cmd and stops at whitespace, so spaced
+    labels are not represented as a single LABEL token in the conformance
+    grammar; consumers that need spaced labels must not rely on that token alone.
   label_fallthrough: >-
     A label line is not a control-flow barrier. Execution falls through into
     following statements unless a GOTO/EXIT (or similar) jumps away. After
@@ -1142,11 +1162,51 @@ directory_commands:
   cd_drive_query: >-
     CD drive: with no path displays the current directory on that drive.
     CD with no arguments displays the current drive and directory.
+  cd_case_normalization: >-
+    With Command Extensions enabled, CD/CHDIR converts the current-directory
+    string to the same case as the on-disk names (for example CD C:\TEMP may
+    become C:\Temp) (CD /?).
+  cd_spaces_not_delimiters: >-
+    With Command Extensions enabled, CD/CHDIR does not treat spaces as
+    delimiters, so an unquoted path with spaces is accepted (for example
+    cd \path\start menu). Without extensions, such paths require quotes
+    (CD /?).
   pushd_popd_stack: >-
     PUSHD path stores the current directory then changes to path. POPD returns
     to the pushed directory. With extensions, PUSHD accepts UNC paths and maps
     a temporary drive letter from Z: downward for the network resource; POPD
     can unmap that temporary drive (PUSHD /?, POPD /?).
+
+mkdir_command:
+  description: >-
+    MKDIR/MD directory creation (MD /?). Intermediate-directory creation is an
+    extensions feature.
+  intermediate_directories: >-
+    With Command Extensions enabled, MKDIR/MD creates any missing intermediate
+    directories in the path (for example mkdir \a\b\c\d creates a, b, c, and d
+    as needed) (MD /?). Without extensions, each level must already exist or be
+    created separately; a multi-level path fails if parents are missing.
+
+del_erase_command:
+  description: >-
+    DEL/ERASE file deletion (DEL /?). Attribute filters and recursion switches
+    are documented in DEL /?; display semantics of /S change with extensions.
+  slash_s_display_with_extensions: >-
+    With Command Extensions enabled, DEL/ERASE /S shows only the files that are
+    deleted, not the ones it could not find (DEL /?).
+
+assoc_ftype_command:
+  description: >-
+    ASSOC and FTYPE manage file-extension associations and open-command strings
+    (ASSOC /?, FTYPE /?). Both require Command Extensions (see
+    command_extensions_off.assoc_ftype_color_gated).
+  assoc_forms: >-
+    ASSOC [.ext[=[fileType]]] displays or sets the file type for an extension;
+    ASSOC .ext= deletes the association (ASSOC /?).
+  ftype_forms: >-
+    FTYPE [fileType[=[openCommandString]]] displays or sets the open command
+    for a file type; empty open-command deletes it. Open strings may use %0/%1,
+    %*, and %~n parameter forms (FTYPE /?).
 
 path_command:
   description: >-

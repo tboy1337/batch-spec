@@ -1,0 +1,11 @@
+{
+  "description": "Parse ASSOC .ext; ASSOC requires Command Extensions (ASSOC /?)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "assoc",
+    "extensions"
+  ]
+}

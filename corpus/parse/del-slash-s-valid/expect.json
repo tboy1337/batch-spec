@@ -1,0 +1,11 @@
+{
+  "description": "Parse DEL /S; with extensions /S display shows only deleted files (DEL /?)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "del",
+    "extensions"
+  ]
+}

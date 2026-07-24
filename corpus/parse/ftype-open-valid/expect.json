@@ -1,0 +1,11 @@
+{
+  "description": "Parse FTYPE filetype; FTYPE requires Command Extensions (FTYPE /?)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "ftype",
+    "extensions"
+  ]
+}

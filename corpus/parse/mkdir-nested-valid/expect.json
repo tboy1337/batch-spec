@@ -1,0 +1,11 @@
+{
+  "description": "Parse nested MKDIR path; intermediate directories require Command Extensions at runtime (MD /?)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "mkdir",
+    "extensions"
+  ]
+}

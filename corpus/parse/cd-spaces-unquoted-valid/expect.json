@@ -1,0 +1,11 @@
+{
+  "description": "Parse unquoted CD path with spaces (extensions ON accepts this at runtime; CD /?)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cd",
+    "extensions"
+  ]
+}

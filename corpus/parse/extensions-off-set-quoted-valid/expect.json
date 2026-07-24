@@ -1,5 +1,5 @@
 {
-  "description": "Parse quoted SET \"name=value\"; requires Command Extensions at runtime",
+  "description": "Parse quoted SET \"name=value\" after setlocal DisableExtensions; quoted SET requires Command Extensions at runtime",
   "parse": {
     "should_parse": true,
     "top_level_statement": "setStmt"

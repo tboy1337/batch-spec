@@ -762,6 +762,9 @@
         "argument_errorlevel": {
           "type": "string"
         },
+        "help_text_two_arguments": {
+          "type": "string"
+        },
         "survive_via_percent_on_same_line": {
           "type": "string"
         },
@@ -1251,7 +1254,64 @@
         "cd_drive_query": {
           "type": "string"
         },
+        "cd_case_normalization": {
+          "type": "string"
+        },
+        "cd_spaces_not_delimiters": {
+          "type": "string"
+        },
         "pushd_popd_stack": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "mkdir_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "intermediate_directories": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "del_erase_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slash_s_display_with_extensions": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "assoc_ftype_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assoc_forms": {
+          "type": "string"
+        },
+        "ftype_forms": {
           "type": "string"
         }
       },
