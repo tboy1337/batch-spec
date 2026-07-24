@@ -1,0 +1,10 @@
+{
+  "description": "Parse nested IF as AND idiom",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if"
+  ]
+}

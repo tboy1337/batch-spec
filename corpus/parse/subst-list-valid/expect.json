@@ -1,0 +1,10 @@
+{
+  "description": "Parse bare SUBST list",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "subst"
+  ]
+}

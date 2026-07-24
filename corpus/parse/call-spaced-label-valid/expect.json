@@ -1,0 +1,10 @@
+{
+  "description": "CALL :label with a space in the label name (live cmd; ANTLR LABEL token is stricter)",
+  "parse": {
+    "should_parse": true
+  },
+  "tags": [
+    "call",
+    "label"
+  ]
+}

@@ -1,4 +1,4 @@
-version: 13
+version: 14
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -761,12 +761,9 @@ errorlevel:
     reads the internal exit code, not the shadowed environment string. Prefer
     cmd /C exit N (or EXIT /B) to set ERRORLEVEL rather than SET ERRORLEVEL=.
   choice_ordinal: >-
-    CHOICE sets ERRORLEVEL to the 1-based index of the selected key in the /C
-    choice list (first choice -> 1, second -> 2, ...). When /C is omitted the
-    default list is YN (CHOICE /?). Both /C ABC and /C:ABC forms are accepted.
-    Error conditions return 255. CTRL+C or CTRL+BREAK returns 0 (CHOICE /?).
-    Optional switches include /CS (case-sensitive choices), /N (hide choice
-    list), /T timeout with /D default, and /M message text.
+    See choice_command for CHOICE ERRORLEVEL ordinals and switches. Summary:
+    CHOICE sets ERRORLEVEL to the 1-based index of the selected key; omitted /C
+    defaults to YN; errors return 255; CTRL+C/BREAK return 0 (CHOICE /?).
   not_errorlevel_negative: >-
     IF ERRORLEVEL n means >= n. IF NOT ERRORLEVEL n means < n. Because of the
     >= test, IF NOT ERRORLEVEL 0 is true only when ERRORLEVEL is negative, not
@@ -925,6 +922,11 @@ command_chaining:
     Inside a parenthesized block, a line that ends with a bare & (no following
     command on that physical line) is a syntax error. Terminate with & rem, or
     escape a literal ampersand as ^&, rather than leaving a dangling separator.
+  success_is_errorlevel_zero: >-
+    && and || key off ERRORLEVEL only. Tools that return non-zero on partial
+    success (notably ROBOCOPY bitmasks; see external_tool_notes) can make
+    && skip follow-on commands even when the operation was useful. Prefer
+    explicit IF ERRORLEVEL / IF %ERRORLEVEL% tests when wrapping such tools.
 
 batch_parameters:
   description: "Batch argument references (CALL /?, SHIFT /?)"
@@ -1183,6 +1185,9 @@ directory_commands:
     to the pushed directory. With extensions, PUSHD accepts UNC paths and maps
     a temporary drive letter from Z: downward for the network resource; POPD
     can unmap that temporary drive (PUSHD /?, POPD /?).
+  pushd_unc_temp_drive: >-
+    With extensions, PUSHD of a UNC path maps a temporary drive letter starting
+    from Z: downward; POPD can remove that mapping (PUSHD /?, POPD /?).
 
 mkdir_command:
   description: >-
@@ -1193,6 +1198,10 @@ mkdir_command:
     directories in the path (for example mkdir \a\b\c\d creates a, b, c, and d
     as needed) (MD /?). Without extensions, each level must already exist or be
     created separately; a multi-level path fails if parents are missing.
+  error_on_existing: >-
+    Creating a directory that already exists typically sets a non-zero ERRORLEVEL
+    (often 1) on live Windows cmd; scripts that use MD in loops should test
+    ERRORLEVEL or IF EXIST before creating.
 
 rmdir_command:
   description: >-
@@ -1204,6 +1213,9 @@ rmdir_command:
     subdirectories under it (RD /?). /Q suppresses the confirmation prompt for
     /S tree removal.
   source: "RD /? (audit/cmd-help/rd-help.txt)"
+  empty_required_without_s: >-
+    Without /S, RD/RMDIR fails when the directory is not empty. /S removes the
+    tree; /Q suppresses the /S confirmation prompt (RD /?).
 
 color_command:
   description: >-
@@ -1217,14 +1229,27 @@ color_command:
     COLOR sets ERRORLEVEL to 1 when foreground and background are the same
     (for example COLOR 00) (COLOR /?).
   source: "COLOR /? (audit/cmd-help/color-help.txt)"
+  no_arg_restore: >-
+    COLOR with no argument restores the colors active when CMD started
+    (/T, console defaults, or DefaultColor registry) (COLOR /?).
 
 del_erase_command:
   description: >-
-    DEL/ERASE file deletion (DEL /?). Attribute filters and recursion switches
-    are documented in DEL /?; display semantics of /S change with extensions.
+    DEL/ERASE file deletion (DEL /?; audit/cmd-help/del-help.txt). Attribute
+    filters and recursion switches are documented in DEL /?; display semantics
+    of /S change with extensions.
+  switches: >-
+    DEL [/P] [/F] [/S] [/Q] [/A[[:]attributes]] names (aliases ERASE). /P prompts
+    per file; /F forces read-only; /S recurses subdirectories; /Q quiet on global
+    wildcard; /A filters by attributes R/S/H/A/I/L/O with optional - not-prefix
+    (DEL /?).
   slash_s_display_with_extensions: >-
     With Command Extensions enabled, DEL/ERASE /S shows only the files that are
     deleted, not the ones it could not find (DEL /?).
+  directory_operand: >-
+    If a directory is specified as a name, all files within that directory are
+    deleted (not the directory itself) (DEL /?).
+  source: "DEL /? (audit/cmd-help/del-help.txt)"
 
 assoc_ftype_command:
   description: >-
@@ -1238,6 +1263,9 @@ assoc_ftype_command:
     FTYPE [fileType[=[openCommandString]]] displays or sets the open command
     for a file type; empty open-command deletes it. Open strings may use %0/%1,
     %*, and %~n parameter forms (FTYPE /?).
+  extensions_required: >-
+    ASSOC and FTYPE are unavailable when Command Extensions are disabled
+    (see command_extensions_off.assoc_ftype_color_gated).
 
 path_command:
   description: >-
@@ -1253,11 +1281,16 @@ path_command:
     When set, its value supplies default switches for DIR (for example
     SET DIRCMD=/B). A later DIR invocation can still pass overriding switches
     (DIR /?; audit/cmd-help/dir-help.txt).
+  session_only: >-
+    PATH changes apply to the current cmd.exe session (and child processes that
+    inherit the environment). Persistent PATH changes require SETX or other
+    system/user environment editors (see setx_command).
 
 start_command:
   description: >-
-    START launches a separate process/window (START /?). Grammar treats START
-    as a generic command; these notes capture language-relevant switches.
+    START launches a separate process/window (START /?; audit/cmd-help/start-help.txt).
+    Grammar treats START as a generic command; these notes capture language-relevant
+    switches.
   quoted_title: >-
     The first quoted argument is the window title (START "title" command ...).
     Always include an explicit title when the command path is quoted so START
@@ -1265,6 +1298,17 @@ start_command:
   wait_and_b: >-
     /WAIT waits for the started process to terminate. /B starts without a new
     window and with default ^C handling ignored for that application.
+  window_and_priority: >-
+    /MIN and /MAX control the initial window state. Priority class switches
+    include /LOW /NORMAL /HIGH /REALTIME /ABOVENORMAL /BELOWNORMAL. /SEPARATE
+    and /SHARED apply only to 16-bit programs and are unsupported on 64-bit
+    platforms (START /?).
+  node_and_affinity: >-
+    /NODE <n> prefers a NUMA node; /AFFINITY <hex> restricts processors. When
+    combined, affinity is interpreted relative to the node's processor mask
+    (START /?).
+  working_directory: >-
+    /D path sets the starting directory for the new process (START /?).
   batch_and_internal: >-
     When command is a batch script or internal cmd command, START typically
     invokes a new cmd.exe (commonly with /K for batch) rather than replacing
@@ -1273,6 +1317,7 @@ start_command:
     /I starts with the original environment passed to cmd.exe rather than the
     current environment. With extensions, starting a non-executable file uses
     file associations (ASSOC/FTYPE).
+  source: "START /? (audit/cmd-help/start-help.txt)"
 
 prompt_codes:
   description: >-
@@ -1286,6 +1331,9 @@ prompt_codes:
     arguments resets to the default ($P$G). Scripts can read and rewrite the
     template via %PROMPT% (for example prompt %PROMPT%$S).
   source: "PROMPT /? (audit/cmd-help/prompt-help.txt)"
+  reset_default: >-
+    PROMPT with no arguments resets the prompt template to the default $P$G
+    (PROMPT /?).
 
 break_command:
   description: >-
@@ -1293,4 +1341,225 @@ break_command:
     CTRL+C checking and does not terminate FOR/IF blocks (BREAK /?). With
     Command Extensions on a debugger-attached process, BREAK may enter a
     hardcoded breakpoint; otherwise treat it as a no-op for script control flow.
+  not_loop_break: >-
+    BREAK does not exit FOR or IF blocks and is not a structured-loop break
+    keyword; use GOTO :EOF, EXIT /B, or restructure control flow.
   source: "BREAK /?"
+
+choice_command:
+  description: >-
+    CHOICE prompts for a single key and sets ERRORLEVEL to the 1-based index
+    (CHOICE /?; audit/cmd-help/choice-help.txt).
+  switches: >-
+    CHOICE [/C choices] [/N] [/CS] [/T timeout /D choice] [/M text]. /C lists
+    keys (default YN); both /C ABC and /C:ABC forms are accepted on live cmd.
+    /N hides the choice list; /CS makes choices case-sensitive; /T with /D
+    selects a default after timeout seconds (0-9999; 0 means immediate
+    default); /M sets message text.
+  errorlevel_ordinal: >-
+    First choice -> ERRORLEVEL 1, second -> 2, and so on. Tool errors return
+    255. CTRL+C or CTRL+BREAK returns 0. When testing with IF ERRORLEVEL, list
+    codes in decreasing order (CHOICE /?).
+  source: "CHOICE /? (audit/cmd-help/choice-help.txt)"
+
+date_command:
+  description: >-
+    DATE displays or sets the system date (DATE /?; audit/cmd-help/date-help.txt).
+  forms: >-
+    DATE without parameters displays the current date and prompts for a new
+    one (ENTER keeps the current date). DATE date sets the date when permitted.
+  slash_t: >-
+    With Command Extensions, DATE /T prints the current date without prompting
+    (DATE /?). The printed format matches %DATE% and is locale-specific
+    (see dynamic_environment_variables.date_locale_format).
+  source: "DATE /? (audit/cmd-help/date-help.txt)"
+
+time_command:
+  description: >-
+    TIME displays or sets the system time (TIME /?; audit/cmd-help/time-help.txt).
+  forms: >-
+    TIME without parameters displays the current time and prompts for a new
+    one (ENTER keeps the current time). TIME time sets the time when permitted.
+  slash_t: >-
+    With Command Extensions, TIME /T prints the current time without prompting
+    (TIME /?). Format matches %TIME% including common leading-space hour padding
+    (see dynamic_environment_variables.time_leading_space).
+  source: "TIME /? (audit/cmd-help/time-help.txt)"
+
+verify_command:
+  description: >-
+    VERIFY toggles write-after-write verification for disk writes
+    (VERIFY /?; audit/cmd-help/verify-help.txt).
+  forms: >-
+    VERIFY [ON | OFF] enables or disables verification. VERIFY without a
+    parameter displays the current setting. Classic SETLOCAL probes often use
+    VERIFY OTHER 2>nul to force a non-zero ERRORLEVEL before testing SETLOCAL
+    (see setlocal_options.argument_errorlevel).
+  source: "VERIFY /? (audit/cmd-help/verify-help.txt)"
+
+setx_command:
+  description: >-
+    SETX writes a persistent user or system environment variable
+    (SETX /?; audit/cmd-help/setx-help.txt). Unlike SET, changes apply to future
+    processes, not the current cmd.exe session.
+  space_delimited: >-
+    Basic form is SETX var value [/M]. Arguments are space-delimited; there is
+    no '=' assignment token as with SET. Quote values that contain spaces.
+  machine_flag: >-
+    /M writes to the system (machine) environment instead of the user
+    environment (elevation may be required).
+  not_current_session: >-
+    SETX does not update the current process environment. Scripts that need
+    the new value immediately must also SET the variable in-session or start a
+    new cmd.exe after SETX.
+  source: "SETX /? (audit/cmd-help/setx-help.txt)"
+
+subst_command:
+  description: >-
+    SUBST maps a path to a virtual drive letter
+    (SUBST /?; audit/cmd-help/subst-help.txt).
+  forms: >-
+    SUBST drive1: path associates path with drive1:. SUBST drive1: /D deletes
+    the virtual drive. SUBST with no parameters lists current substitutions.
+  source: "SUBST /? (audit/cmd-help/subst-help.txt)"
+
+copy_command:
+  description: >-
+    COPY copies one or more files (COPY /?; audit/cmd-help/copy-help.txt).
+  switches: >-
+    Common switches: /A ASCII, /B binary, /V verify, /Y suppress overwrite
+    prompt, /-Y force prompt, /D decrypt destination, /Z restartable network
+    copy, /L copy symlink itself, /N short name. Sources may be combined with +
+    to append into one destination (COPY /?).
+  overwrite_defaults: >-
+    Overwrite prompting defaults to prompt unless COPY runs from a batch
+    script (then /Y is effectively default). COPYCMD may preset /Y or /-Y;
+    command-line /-Y or /Y overrides (COPY /?).
+  nul_source: >-
+    copy nul filename is a common idiom to create an empty file
+    (NUL is a special device; see redirection.special_devices).
+  source: "COPY /? (audit/cmd-help/copy-help.txt)"
+
+type_command:
+  description: >-
+    TYPE displays the contents of a text file or files
+    (TYPE /?; audit/cmd-help/type-help.txt).
+  forms: "TYPE [drive:][path]filename (multiple files may be listed)."
+  source: "TYPE /? (audit/cmd-help/type-help.txt)"
+
+title_command:
+  description: >-
+    TITLE sets the console window title
+    (TITLE /?; audit/cmd-help/title-help.txt).
+  forms: >-
+    TITLE [string] sets the title bar text. Omitting string typically clears
+    or sets an empty title depending on host behavior; prefer an explicit string.
+  source: "TITLE /? (audit/cmd-help/title-help.txt)"
+
+pause_command:
+  description: >-
+    PAUSE suspends batch execution until a key is pressed
+    (PAUSE /?; audit/cmd-help/pause-help.txt).
+  message: >-
+    Displays "Press any key to continue . . ." and waits for a keypress
+    (PAUSE /?).
+  source: "PAUSE /? (audit/cmd-help/pause-help.txt)"
+
+cls_command:
+  description: >-
+    CLS clears the console screen (CLS /?; audit/cmd-help/cls-help.txt).
+  forms: "CLS takes no operands."
+  source: "CLS /? (audit/cmd-help/cls-help.txt)"
+
+ver_command:
+  description: >-
+    VER displays the Windows version string
+    (VER /?; audit/cmd-help/ver-help.txt).
+  forms: "VER takes no operands."
+  source: "VER /? (audit/cmd-help/ver-help.txt)"
+
+vol_command:
+  description: >-
+    VOL displays the disk volume label and serial number if present
+    (VOL /?; audit/cmd-help/vol-help.txt).
+  forms: "VOL [drive:] shows volume info for the specified or current drive."
+  source: "VOL /? (audit/cmd-help/vol-help.txt)"
+
+mklink_command:
+  description: >-
+    MKLINK creates symbolic links, hard links, or directory junctions
+    (MKLINK /?; audit/cmd-help/mklink-help.txt). Creating symlinks typically
+    requires appropriate privilege (SeCreateSymbolicLinkPrivilege or Developer
+    Mode) on modern Windows.
+  forms: >-
+    MKLINK [[/D] | [/H] | [/J]] Link Target. Default is a file symbolic link;
+    /D directory symlink; /H hard link; /J directory junction (MKLINK /?).
+  source: "MKLINK /? (audit/cmd-help/mklink-help.txt)"
+
+dir_command:
+  description: >-
+    DIR lists files and subdirectories
+    (DIR /?; audit/cmd-help/dir-help.txt).
+  switches: >-
+    Common switches include /A attributes, /B bare, /S recurse, /W wide,
+    /O sort order, /T time field, /X short names, /P pause, /Q owner, /R ADS
+    (DIR /?). Full switch matrix is in DIR /?.
+  dircmd_env: >-
+    DIRCMD supplies default switches (for example SET DIRCMD=/B). Override a
+    preset by prefixing the switch with - (for example DIR /-W) (DIR /?).
+  source: "DIR /? (audit/cmd-help/dir-help.txt)"
+
+move_command:
+  description: >-
+    MOVE moves files and renames files/directories
+    (MOVE /?; audit/cmd-help/move-help.txt).
+  forms: >-
+    MOVE [/Y | /-Y] source destination moves files; MOVE can also rename a
+    directory. /Y suppresses overwrite prompts; /-Y forces prompts. COPYCMD
+    may preset /Y; batch scripts default to suppress prompts similarly to COPY
+    (MOVE /?).
+  source: "MOVE /? (audit/cmd-help/move-help.txt)"
+
+ren_command:
+  description: >-
+    REN/RENAME renames files
+    (REN /?; audit/cmd-help/ren-help.txt).
+  forms: >-
+    REN [drive:][path]filename1 filename2. The destination cannot specify a
+    new drive or path -- rename in place only (REN /?).
+  source: "REN /? (audit/cmd-help/ren-help.txt)"
+
+external_tool_notes:
+  description: >-
+    Language-impacting notes for common external PATH tools. These are not
+    full switch encyclopedias; they document ERRORLEVEL and parsing facts that
+    affect Batch control flow (&& / || / IF ERRORLEVEL).
+  find_and_findstr: >-
+    FIND and FINDSTR search text. Successful match typically leaves ERRORLEVEL
+    0; no match typically leaves ERRORLEVEL 1 (live cmd; confirm on host).
+    FINDSTR without /C treats a quoted multi-word argument as OR of words;
+    /C:"literal with spaces" searches the literal phrase (FINDSTR /?).
+    Default FINDSTR matching is case-sensitive unless /I is used.
+  where_command: >-
+    WHERE locates files matching a pattern via PATH/PATHEXT-style search
+    (WHERE /?; audit/cmd-help/where-help.txt). Useful to resolve which
+    executable a bare name would run.
+  forfiles_command: >-
+    FORFILES iterates files and can run a command per match
+    (FORFILES /?; audit/cmd-help/forfiles-help.txt). Variables use @file
+    style placeholders documented in FORFILES /?.
+  robocopy_errorlevel: >-
+    ROBOCOPY returns a bitmask ERRORLEVEL: 0 synced/nothing copied; bit 1
+    (1) files copied; bit 2 (2) extras; bit 4 (4) mismatches; bit 8 (8) copy
+    failures; bit 16 (16) serious/fatal. Values 0-7 are commonly treated as
+    success; >=8 indicates failure (Microsoft Learn KB on Robocopy return
+    codes). Because successful copies often return 1, ROBOCOPY ... && next
+    skips next unless scripts mask/test ERRORLEVEL explicitly.
+  xcopy_notes: >-
+    XCOPY is an external recursive copy tool (XCOPY /?). /C continues after
+    errors. Return codes are tool-defined; do not assume identical semantics
+    to COPY or ROBOCOPY when chaining with && / ||.
+  timeout_command: >-
+    TIMEOUT [/T] seconds [/NOBREAK] waits for a key or a timeout
+    (TIMEOUT /?; audit/cmd-help/timeout-help.txt). Valid range includes -1
+    (wait indefinitely for a key) through 99999 seconds.

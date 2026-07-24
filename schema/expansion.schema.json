@@ -972,6 +972,9 @@
         },
         "trailing_ampersand_in_block": {
           "type": "string"
+        },
+        "success_is_errorlevel_zero": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1196,6 +1199,9 @@
         },
         "prompt_env": {
           "type": "string"
+        },
+        "reset_default": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1265,6 +1271,9 @@
         },
         "pushd_popd_stack": {
           "type": "string"
+        },
+        "pushd_unc_temp_drive": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1280,6 +1289,9 @@
           "minLength": 1
         },
         "intermediate_directories": {
+          "type": "string"
+        },
+        "error_on_existing": {
           "type": "string"
         }
       },
@@ -1299,6 +1311,9 @@
           "type": "string"
         },
         "source": {
+          "type": "string"
+        },
+        "empty_required_without_s": {
           "type": "string"
         }
       },
@@ -1322,6 +1337,9 @@
         },
         "source": {
           "type": "string"
+        },
+        "no_arg_restore": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1336,7 +1354,16 @@
           "type": "string",
           "minLength": 1
         },
+        "switches": {
+          "type": "string"
+        },
         "slash_s_display_with_extensions": {
+          "type": "string"
+        },
+        "directory_operand": {
+          "type": "string"
+        },
+        "source": {
           "type": "string"
         }
       },
@@ -1356,6 +1383,9 @@
           "type": "string"
         },
         "ftype_forms": {
+          "type": "string"
+        },
+        "extensions_required": {
           "type": "string"
         }
       },
@@ -1379,6 +1409,9 @@
         },
         "dircmd_env": {
           "type": "string"
+        },
+        "session_only": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1399,10 +1432,22 @@
         "wait_and_b": {
           "type": "string"
         },
+        "window_and_priority": {
+          "type": "string"
+        },
+        "node_and_affinity": {
+          "type": "string"
+        },
+        "working_directory": {
+          "type": "string"
+        },
         "batch_and_internal": {
           "type": "string"
         },
         "env_and_associations": {
+          "type": "string"
+        },
+        "source": {
           "type": "string"
         }
       },
@@ -1415,6 +1460,387 @@
           "type": "string"
         },
         "source": {
+          "type": "string"
+        },
+        "not_loop_break": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "choice_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "switches": {
+          "type": "string"
+        },
+        "errorlevel_ordinal": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "date_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "slash_t": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "time_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "slash_t": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "verify_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "setx_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "space_delimited": {
+          "type": "string"
+        },
+        "machine_flag": {
+          "type": "string"
+        },
+        "not_current_session": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "subst_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "copy_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "switches": {
+          "type": "string"
+        },
+        "overwrite_defaults": {
+          "type": "string"
+        },
+        "nul_source": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "type_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "title_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "pause_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cls_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ver_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "vol_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "mklink_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "dir_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "switches": {
+          "type": "string"
+        },
+        "dircmd_env": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "move_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ren_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "external_tool_notes": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "find_and_findstr": {
+          "type": "string"
+        },
+        "where_command": {
+          "type": "string"
+        },
+        "forfiles_command": {
+          "type": "string"
+        },
+        "robocopy_errorlevel": {
+          "type": "string"
+        },
+        "xcopy_notes": {
+          "type": "string"
+        },
+        "timeout_command": {
           "type": "string"
         }
       },

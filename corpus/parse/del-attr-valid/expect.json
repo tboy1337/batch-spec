@@ -1,0 +1,10 @@
+{
+  "description": "Parse DEL /F /Q /A",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "del"
+  ]
+}

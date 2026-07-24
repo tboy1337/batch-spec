@@ -1,0 +1,10 @@
+{
+  "description": "Parse MKLINK /D",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "mklink"
+  ]
+}
