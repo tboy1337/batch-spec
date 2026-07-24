@@ -1,0 +1,11 @@
+{
+  "description": "Extensions off with delayed on: plain !var! still expands (orthogonal axes)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "extensions",
+    "delayed-expansion"
+  ]
+}

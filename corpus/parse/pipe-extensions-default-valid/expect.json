@@ -1,0 +1,11 @@
+{
+  "description": "Pipe child does not inherit parent SETLOCAL DisableExtensions (defaults independently)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "extensions",
+    "chaining"
+  ]
+}

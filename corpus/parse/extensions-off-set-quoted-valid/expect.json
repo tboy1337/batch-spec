@@ -1,0 +1,12 @@
+{
+  "description": "Parse quoted SET \"name=value\"; requires Command Extensions at runtime",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "quoting",
+    "extensions"
+  ]
+}

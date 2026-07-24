@@ -1,4 +1,4 @@
-version: 10
+version: 11
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -109,6 +109,19 @@ percent_expansion:
 delayed_expansion:
   pattern: "!VAR!"
   requires_setlocal: false
+  default_off: >-
+    Delayed expansion is disabled by default (CMD /?, SET /?). Enable it
+    explicitly via cmd /V:ON, SETLOCAL EnableDelayedExpansion, or the Command
+    Processor DelayedExpansion registry value.
+  literal_when_disabled: >-
+    When delayed expansion is disabled, !var! (including substring and replace
+    forms) is ordinary literal text and is not expanded.
+  orthogonal_to_extensions: >-
+    Delayed expansion is independent of Command Extensions. cmd /E:OFF /V:ON
+    (or SETLOCAL DisableExtensions EnableDelayedExpansion) still expands plain
+    !var! forms. Percent and delayed substring/replace ops (%var:~% / !var:~!
+    and :old=new) still require extensions; with extensions off those bang
+    forms do not perform substring/replace.
   enable_keywords:
     - "setlocal enabledelayedexpansion"
     - "setlocal enableextensions enabledelayedexpansion"
@@ -143,6 +156,10 @@ delayed_expansion:
     yields !%Car%! -> Prius). Related forms such as !prefix%name%! /
     !%name%suffix! follow the same two-phase substitution. Without delayed
     expansion, !...! is literal text.
+  for_accumulate_pattern: >-
+    With delayed expansion enabled, a FOR body can accumulate with forms such
+    as set "LIST=!LIST! %%i" so each iteration sees the updated LIST. Plain
+    %LIST% expands when the FOR block is parsed and stays fixed for the loop.
 
 for_loop_variables:
   batch_file_prefix: "%%"
@@ -451,12 +468,32 @@ set_assignment:
   unset_with_empty_value: >-
     SET name= or SET "name=" removes the variable (IF DEFINED name is false).
     A value that is only spaces (SET "name= ") remains defined.
-  bat_vs_cmd_errorlevel: >-
-    With Command Extensions enabled, successful SET, PATH, PROMPT, ASSOC,
-    FTYPE, and APPEND in a .cmd script set ERRORLEVEL to 0. The same commands
-    in a .bat script update ERRORLEVEL only on error and otherwise preserve
-    the prior value. Prefer EXIT /B or cmd /C exit N when the exit code must
-    be set explicitly.
+  bat_vs_cmd_errorlevel:
+    description: >-
+      Script file extension changes whether certain successful internal
+      commands clear ERRORLEVEL. Prefer EXIT /B or cmd /C exit N when the exit
+      code must be set explicitly.
+    commands_clear_in_cmd: >-
+      With Command Extensions enabled, successful SET, PATH, PROMPT, ASSOC, and
+      FTYPE in a .cmd script set ERRORLEVEL to 0. The same successful commands
+      in a .bat script leave the prior ERRORLEVEL unchanged. Live Windows 10/11
+      cmd also applies this clear-vs-preserve rule to successful SET /A and
+      SET /P (redirect/file input). APPEND is historically grouped with these
+      commands but is often absent from modern installs (not verified when the
+      APPEND command is missing).
+    failure_still_sets: >-
+      Failures still set a non-zero ERRORLEVEL in both .bat and .cmd (for
+      example SET with a missing prefix name sets ERRORLEVEL 1).
+    probe_recipe: >-
+      Reset with cmd /C exit N immediately before the command under test, then
+      read %ERRORLEVEL% (extensions on) or IF ERRORLEVEL (always). Avoid
+      echo|set /P probes: the pipe runs SET /P in a child and does not update
+      the parent environment.
+    extensions_off: >-
+      Without extensions, dynamic %ERRORLEVEL% / !ERRORLEVEL! are unavailable,
+      so bat-vs-cmd clearing is best observed with IF ERRORLEVEL. Plain SET
+      assignment still runs; SET /A and SET /P are not arithmetic/prompt forms
+      when extensions are off (see command_extensions_off).
   bare_set_lists_all: >-
     SET with no arguments lists the entire environment (SET /?). Dynamic
     names such as CD/DATE/TIME are omitted unless the user defined ordinary
@@ -470,7 +507,8 @@ set_assignment:
 set_p:
   description: >-
     SET /P var=[prompt] reads a line of input into var (SET /?). The prompt
-    string is optional and may be empty (SET /P var=).
+    string is optional and may be empty (SET /P var=). Requires Command
+    Extensions (see command_extensions_off.set_p_requires_extensions).
   eof_keeps_prior: >-
     If input ends immediately (EOF) or is redirected from NUL with no data,
     the prior value of var is left unchanged.
@@ -610,25 +648,57 @@ command_extensions_off:
   extension_if_unavailable: >-
     Extension IF forms are unavailable: compare-ops (EQU/NEQ/LSS/LEQ/GTR/GEQ),
     /I, IF DEFINED, and IF CMDEXTVERSION. Using them yields a syntax error
-    (for example 'EQU was unexpected').
+    (for example 'EQU was unexpected', '/I' compare forms unexpected, or
+    'DEFINED' operand unexpected).
   goto_eof_not_special: >-
     GOTO :EOF is not an end-of-file target without extensions; cmd searches for
-    a user label named eof and errors if none exists.
+    a user label named eof and errors if none exists. A user :eof label works
+    as an ordinary label target.
   call_label_and_modifiers: >-
     CALL :label internal routines and percent-tilde / %* argument expansions
     require extensions. With extensions off, %* expands to literal * and %~1
     leaves literal ~1 (leading % consumed). Base %0-%9 still expand.
+  call_label_runtime: >-
+    With extensions off, CALL :label does not transfer to an internal label; the
+    CALL is skipped and execution continues at the next statement (no jump to
+    :label). CALL without a colon still searches for an external program/script.
   set_a_and_string_ops: >-
-    SET /A and %var:~...% / %var:old=new% string operations require extensions.
+    SET /A arithmetic and %var:~...% / %var:old=new% (and the delayed !var!
+    equivalents) require extensions. With extensions off, a line such as
+    set /A N=1+1 is treated as a plain assignment whose variable name includes
+    the /A token (for example name "/A N" with value "1+1"), not as arithmetic.
+  set_p_requires_extensions: >-
+    SET /P requires extensions. With extensions off, set /P var=text is treated
+    as a plain assignment whose variable name includes the /P token (for
+    example name "/P var"), not as a prompt/read.
+  prefix_query_requires_extensions: >-
+    Prefix query (SET name with no equals) requires extensions. With extensions
+    off it is a syntax error ("The syntax of the command is incorrect").
+  quoted_assignment_requires_extensions: >-
+    Quoted assignment SET "name=value" requires extensions. With extensions off
+    it is a syntax error and the variable is not set. Unquoted set name=value
+    remains available.
   for_slash_forms: >-
     FOR /D, /R, /L, and /F (and their options) require extensions; only the
-    classic FOR %%i IN (set) DO form remains without them.
+    classic FOR %%i IN (set) DO form remains without them. Slash forms yield
+    errors such as '/F was unexpected at this time'.
   shift_n: >-
     SHIFT /n requires extensions; bare SHIFT remains available.
   dynamic_environment: >-
     Dynamic environment names (CD, DATE, TIME, RANDOM, ERRORLEVEL,
     CMDEXTVERSION, CMDCMDLINE, HIGHESTNUMANODENUMBER) are not provided without
     extensions unless the user defines ordinary variables with those names.
+  directory_and_prompt_gated: >-
+    CD /D (other-drive change), PUSHD UNC temp-drive mapping / POPD unmap, and
+    PROMPT $+ / $M codes require extensions. Plain CD, PUSHD/POPD for ordinary
+    paths, and basic PROMPT codes remain.
+  assoc_ftype_color_gated: >-
+    ASSOC, FTYPE, and COLOR are unavailable when extensions are disabled
+    (reported as not recognized internal/external commands).
+  delayed_independent: >-
+    Delayed expansion can be enabled while extensions are disabled. Plain
+    !var! still expands; substring/replace bang forms and dynamic env names
+    still need extensions (see delayed_expansion.orthogonal_to_extensions).
 
 setlocal_options:
   flags:
@@ -817,10 +887,18 @@ command_chaining:
   pipe_delayed_expansion_default: >-
     Pipe-side child cmd.exe instances start with the processor defaults for
     delayed expansion and extensions (delayed expansion off unless registry or
-    an explicit /V:ON on that child enables it). Parent SETLOCAL
-    EnableDelayedExpansion does not automatically apply inside the pipe child,
-    so !var! on a pipe side often remains literal unless the child enables
-    delayed expansion itself.
+    an explicit /V:ON on that child enables it; extensions on by default).
+    Parent SETLOCAL Enable/Disable DelayedExpansion or Extensions does not
+    automatically apply inside the pipe child, so !var! on a pipe side often
+    remains literal unless the child enables delayed expansion itself, and a
+    child script invoked via the pipe can still use extension IF/FOR/SET forms
+    even when the parent used SETLOCAL DisableExtensions.
+  pipe_extensions_default: >-
+    Same isolation as pipe_delayed_expansion_default for Command Extensions:
+    the pipe child does not inherit the parent's SETLOCAL DisableExtensions /
+    EnableExtensions state. A separate script CALLed from the pipe right-hand
+    side runs under the child's default extensions (on unless that child was
+    started with /E:OFF or equivalent).
   and_or_chain_trap: >-
     In A && (B) || (C), statement C runs when A fails or when B leaves a
     non-zero ERRORLEVEL. A successful A followed by a failing B still executes
@@ -1059,7 +1137,8 @@ directory_commands:
   cd_slash_d: >-
     CD /D (or CHDIR /D) changes the current drive as well as the directory.
     Without /D, CD D:\path sets that drive's current directory but does not
-    switch the process to drive D: (CD /?).
+    switch the process to drive D: (CD /?). /D requires Command Extensions
+    (see command_extensions_off.directory_and_prompt_gated).
   cd_drive_query: >-
     CD drive: with no path displays the current directory on that drive.
     CD with no arguments displays the current drive and directory.

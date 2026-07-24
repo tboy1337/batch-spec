@@ -104,6 +104,18 @@
         "replacement_pattern": {
           "type": "string"
         },
+        "default_off": {
+          "type": "string"
+        },
+        "literal_when_disabled": {
+          "type": "string"
+        },
+        "orthogonal_to_extensions": {
+          "type": "string"
+        },
+        "for_accumulate_pattern": {
+          "type": "string"
+        },
         "digit_leading_names": {
           "type": "string"
         },
@@ -481,7 +493,29 @@
           "type": "string"
         },
         "bat_vs_cmd_errorlevel": {
-          "type": "string"
+          "type": "object",
+          "required": [
+            "description"
+          ],
+          "properties": {
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "commands_clear_in_cmd": {
+              "type": "string"
+            },
+            "failure_still_sets": {
+              "type": "string"
+            },
+            "probe_recipe": {
+              "type": "string"
+            },
+            "extensions_off": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
         },
         "bare_set_lists_all": {
           "type": "string"
@@ -674,7 +708,19 @@
         "call_label_and_modifiers": {
           "type": "string"
         },
+        "call_label_runtime": {
+          "type": "string"
+        },
         "set_a_and_string_ops": {
+          "type": "string"
+        },
+        "set_p_requires_extensions": {
+          "type": "string"
+        },
+        "prefix_query_requires_extensions": {
+          "type": "string"
+        },
+        "quoted_assignment_requires_extensions": {
           "type": "string"
         },
         "for_slash_forms": {
@@ -684,6 +730,15 @@
           "type": "string"
         },
         "dynamic_environment": {
+          "type": "string"
+        },
+        "directory_and_prompt_gated": {
+          "type": "string"
+        },
+        "assoc_ftype_color_gated": {
+          "type": "string"
+        },
+        "delayed_independent": {
           "type": "string"
         }
       },
@@ -904,6 +959,9 @@
           "type": "string"
         },
         "pipe_delayed_expansion_default": {
+          "type": "string"
+        },
+        "pipe_extensions_default": {
           "type": "string"
         },
         "and_or_chain_trap": {

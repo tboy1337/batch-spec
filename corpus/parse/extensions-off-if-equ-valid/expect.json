@@ -1,5 +1,5 @@
 {
-  "description": "IF EQU compare-op (requires extensions at runtime)",
+  "description": "Parse IF EQU under default extensions ON; at runtime EQU requires extensions (cmd /E:OFF yields 'EQU was unexpected')",
   "parse": {
     "should_parse": true,
     "top_level_statement": "ifStmt"

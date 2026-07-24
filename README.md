@@ -1,4 +1,4 @@
-# batch-spec
+﻿# batch-spec
 
 Single source of truth for the Windows batch/cmd.exe **language** structure used by
 [Blinter](https://github.com/tboy1337/Blinter) and other conforming tools.
@@ -22,8 +22,7 @@ define linter rules (E/W/S/SEC/P codes) -- those live in Blinter's `spec/` tree.
 
 ## Versioning
 
-The package version is the contents of [`VERSION`](VERSION) (currently **0.21.0**).
-Releases are intended to be tagged `vMAJOR.MINOR.PATCH` matching that file. Pin a
+The package version is the contents of [`VERSION`](VERSION) (currently **0.22.0**). Releases are intended to be tagged `vMAJOR.MINOR.PATCH` matching that file. Pin a
 published tag via git submodule or lock file once it exists; do not depend on `main`
 directly in production CI.
 

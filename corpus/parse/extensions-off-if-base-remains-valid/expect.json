@@ -1,0 +1,11 @@
+{
+  "description": "Base IF == and EXIST remain available when extensions are disabled",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "if",
+    "extensions"
+  ]
+}

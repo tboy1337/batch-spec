@@ -1,0 +1,11 @@
+{
+  "description": "Parse SET /P; requires Command Extensions at runtime (OFF treats /P as part of the name)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "extensions"
+  ]
+}

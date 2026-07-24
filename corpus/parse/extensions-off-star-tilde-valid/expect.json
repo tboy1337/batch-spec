@@ -1,13 +1,11 @@
 {
-  "description": "CMD /E:OFF leaves %* and %~ unexpanded at runtime (parse documents the forms)",
+  "description": "Parse %* and %~1 forms; at runtime cmd /E:OFF leaves them unexpanded (literal * / ~1)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"
   },
   "tags": [
-    "cmd",
-    "extensions",
-    "expansion",
-    "negative"
+    "parameters",
+    "extensions"
   ]
 }
