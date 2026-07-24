@@ -1,4 +1,4 @@
-﻿Changes the position of replaceable parameters in a batch file.
+Changes the position of replaceable parameters in a batch file.
 
 SHIFT [/n]
 

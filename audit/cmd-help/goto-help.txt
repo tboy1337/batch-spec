@@ -1,4 +1,4 @@
-﻿Directs cmd.exe to a labeled line in a batch program.
+Directs cmd.exe to a labeled line in a batch program.
 
 GOTO label
 

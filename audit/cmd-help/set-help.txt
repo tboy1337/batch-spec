@@ -1,4 +1,4 @@
-﻿Displays, sets, or removes cmd.exe environment variables.
+Displays, sets, or removes cmd.exe environment variables.
 
 SET [variable=[string]]
 

@@ -1,4 +1,4 @@
-﻿Quits the CMD.EXE program (command interpreter) or the current batch
+Quits the CMD.EXE program (command interpreter) or the current batch
 script.
 
 EXIT [/B] [exitCode]

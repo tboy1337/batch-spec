@@ -1,4 +1,4 @@
-﻿Calls one batch program from another.
+Calls one batch program from another.
 
 CALL [drive:][path]filename [batch-parameters]
 

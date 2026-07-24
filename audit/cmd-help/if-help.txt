@@ -1,4 +1,4 @@
-﻿Performs conditional processing in batch programs.
+Performs conditional processing in batch programs.
 
 IF [NOT] ERRORLEVEL number command
 IF [NOT] string1==string2 command

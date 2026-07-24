@@ -1,4 +1,4 @@
-﻿
+
 CHOICE [/C choices] [/N] [/CS] [/T timeout /D choice] [/M text]
 
 Description:

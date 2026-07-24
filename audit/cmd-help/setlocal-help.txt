@@ -1,4 +1,4 @@
-﻿Begins localization of environment changes in a batch file.  Environment
+Begins localization of environment changes in a batch file.  Environment
 changes made after SETLOCAL has been issued are local to the batch file.
 ENDLOCAL must be issued to restore the previous settings.  When the end
 of a batch script is reached, an implied ENDLOCAL is executed for any

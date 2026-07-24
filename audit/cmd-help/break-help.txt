@@ -1,4 +1,4 @@
-﻿Sets or Clears Extended CTRL+C checking on DOS system
+Sets or Clears Extended CTRL+C checking on DOS system
 
 This is present for Compatibility with DOS systems. It has no effect
 under Windows.
