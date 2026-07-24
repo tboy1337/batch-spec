@@ -1,4 +1,4 @@
-version: 14
+version: 15
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -156,10 +156,22 @@ delayed_expansion:
     yields !%Car%! -> Prius). Related forms such as !prefix%name%! /
     !%name%suffix! follow the same two-phase substitution. Without delayed
     expansion, !...! is literal text.
+  block_indirect_percent_binding: >-
+    Inside a parenthesized IF/FOR block, %name% is still the pre-block value, so
+    !prefix%name%! builds the bang name from that frozen percent value even when
+    set name=... runs earlier in the same block. To compose a name assigned in
+    the block, bind it through a FOR metavar (FOR /F %%x in ("!name!") do ...)
+    or CALL with %~1, rather than expecting !prefix%name%! to see the in-block
+    assignment.
   for_accumulate_pattern: >-
     With delayed expansion enabled, a FOR body can accumulate with forms such
     as set "LIST=!LIST! %%i" so each iteration sees the updated LIST. Plain
     %LIST% expands when the FOR block is parsed and stays fixed for the loop.
+  value_with_exclamation: >-
+    When delayed expansion is enabled, a value that contains ! (and often ^) can
+    be corrupted or truncated during !var! expansion and inside FOR bodies.
+    Prefer disabling delayed expansion while handling such data, or escape
+    carefully with the phase-sensitive caret rules in exclamation_escaping.
 
 for_loop_variables:
   batch_file_prefix: "%%"
@@ -222,7 +234,11 @@ for_f:
     - tokens
     - usebackq
   option_details:
-    eol: "eol=c sets a single end-of-line comment character (default semicolon)"
+    eol: >-
+      eol=c sets a single end-of-line comment character (default semicolon).
+      A line is skipped when its first parsed token begins with that character;
+      the same character later on the line is ordinary data (not a C-style
+      mid-line comment).
     skip: "skip=n skips the first n lines of each input"
     delims: >-
       delims=xxx replaces the default delimiter set (space and tab). An empty
@@ -746,6 +762,14 @@ setlocal_options:
     ENDLOCAL restores the prior environment and the prior enabled/disabled
     state of Extensions and DelayedExpansion from the matching SETLOCAL
     (ENDLOCAL /?).
+  endlocal_restores_directory: >-
+    ENDLOCAL also restores the current drive and directory that were in effect
+    at the matching SETLOCAL. CD/CHDIR or PUSHD changes made inside the local
+    scope are undone by ENDLOCAL even though ENDLOCAL /? omits this detail.
+  survive_via_paren_block: >-
+    The same parse-time percent capture used by endlocal & set "out=%in%" also
+    works in a parenthesized block such as (endlocal & set "out=%in%"), because
+    %in% expands when the block is parsed, before ENDLOCAL runs.
 
 errorlevel:
   if_form: >-
@@ -809,6 +833,10 @@ dynamic_environment_variables:
     process (SET /?). When a script is launched via cmd /C "script.cmd args",
     the expanded value typically includes the /C switch and the quoted script
     invocation text rather than only the script's own arguments.
+  cd_shadow_vs_cwd: >-
+    SET CD=value overrides %CD% expansion with that string but does not change
+    the process current directory. Bare CD (and filesystem operations) still
+    use the real CWD; clear the CD variable to restore dynamic %CD%.
   extensions_required: true
 
 keyword_boundaries:
@@ -888,16 +916,26 @@ command_chaining:
     Statement separators and conditionals compose commandLine forms in the
     grammar and in cmd.exe.
   operators:
-    "&": "Unconditional command separator; run the next statement regardless of ERRORLEVEL"
-    "&&": "Run the next statement only if the prior statement left ERRORLEVEL 0"
-    "||": "Run the next statement only if the prior statement left a non-zero ERRORLEVEL"
+    "&": "Unconditional command separator; run the next statement regardless of prior success"
+    "&&": "Run the next statement only if the prior statement succeeded for chaining purposes"
+    "||": "Run the next statement only if the prior statement failed for chaining purposes"
     "|": "Pipe stdout of the left statement into stdin of the right (not a conditional)"
   grouping: >-
     Parentheses group a statement list so trailing && / || observe the group's
-    resulting ERRORLEVEL.
+    chaining success and resulting ERRORLEVEL. Prefer explicit groups for
+    portable scripts.
+  and_or_precedence: >-
+    On live cmd.exe, && binds tighter than ||, so A || B && C behaves as
+    A || (B && C), and A && B || C behaves as (A && B) || C. Equal-precedence
+    left-to-right is not the observed model; parenthesize when intent is
+    ambiguous. Do not treat a successful || alternative as abandoning an entire
+    physical line when a later && belongs to a tighter group.
   pipe_child_process: >-
     Each side of a pipe runs in a child cmd.exe context. Environment mutations
     (SET, SET /P, SETLOCAL) on a pipe side do not update the parent environment.
+  pipe_concurrent_start: >-
+    Both pipe sides are started as child cmd contexts for the pipeline; do not
+    assume the left side fully completes before the right side begins.
   pipe_delayed_expansion_default: >-
     Pipe-side child cmd.exe instances start with the processor defaults for
     delayed expansion and extensions (delayed expansion off unless registry or
@@ -923,10 +961,13 @@ command_chaining:
     command on that physical line) is a syntax error. Terminate with & rem, or
     escape a literal ampersand as ^&, rather than leaving a dangling separator.
   success_is_errorlevel_zero: >-
-    && and || key off ERRORLEVEL only. Tools that return non-zero on partial
-    success (notably ROBOCOPY bitmasks; see external_tool_notes) can make
-    && skip follow-on commands even when the operation was useful. Prefer
-    explicit IF ERRORLEVEL / IF %ERRORLEVEL% tests when wrapping such tools.
+    && and || primarily follow command success/failure for chaining. Many
+    builtins (notably ECHO and REM) can succeed for && / || without clearing a
+    prior non-zero ERRORLEVEL, so a later IF %ERRORLEVEL% test can still see the
+    stale code. Tools that return non-zero on partial success (notably ROBOCOPY
+    bitmasks; see external_tool_notes) can make && skip follow-on commands even
+    when the operation was useful. Prefer explicit IF ERRORLEVEL /
+    IF %ERRORLEVEL% tests when wrapping such tools.
 
 batch_parameters:
   description: "Batch argument references (CALL /?, SHIFT /?)"
@@ -1157,8 +1198,8 @@ command_resolution:
   call_missing_script: >-
     CALL of a missing label sets ERRORLEVEL to 1 and continues (see
     call_goto.call_missing_label). CALL of a missing external script/program
-    follows normal command-resolution failure (typically ERRORLEVEL 9009 for a
-    bare missing name).
+    also sets ERRORLEVEL to 1 (not 9009). A bare missing name without CALL sets
+    ERRORLEVEL to 9009 (see not_found_errorlevel).
 
 directory_commands:
   description: >-
@@ -1528,6 +1569,52 @@ ren_command:
     REN [drive:][path]filename1 filename2. The destination cannot specify a
     new drive or path -- rename in place only (REN /?).
   source: "REN /? (audit/cmd-help/ren-help.txt)"
+
+chcp_command:
+  description: >-
+    CHCP displays or sets the active console code page
+    (CHCP /?; audit/cmd-help/chcp-help.txt).
+  forms: >-
+    CHCP [nnn] sets code page nnn; CHCP with no argument displays the active
+    code page (CHCP /?).
+  source: "CHCP /? (audit/cmd-help/chcp-help.txt)"
+
+doskey_command:
+  description: >-
+    DOSKEY edits command lines, recalls history, and defines macros
+    (DOSKEY /?; audit/cmd-help/doskey-help.txt).
+  forms: >-
+    DOSKEY [options] [macroname=[text]]. Macro text may use $T as a command
+    separator and $1-$9 / $* as parameter placeholders analogous to batch
+    %1-%9 / %* (DOSKEY /?).
+  source: "DOSKEY /? (audit/cmd-help/doskey-help.txt)"
+
+help_command:
+  description: >-
+    HELP displays help text for Windows commands
+    (HELP /?; audit/cmd-help/help-help.txt).
+  forms: "HELP [command] shows help for the named command (HELP /?)."
+  source: "HELP /? (audit/cmd-help/help-help.txt)"
+
+more_command:
+  description: >-
+    MORE displays output one screen at a time and is commonly used on the
+    right-hand side of a pipe (MORE /?; audit/cmd-help/more-help.txt).
+  forms: >-
+    command | MORE [options], MORE < file, or MORE /E [options] [files].
+    Extended /E features include clear, formfeed expand, squeeze blank lines,
+    and tab expansion (MORE /?).
+  source: "MORE /? (audit/cmd-help/more-help.txt)"
+
+sort_command:
+  description: >-
+    SORT sorts input lines and is commonly used in pipes
+    (SORT /?; audit/cmd-help/sort-help.txt).
+  forms: >-
+    SORT [/R] [/+n] [/M kilobytes] [/L locale] [/REC chars] [[drive1:][path1]filename1]
+    [/T [drive2:][path2]] [/O [drive3:][path3]filename3]. /R reverses order;
+    /+n starts compare at column n (SORT /?).
+  source: "SORT /? (audit/cmd-help/sort-help.txt)"
 
 external_tool_notes:
   description: >-

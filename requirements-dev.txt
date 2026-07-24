@@ -6,6 +6,7 @@ pytest-timeout
 pytest-mock
 pylint
 mypy
+types-PyYAML
 black
 isort
 autopep8

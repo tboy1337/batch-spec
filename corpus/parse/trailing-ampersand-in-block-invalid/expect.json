@@ -1,0 +1,1 @@
+{"description":"Trailing bare ampersand inside paren block is a syntax error","parse":{"expect_syntax_errors":true},"tags":["operators","parentheses","negative"]}

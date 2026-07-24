@@ -1,0 +1,1 @@
+{"description":"CHCP without argument displays active code page","parse":{"top_level_statement":"genericCmd","should_parse":true},"tags":["chcp"]}

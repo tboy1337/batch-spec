@@ -1,0 +1,1 @@
+{"description":"ENDLOCAL restores prior current directory after CD inside SETLOCAL","parse":{"top_level_statement":"endlocalStmt","should_parse":true},"tags":["setlocal","endlocal","directory"]}

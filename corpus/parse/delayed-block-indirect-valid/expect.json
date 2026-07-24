@@ -1,0 +1,1 @@
+{"description":"In-block percent name stays pre-block in bang-indirect forms","parse":{"top_level_statement":"forStmt","should_parse":true},"tags":["for","delayed-expansion","expansion"]}

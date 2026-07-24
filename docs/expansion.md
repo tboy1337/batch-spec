@@ -4,7 +4,7 @@ Machine-readable rules live in [`data/expansion.yaml`](../data/expansion.yaml)
 
 (schema: [`schema/expansion.schema.json`](../schema/expansion.schema.json)).
 
-Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/) (`assoc-help.txt`, `break-help.txt`, `call-help.txt`, `cd-help.txt`, `choice-help.txt`, `cls-help.txt`, `cmd-help.txt`, `color-help.txt`, `copy-help.txt`, `date-help.txt`, `del-help.txt`, `dir-help.txt`, `echo-help.txt`, `endlocal-help.txt`, `exit-help.txt`, `find-help.txt`, `findstr-help.txt`, `for-help.txt`, `forfiles-help.txt`, `ftype-help.txt`, `goto-help.txt`, `if-help.txt`, `md-help.txt`, `mklink-help.txt`, `move-help.txt`, `path-help.txt`, `pause-help.txt`, `popd-help.txt`, `prompt-help.txt`, `pushd-help.txt`, `rd-help.txt`, `rem-help.txt`, `ren-help.txt`, `robocopy-help.txt`, `set-help.txt`, `setlocal-help.txt`, `setx-help.txt`, `shift-help.txt`, `start-help.txt`, `subst-help.txt`, `time-help.txt`, `timeout-help.txt`, `title-help.txt`, `type-help.txt`, `ver-help.txt`, `verify-help.txt`, `vol-help.txt`, `where-help.txt`, `xcopy-help.txt`).
+Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/) (`assoc-help.txt`, `break-help.txt`, `call-help.txt`, `cd-help.txt`, `choice-help.txt`, `cls-help.txt`, `cmd-help.txt`, `color-help.txt`, `copy-help.txt`, `date-help.txt`, `del-help.txt`, `dir-help.txt`, `echo-help.txt`, `endlocal-help.txt`, `exit-help.txt`, `find-help.txt`, `findstr-help.txt`, `for-help.txt`, `forfiles-help.txt`, `ftype-help.txt`, `goto-help.txt`, `if-help.txt`, `md-help.txt`, `mklink-help.txt`, `move-help.txt`, `path-help.txt`, `pause-help.txt`, `popd-help.txt`, `prompt-help.txt`, `pushd-help.txt`, `rd-help.txt`, `rem-help.txt`, `ren-help.txt`, `robocopy-help.txt`, `set-help.txt`, `setlocal-help.txt`, `setx-help.txt`, `shift-help.txt`, `start-help.txt`, `subst-help.txt`, `time-help.txt`, `timeout-help.txt`, `title-help.txt`, `type-help.txt`, `ver-help.txt`, `verify-help.txt`, `vol-help.txt`, `where-help.txt`, `xcopy-help.txt`, `chcp-help.txt`, `doskey-help.txt`, `help-help.txt`, `more-help.txt`, `sort-help.txt`).
 
 ## Topics covered
 
@@ -12,11 +12,11 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **Percent expansion** - in scripts, undefined `%name%` / `!name!` expand to empty; on the interactive prompt undefined `%name%` often remains literal; incomplete unclosed `%` forms are not successful expansions (leading `%` typically stripped, leaving trailing text as literals).
 
-- **Delayed expansion (`!var!`)** - disabled by default; does *not* require SETLOCAL; enable via cmd `/V:ON`, SETLOCAL flags, or the Command Processor registry value. Independent of Command Extensions (plain `!var!` works with extensions off; substring/replace still need extensions). When disabled, `!var!` is literal. Supports substring/replace peers of the percent forms (case-insensitive search), FOR accumulate `!LIST!`, indirect `!%name%!` (percent then delayed); digit-leading names need bang forms; `!` escaping under delayed expansion is phase-sensitive. Disable via SETLOCAL DisableDelayedExpansion or `cmd /V:OFF`.
+- **Delayed expansion (`!var!`)** - disabled by default; does *not* require SETLOCAL; enable via cmd `/V:ON`, SETLOCAL flags, or the Command Processor registry value. Independent of Command Extensions (plain `!var!` works with extensions off; substring/replace still need extensions). When disabled, `!var!` is literal. Supports substring/replace peers of the percent forms (case-insensitive search), FOR accumulate `!LIST!`, indirect `!%name%!` (percent then delayed); in-block `!prefix%name%!` still uses the pre-block percent value; values containing `!` can corrupt expansion; digit-leading names need bang forms; `!` escaping under delayed expansion is phase-sensitive. Disable via SETLOCAL DisableDelayedExpansion or `cmd /V:OFF`.
 
 - **FOR variables / forms** - `%%i` in batch files, `%i` on the interactive command line; letter charset; `/D` `/R` `/L` `/F` forms (extensions); FOR `/R` with `(.)` includes the walk root; `/D /R` with `(*)` lists subdirs only; trailing `?` may match fewer characters; FOR `/R` without wildcards synthesizes `root\name` under each directory; FOR metavars expand in the DO body and share a session letter namespace (nested same-letter restores after inner); classic FOR non-wildcard set members are literals even when missing
 
-- **FOR /F** - `eol` / `skip` / `delims` / `tokens` / `usebackq` (and live `useback` synonym), quote forms, consecutive-delimiter collapse, empty `delims=`, space-must-be-last in `delims`, case-sensitive delimiter chars, default first token, z/Z token ceiling
+- **FOR /F** - `eol` / `skip` / `delims` / `tokens` / `usebackq` (and live `useback` synonym), quote forms, consecutive-delimiter collapse, empty `delims=`, space-must-be-last in `delims`, case-sensitive delimiter chars, default first token, z/Z token ceiling; `eol=` skips lines whose first token starts with that character (mid-line occurrences stay data)
 
 - **Caret escaping** - `2^n-1` for ordinary multilevel hops; CALL doubles carets on its tail (including inside quotes); line-continuation caret must be the last character of the physical line; caret does not escape `%` (percent expansion runs first; use `%%` for a literal percent in scripts)
 
@@ -38,17 +38,17 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **Command Extensions off** - disable via `cmd /E:OFF`, `/Y`, registry, or `SETLOCAL DisableExtensions`; base IF ERRORLEVEL/`==`/EXIST remain; compare-ops/`/I`/DEFINED/CMDEXTVERSION, GOTO `:EOF` special target, CALL `:label` jump/`%*`/`%~`, SET `/A`/`/P`, quoted SET, prefix query, string ops, FOR `/D`/`/R`/`/L`/`/F`, SHIFT `/n`, dynamic env names, CD `/D`, ASSOC/FTYPE/COLOR, and PROMPT `$+`/`$M` require extensions; delayed expansion remains independently switchable; under OFF, `set /A` and `set /P` become literal plain assignments whose names include the `/A` or `/P` token
 
-- **SETLOCAL options** - four Enable/Disable Extensions and DelayedExpansion flags (precedence over CMD `/E`/`/V`; SETLOCAL /? still says "two valid arguments" while listing all four); nesting limit 32 per CALL level ("Maximum setlocal recursion level reached."); argument ERRORLEVEL probe; ENDLOCAL restores prior state; `endlocal & set "out=%in%"` same-line survive trick
+- **SETLOCAL options** - four Enable/Disable Extensions and DelayedExpansion flags (precedence over CMD `/E`/`/V`; SETLOCAL /? still says "two valid arguments" while listing all four); nesting limit 32 per CALL level ("Maximum setlocal recursion level reached."); argument ERRORLEVEL probe; ENDLOCAL restores prior environment, Extensions/DelayedExpansion state, and current directory; `endlocal & set "out=%in%"` same-line (or paren-block) survive trick
 
 - **ERRORLEVEL / CMDEXTVERSION** - `IF ERRORLEVEL n` means `>= n`; dynamic `%ERRORLEVEL%` env-var shadowing; CHOICE sets ERRORLEVEL to the 1-based choice ordinal (255 on tool error; CTRL+C/BREAK returns 0; /CS /T /D switches); CMDEXTVERSION starts at 1 and never true when extensions are off
 
-- **Dynamic environment variables** - `%CD%`, `%DATE%`, `%TIME%`, `%RANDOM%`, `%ERRORLEVEL%`, `%CMDEXTVERSION%`, `%CMDCMDLINE%`, `%HIGHESTNUMANODENUMBER%` (SET /?; extensions required); `%TIME%` often space-pads hours 0-9; `%DATE%`/`%TIME%` follow locale-specific DATE/TIME formats (separators may include comma)
+- **Dynamic environment variables** - `%CD%`, `%DATE%`, `%TIME%`, `%RANDOM%`, `%ERRORLEVEL%`, `%CMDEXTVERSION%`, `%CMDCMDLINE%`, `%HIGHESTNUMANODENUMBER%` (SET /?; extensions required); `%TIME%` often space-pads hours 0-9; `%DATE%`/`%TIME%` follow locale-specific DATE/TIME formats (separators may include comma); `SET CD=...` shadows `%CD%` without changing process CWD
 
 - **Keyword boundaries** - do not glue keywords to `%`, `!`, or quotes (`IF%1`, `SET%x%` are not IF/SET)
 
 - **IF forms / parentheses** - base and extension predicates; EXIST (not EXISTS) for files and directories; quoted compare sides are string compares; string order is not raw ASCII; unquoted empty operands are a syntax error; classic `.%var%.` padding works only for simple values (breaks on spaces); no native `and`/`or` keywords inside IF; open `(` on the same line as the predicate (spaces allowed); ELSE same-line attachment
 
-- **Command chaining** - `&`, `&&`, `||`, `|`, and parenthesized groups; pipe sides run in child cmd contexts (delayed expansion and extensions default independently of parent SETLOCAL); `A && (B) || (C)` runs C when B fails even after successful A; bare trailing `&` inside `( )` is a syntax error
+- **Command chaining** - `&`, `&&`, `||`, `|`, and parenthesized groups; on live cmd `&&` binds tighter than `||`; pipe sides run in concurrent child cmd contexts (delayed expansion and extensions default independently of parent SETLOCAL); `A && (B) || (C)` runs C when B fails even after successful A; ECHO/REM can succeed for chaining without clearing ERRORLEVEL; bare trailing `&` inside `( )` is a syntax error
 
 - **Redirection** - `>`, `>>`, `<`, `n>`, `>&`, `<&` handle duplication, NUL suppress, group redirects, leading redirects, left-to-right handle order
 
@@ -72,7 +72,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **Quoting** - double quotes suppress `&|<>^()` for command parsing but do not suppress percent or delayed `!` expansion
 
-- **Command resolution** - cwd then PATH with PATHEXT; missing external name sets ERRORLEVEL 9009
+- **Command resolution** - cwd then PATH with PATHEXT; bare missing external name sets ERRORLEVEL 9009; `CALL` of a missing external sets ERRORLEVEL 1
 
 - **Directory commands** - CD `/D` changes drive; with extensions, CD normalizes case and accepts unquoted paths with spaces; PUSHD/POPD stack; UNC temp drives from Z: down (PUSHD /?)
 
@@ -121,6 +121,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 - **COPY / MOVE / REN / DIR / TYPE** -- overwrite `/Y` defaults in batch; DIRCMD; REN in-place only; TYPE display
 
 - **TITLE / PAUSE / CLS / VER / VOL / MKLINK** -- console/session builtins and link creation forms
+- **CHCP / DOSKEY / HELP / MORE / SORT** -- code page, macros/history, help lookup, and common pipe filters
 
 - **CHOICE** -- dedicated section: `/C` `/N` `/CS` `/T` `/D` `/M` and ERRORLEVEL ordinals
 

@@ -1,0 +1,1 @@
+{"description":"SET CD shadows percent CD without changing process CWD","parse":{"top_level_statement":"setStmt","should_parse":true},"tags":["set","expansion","directory"]}

@@ -1,0 +1,1 @@
+{"description":"OR then AND chain parses with tighter AND grouping","parse":{"should_parse":true},"tags":["operators","directory"]}

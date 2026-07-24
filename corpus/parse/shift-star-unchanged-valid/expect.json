@@ -1,0 +1,1 @@
+{"description":"SHIFT then percent-star still parses as argument forms","parse":{"top_level_statement":"shiftStmt","should_parse":true},"tags":["shift","parameters"]}

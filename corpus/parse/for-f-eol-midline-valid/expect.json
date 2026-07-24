@@ -1,0 +1,1 @@
+{"description":"FOR /F eol skips only lines whose first token starts with eol char","parse":{"top_level_statement":"forStmt","should_parse":true},"tags":["for","for-f"]}
