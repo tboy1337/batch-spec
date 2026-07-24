@@ -1,4 +1,4 @@
-version: 15
+version: 16
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -326,6 +326,11 @@ quoting:
     When delayed expansion is enabled, !name! also expands inside quotes.
     Use %% / phase-aware ! escaping when a literal percent or exclamation
     mark must survive.
+  embedded_doubled_quotes: >-
+    Inside a quoted argument, "" is an embedded quote pair and is not collapsed
+    to a single quotation mark by %~1. Example: call :t "a""b" then %~1 expands
+    to a""b (outer quotes stripped; embedded "" retained). %1 keeps the outer
+    quotes as ["a""b"].
 
 double_percent:
   for_body_rule: "FOR loop variables use %% in batch files"
@@ -566,10 +571,10 @@ environment_variable_names:
     - "var#x"
     - "var$with.odd[chars]"
   tokenizer_note: >-
-    The ANTLR lexer treats %name% as a single PERCENT_VAR when the name uses
-    letters, digits, underscore, '.', '-', or '~'. Spaced names and many
-    punctuation-heavy names are accepted at runtime but may not be a single
-    percent token; prefer documenting them via SET forms in the parse corpus.
+    The ANTLR lexer treats %name% as a single PERCENT_VAR for any name
+    characters other than '%', '=', or newlines (matching live cmd's wide
+    charset, including spaces and punctuation such as @ # $ ; [ ]). Prefer
+    underscore-alnum names for portable scripts.
   case_insensitive_names: >-
     Environment variable names are case-insensitive for lookup and assignment
     (%abc% and %AbC% refer to the same variable). Values are stored with the
@@ -595,11 +600,10 @@ echo_forms:
     - "echo["
     - "echo]"
   blank_line_tokenizer_note: >-
-    Live cmd accepts the listed blank-line spellings. The ANTLR lexer may split
-    some of them (for example echo( is WORD echo plus LPAREN; echo[ / echo]
-    can produce token-recognition errors for bare brackets). Prefer documenting
-    runtime behavior here and using parse corpus cases for forms that tokenize
-    cleanly.
+    Live cmd accepts the listed blank-line spellings. echo[ and echo] tokenize
+    as a single WORD (brackets are allowed in WORD). echo( is still WORD echo
+    plus LPAREN because '(' is a distinct token; both forms parse as ordinary
+    commands.
   echo_on_off: >-
     ECHO ON and ECHO OFF toggle command echoing. A leading @ suppresses
     echoing for that single statement (@echo off).
@@ -641,6 +645,11 @@ cmd_processor_switches:
   file_completion_f: >-
     /F:ON enables file and directory name completion characters; /F:OFF
     disables them. Completion is off by default (CMD /?).
+  completion_chars: >-
+    With /F:ON, CMD /? documents Ctrl-F / Ctrl-D style completion (and related
+    CompletionChar / PathCompletionChar registry values under Command
+    Processor). Exact control characters are host/configuration dependent;
+    scripts should not rely on interactive completion.
   color_t: >-
     /T:fg sets the foreground/background colors for the session (see COLOR /?;
     CMD /?).
@@ -1015,7 +1024,14 @@ call_goto:
   call_label: >-
     CALL :label arguments creates a new batch context at the label. Control
     returns to the statement after CALL when the called context reaches EOF
-    (or GOTO :EOF). Reaching EOF a second time exits the script.
+    (or GOTO :EOF / EXIT /B). Reaching EOF a second time exits the script.
+  call_context_runs_to_eof: >-
+    After CALL :label, execution continues from the statement following the
+    label through subsequent lines and label fallthrough until the called
+    context hits physical EOF, GOTO :EOF, or EXIT /B. Labels and commands after
+    the routine are still executed in the CALL context unless fenced. Fence
+    routines with GOTO :EOF or EXIT /B before later labels when return should
+    happen immediately.
   call_requires_colon_for_label: >-
     CALL :label requires the colon for an internal label. CALL name without a
     colon searches PATH/PATHEXT for an external program or script instead of
@@ -1051,13 +1067,18 @@ call_goto:
   label_charset: >-
     User label names may include letters, digits, dots, spaces, and many
     punctuation characters after the leading colon (for example :ok.label and
-    :has space). A second colon immediately after the first (::) is the
-    label-style remark form, not a normal jump target. Prefer simple
+    :has space). A label line consumes the rest of the physical line after the
+    leading colon (GOTO /?). A second colon immediately after the first (::) is
+    the label-style remark form, not a normal jump target. Prefer simple
     alphanumeric labels for portable scripts; avoid ')' inside labels used
     within parenthesized blocks (see remarks.double_colon). The ANTLR LABEL
-    lexer token is stricter than live cmd and stops at whitespace, so spaced
-    labels are not represented as a single LABEL token in the conformance
-    grammar; consumers that need spaced labels must not rely on that token alone.
+    token matches ':' plus the remainder of the line (excluding the newline).
+  label_call_vs_goto_spaces: >-
+    CALL :label arguments treats the first token after the colon as the label
+    name and subsequent tokens as routine arguments (CALL /?). GOTO label uses
+    the remainder of the statement as the target text, so goto :has space can
+    target a line ":has space". Label lookup is prefix-oriented: goto :has also
+    matches a line beginning with ":has " (live cmd).
   label_fallthrough: >-
     A label line is not a control-flow barrier. Execution falls through into
     following statements unless a GOTO/EXIT (or similar) jumps away. After
@@ -1107,6 +1128,11 @@ remarks:
     With ECHO ON, a REM remark is echoed to stdout like other commands. A ::
     label-style remark is typically not echoed as a command line. Neither form
     prints the remark text as output by itself when ECHO is OFF.
+  percent_expansion_still_runs: >-
+    Percent expansion still runs on REM lines. With ECHO ON, rem value is %FOO%
+    echoes the expanded value. Delayed !FOO! on a REM line typically remains
+    literal even when delayed expansion is enabled (percent phase still
+    applies; bang expansion does not rewrite the remark the same way).
 
 redirection:
   description: >-
@@ -1181,6 +1207,20 @@ expansion_phases: >-
   run in child cmd.exe contexts with their own defaults. See percent_expansion,
   delayed_expansion, caret_escape, double_percent, paren_block_expansion, and
   command_chaining for details.
+
+script_encoding:
+  description: >-
+    Batch scripts are interpreted as a sequence of bytes that cmd.exe maps to
+    command text. Prefer ASCII or the active console code page without a BOM.
+  bom_prefixes_first_token: >-
+    A UTF-8 BOM (EF BB BF) or UTF-16 BOM at the start of a .cmd/.bat file is
+    consumed as part of the first token. A leading @echo off then becomes a
+    non-command such as '<BOM>@echo', so echo remains on and the line fails as
+    an unrecognized command. Save scripts without a BOM, or place a blank line
+    before the first command if a BOM cannot be avoided.
+  crlf_vs_lf: >-
+    CRLF and LF line endings both work on modern Windows cmd for ordinary
+    scripts; prefer CRLF for maximum tool compatibility.
 
 command_resolution:
   description: >-
@@ -1622,9 +1662,9 @@ external_tool_notes:
     full switch encyclopedias; they document ERRORLEVEL and parsing facts that
     affect Batch control flow (&& / || / IF ERRORLEVEL).
   find_and_findstr: >-
-    FIND and FINDSTR search text. Successful match typically leaves ERRORLEVEL
-    0; no match typically leaves ERRORLEVEL 1 (live cmd; confirm on host).
-    FINDSTR without /C treats a quoted multi-word argument as OR of words;
+    FIND and FINDSTR search text. Successful match leaves ERRORLEVEL 0; no
+    match leaves ERRORLEVEL 1 (confirmed on live Windows 10 cmd). FINDSTR
+    without /C treats a quoted multi-word argument as OR of words;
     /C:"literal with spaces" searches the literal phrase (FINDSTR /?).
     Default FINDSTR matching is case-sensitive unless /I is used.
   where_command: >-

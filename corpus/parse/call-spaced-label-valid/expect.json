@@ -1,7 +1,8 @@
 {
-  "description": "CALL :label with a space in the label name (live cmd; ANTLR LABEL token is stricter)",
+  "description": "CALL :label args uses first token as label; spaced label line is one LABEL token",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
   },
   "tags": [
     "call",

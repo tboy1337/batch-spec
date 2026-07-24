@@ -1,0 +1,11 @@
+{
+  "description": "Embedded doubled quotes in CALL args parse; %~1 keeps inner quote pairs",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "quoting",
+    "call"
+  ]
+}

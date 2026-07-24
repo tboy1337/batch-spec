@@ -1,0 +1,10 @@
+{
+  "description": "CMD /F:ON file completion switch parses as a command line",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cmd"
+  ]
+}

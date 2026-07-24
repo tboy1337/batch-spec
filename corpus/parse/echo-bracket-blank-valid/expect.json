@@ -1,0 +1,10 @@
+{
+  "description": "ECHO blank-line forms echo[ and echo] tokenize as WORD",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "echo"
+  ]
+}

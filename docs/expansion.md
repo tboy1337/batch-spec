@@ -30,11 +30,11 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **SET /P** - requires extensions; optional prompt; EOF/NUL keeps prior value; a blank input line (Enter with no text) also keeps the prior value (does not assign empty); a spaces-only line assigns those spaces; `SET /P var=<file` reads the first line only; pipe-side SET /P updates only the child cmd environment
 
-- **Environment variable names** - `=` forbidden in names; live cmd accepts `.`, `-`, `~`, and spaced names (prefer underscore-alnum for portability). Lexer single-token `%name%` covers `.`/`-`/`~`; spaced names are runtime-only (tokenizer note in YAML).
+- **Environment variable names** - `=` forbidden in names; live cmd accepts `.`, `-`, `~`, spaces, and punctuation such as `@#$;[]` (prefer underscore-alnum for portability). Lexer `%name%` is a single PERCENT_VAR for any name chars other than `%`, `=`, or newlines.
 
-- **ECHO** - blank-line forms (`ECHO.` `ECHO:` `ECHO/` and peers); bare/whitespace-only ECHO prints on/off status; `ECHO ON`/`OFF` and `@` suppression
+- **ECHO** - blank-line forms (`ECHO.` `ECHO:` `ECHO/` `ECHO[` `ECHO]` and peers; `ECHO(` is WORD plus LPAREN); bare/whitespace-only ECHO prints on/off status; `ECHO ON`/`OFF` and `@` suppression
 
-- **CMD processor switches** - `/V` delayed expansion; `/E` Command Extensions; `/Q` echo off; `/D` disable AutoRun; `/A` ANSI / `/U` Unicode pipe/file output; `/F:ON|OFF` completion; `/T:fg` colors; defaults (extensions on, delayed off); compatibility aliases `/X`=`/E:ON`, `/Y`=`/E:OFF`, `/R`=`/C`; `/C` `/K` `/S` quote-stripping; AutoRun registry unless `/D`
+- **CMD processor switches** - `/V` delayed expansion; `/E` Command Extensions; `/Q` echo off; `/D` disable AutoRun; `/A` ANSI / `/U` Unicode pipe/file output; `/F:ON|OFF` completion (Ctrl-F / Ctrl-D and CompletionChar registry values); `/T:fg` colors; defaults (extensions on, delayed off); compatibility aliases `/X`=`/E:ON`, `/Y`=`/E:OFF`, `/R`=`/C`; `/C` `/K` `/S` quote-stripping; AutoRun registry unless `/D`
 
 - **Command Extensions off** - disable via `cmd /E:OFF`, `/Y`, registry, or `SETLOCAL DisableExtensions`; base IF ERRORLEVEL/`==`/EXIST remain; compare-ops/`/I`/DEFINED/CMDEXTVERSION, GOTO `:EOF` special target, CALL `:label` jump/`%*`/`%~`, SET `/A`/`/P`, quoted SET, prefix query, string ops, FOR `/D`/`/R`/`/L`/`/F`, SHIFT `/n`, dynamic env names, CD `/D`, ASSOC/FTYPE/COLOR, and PROMPT `$+`/`$M` require extensions; delayed expansion remains independently switchable; under OFF, `set /A` and `set /P` become literal plain assignments whose names include the `/A` or `/P` token
 
@@ -56,21 +56,23 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **Batch parameters** - `%*` and `%~` require Command Extensions (literal `*` / `~...` when off); base `%0`-`%9` work without extensions; `%10` is `%1` plus literal `0`; `%0` spelling mirrors CALL text; SHIFT `/n` and bare SHIFT; `%*` unaffected by SHIFT; unquoted args split on space/tab/comma/semicolon/equals
 
-- **CALL / GOTO** - `CALL :label` return context; CALL requires colon for labels; missing CALL label continues with ERRORLEVEL 1; successful CALL without `EXIT /B` preserves prior ERRORLEVEL; bare script invoke does not return (CALL does); `GOTO :EOF` vs `GOTO EOF`; case-insensitive user labels
+- **CALL / GOTO** - `CALL :label` return context; CALL requires colon for labels; missing CALL label continues with ERRORLEVEL 1; successful CALL without `EXIT /B` preserves prior ERRORLEVEL; bare script invoke does not return (CALL does); CALL context runs through later labels until EOF / `GOTO :EOF` / `EXIT /B`; `GOTO :EOF` vs `GOTO EOF`; case-insensitive user labels
 
 - **Expanded GOTO/CALL targets** - `goto %name%` / `CALL :%name%` resolve after percent (or delayed) expansion; missing targets follow ordinary GOTO/CALL missing-label rules
 
-- **Label charset vs grammar** - live cmd accepts spaces in labels; the ANTLR LABEL token stops at whitespace (stricter than runtime)
+- **Label charset** - label lines consume the rest of the physical line (spaces and punctuation allowed); ANTLR LABEL matches that form; CALL uses the first token after `:` as the label and the rest as arguments, while GOTO uses the remainder of the statement as the target (prefix-oriented matching)
 
 - **EXIT** - bare `EXIT` ends the cmd process; `EXIT /B` ends the script/routine; omit exitCode to preserve ERRORLEVEL, or pass n to set it
 
-- **Remarks** - `REM` vs `::` label-style remarks; REM consumes the rest of the physical line (including a trailing `&`); a `::` line containing `)` inside `( )` can close the block early -- prefer REM in paren blocks
+- **Remarks** - `REM` vs `::` label-style remarks; REM consumes the rest of the physical line (including a trailing `&`); percent expansion still runs on REM lines (delayed `!` typically stays literal); a `::` line containing `)` inside `( )` can close the block early -- prefer REM in paren blocks
 
 - **PROMPT `$` codes** - `$P$G`, `$T`, `$$`, and extensions `$+` / `$M` (PROMPT /?)
 
 - **Command-line length** - cmd.exe accepts at most 8191 characters on a command line
 
-- **Quoting** - double quotes suppress `&|<>^()` for command parsing but do not suppress percent or delayed `!` expansion
+- **Quoting** - double quotes suppress `&|<>^()` for command parsing but do not suppress percent or delayed `!` expansion; embedded `""` pairs inside a quoted arg are retained after `%~` outer-quote strip (`"a""b"` -> `a""b`)
+
+- **Script encoding** - UTF-8/UTF-16 BOM prefixes the first token (breaking `@echo off`); prefer BOM-less ASCII/code-page text; CRLF preferred, LF usually works
 
 - **Command resolution** - cwd then PATH with PATHEXT; bare missing external name sets ERRORLEVEL 9009; `CALL` of a missing external sets ERRORLEVEL 1
 

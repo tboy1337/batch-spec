@@ -1,0 +1,11 @@
+{
+  "description": "GOTO multi-word target and spaced LABEL line stay one statement each",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "goto",
+    "label"
+  ]
+}

@@ -30,7 +30,10 @@ fragment FOR_VAR_LETTER : [a-zA-Z0-9?#$@_`[\]{}+.\-\\!*():/] ;
 LINE_COMMENT   : {self._atLineStart()}? '::' ~[\r\n]* -> skip ;
 REM            : {self._atLineStart()}? [rR][eE][mM] ~[\r\n]* -> skip ;
 
-LABEL          : {self._atLineStart()}? ':' ~[ \t\r\n(]+ ;
+// Live cmd: a label is a line beginning with ':' and the rest of the physical
+// line is the label text (spaces and most punctuation allowed). LINE_COMMENT
+// ('::...') is declared first and wins for double-colon remarks.
+LABEL          : {self._atLineStart()}? ':' ~[\r\n]+ ;
 
 AT             : '@' ;
 
@@ -111,16 +114,22 @@ PERCENT_TILDE
     : '%' '~' ([a-zA-Z]* '$' [a-zA-Z_][a-zA-Z0-9_]* ':' [0-9a-zA-Z*] | [a-zA-Z]* [0-9a-zA-Z*])
     ;
 
+// Live cmd accepts a wide env-name charset inside %name% (spaces and most
+// punctuation). Exclude '%' (terminator), '=' (SET forbids in names), and
+// newlines. Substring/replace forms also exclude ':' in the name portion.
+fragment ENV_NAME_CHAR : ~[%=\r\n] ;
+fragment ENV_NAME_CHAR_NO_COLON : ~[%:=\r\n] ;
+
 PERCENT_VAR_SUBSTRING
-    : '%' [a-zA-Z_][a-zA-Z0-9_.\-~]* ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '%'
+    : '%' ENV_NAME_CHAR_NO_COLON+ ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '%'
     ;
 
 PERCENT_VAR_REPLACE
-    : '%' [a-zA-Z_][a-zA-Z0-9_.\-~]* ':' (~'%' | '%%')+ '=' (~'%' | '%%')* '%'
+    : '%' ENV_NAME_CHAR_NO_COLON+ ':' (~'%' | '%%')+ '=' (~'%' | '%%')* '%'
     ;
 
 PERCENT_VAR
-    : '%' [a-zA-Z_][a-zA-Z0-9_.\-~]* '%'
+    : '%' ENV_NAME_CHAR+ '%'
     ;
 
 PERCENT_ARG
@@ -135,16 +144,19 @@ FOR_VAR
     : '%%' FOR_VAR_LETTER
     ;
 
+fragment DELAYED_NAME_CHAR : ~[!\r\n] ;
+fragment DELAYED_NAME_CHAR_NO_COLON : ~[!:\r\n] ;
+
 BANG_VAR_SUBSTRING
-    : '!' [a-zA-Z0-9_][a-zA-Z0-9_.\-~]* ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '!'
+    : '!' DELAYED_NAME_CHAR_NO_COLON+ ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '!'
     ;
 
 BANG_VAR_REPLACE
-    : '!' [a-zA-Z0-9_][a-zA-Z0-9_.\-~]* ':' (~[!\r\n] | '!!')+ '=' (~[!\r\n] | '!!')* '!'
+    : '!' DELAYED_NAME_CHAR_NO_COLON+ ':' (~[!\r\n] | '!!')+ '=' (~[!\r\n] | '!!')* '!'
     ;
 
 BANG_VAR
-    : '!' [a-zA-Z0-9_][a-zA-Z0-9_.\-~]* '!'
+    : '!' DELAYED_NAME_CHAR+ '!'
     ;
 
 BANG
@@ -159,7 +171,9 @@ PERCENT
     : '%'
     ;
 
-WORD           : [a-zA-Z_][a-zA-Z0-9_./\\:+\-]* ;
+// Include [] (\u005B/\u005D) so blank-line forms like echo[ / echo] stay a
+// single WORD token (live cmd accepts those ECHO blank-line spellings).
+WORD           : [a-zA-Z_][a-zA-Z0-9_./\\:+\-\u005B\u005D]* ;
 HEX_NUMBER     : '0' [xX] [0-9a-fA-F]+ ;
 NUMBER         : DIGIT+ ;
 

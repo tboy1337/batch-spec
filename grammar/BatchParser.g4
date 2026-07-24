@@ -261,8 +261,10 @@ callTarget
     | DQ_STRING
     ;
 
+// GOTO takes the remainder of the statement as the target (spaces allowed).
+// CALL keeps callTarget as the first word/token and commandTail as arguments.
 gotoStmt
-    : GOTO callTarget
+    : GOTO callTarget commandTail?
     ;
 
 setStmt

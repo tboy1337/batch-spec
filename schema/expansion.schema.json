@@ -676,6 +676,9 @@
         "file_completion_f": {
           "type": "string"
         },
+        "completion_chars": {
+          "type": "string"
+        },
         "color_t": {
           "type": "string"
         },
@@ -1056,6 +1059,9 @@
         "call_label": {
           "type": "string"
         },
+        "call_context_runs_to_eof": {
+          "type": "string"
+        },
         "call_requires_colon_for_label": {
           "type": "string"
         },
@@ -1081,6 +1087,9 @@
           "type": "string"
         },
         "label_charset": {
+          "type": "string"
+        },
+        "label_call_vs_goto_spaces": {
           "type": "string"
         },
         "label_fallthrough": {
@@ -1127,6 +1136,9 @@
           "type": "string"
         },
         "echo_visibility": {
+          "type": "string"
+        },
+        "percent_expansion_still_runs": {
           "type": "string"
         }
       },
@@ -1205,6 +1217,25 @@
       "type": "string",
       "minLength": 1
     },
+    "script_encoding": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bom_prefixes_first_token": {
+          "type": "string"
+        },
+        "crlf_vs_lf": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
     "prompt_codes": {
       "type": "object",
       "required": [
@@ -1241,6 +1272,9 @@
           "type": "string"
         },
         "no_suppress_percent_or_delayed": {
+          "type": "string"
+        },
+        "embedded_doubled_quotes": {
           "type": "string"
         }
       },

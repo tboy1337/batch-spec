@@ -1,0 +1,11 @@
+{
+  "description": "PERCENT_VAR token covers punctuation and spaced env names",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "set"
+  ]
+}
