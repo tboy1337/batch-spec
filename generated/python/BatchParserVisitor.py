@@ -209,6 +209,11 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by BatchParser#setNamePart.
+    def visitSetNamePart(self, ctx:BatchParser.SetNamePartContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by BatchParser#setRest.
     def visitSetRest(self, ctx:BatchParser.SetRestContext):
         return self.visitChildren(ctx)

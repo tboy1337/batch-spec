@@ -199,7 +199,7 @@ deprecated_commands:
   wmic: Deprecated Windows command (not installed by default on Windows 11 24H2+; optional FoD)
 
 removed_commands:
-  append: Removed since Windows NT (not supported in cmd.exe)
+  append: Absent on modern Windows hosts (not a supported cmd.exe internal; historical DOS APPEND)
   assign: Removed since Windows NT (not supported in cmd.exe)
   backup: Removed since Windows NT (replaced by ntbackup then wbadmin)
   browstat: Windows Resource Kit add-on tool (browser status); not a stock cmd.exe command

@@ -41,6 +41,13 @@ modifiers - see `e017-invalid-modifier` - or `%~*` which CALL /? forbids - see
 `percent-missing-substring-batveat-valid`) when the goal is to document
 tokenizer/parser acceptance rather than runtime validity.
 
+Directory names containing `invalid` are not the same as
+`expect_syntax_errors: true`. Many `*-invalid` fixtures still
+`should_parse: true` and only document semantic/runtime invalidity (or an
+unattached ELSE that becomes a separate `genericCmd`). Conversely,
+`if-empty-unquoted-valid` is tagged `negative` for a live syntax error that
+the permissive grammar still accepts.
+
 Semantic rejection guidance (valid `%~` letters, SET /A rules, remarks, and
 related facts) lives in [`data/expansion.yaml`](../data/expansion.yaml). Parser
 acceptance does not imply catalog validity.

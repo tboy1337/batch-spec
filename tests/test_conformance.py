@@ -273,6 +273,33 @@ def test_collect_top_level_statements_handles_non_tree() -> None:
 
 
 @pytest.mark.integration
+def test_set_punct_name_stays_single_setstmt(generated_parser: None) -> None:
+    """Unquoted SET names with ~ @ # $ must not mid-line-split into genericCmd."""
+    tree, errors = run_parser._parse_antlr(["set a~b=1", "set var@x=3", "set n#1=h"])
+    assert tree is not None
+    assert errors == []
+    statements = run_parser._collect_top_level_statements(tree)
+    assert len(statements) == 3
+    assert all(
+        run_parser._statement_rule_name(stmt) == "setStmt" for stmt in statements
+    )
+
+
+@pytest.mark.integration
+def test_hash_dollar_at_are_argument_tokens(generated_parser: None) -> None:
+    tree, errors = run_parser._parse_antlr(
+        ["echo #alone", "echo $alone", "echo hello@there"]
+    )
+    assert tree is not None
+    assert errors == []
+    statements = run_parser._collect_top_level_statements(tree)
+    assert len(statements) == 3
+    assert all(
+        run_parser._statement_rule_name(stmt) == "genericCmd" for stmt in statements
+    )
+
+
+@pytest.mark.integration
 def test_parse_antlr_parses_simple_script(generated_parser: None) -> None:
     generated_dir = str(run_parser.GENERATED_DIR)
     if generated_dir in sys.path:

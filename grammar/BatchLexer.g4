@@ -36,6 +36,10 @@ REM            : {self._atLineStart()}? [rR][eE][mM] ~[\r\n]* -> skip ;
 LABEL          : {self._atLineStart()}? ':' ~[\r\n]+ ;
 
 AT             : '@' ;
+// Bare # / $ appear in args and SET names (live cmd). Keep as distinct
+// tokens so they are not dropped as recognition errors outside %name%.
+HASH           : '#' ;
+DOLLAR         : '$' ;
 
 FOR            : [fF][oO][rR] {self._keywordTrailerOk()}? ;
 IF             : [iI][fF] {self._keywordTrailerOk()}? ;
@@ -189,5 +193,5 @@ UNMATCHED_SQ
     ;
 
 UNMATCHED_BACKTICK
-    : '`' (~[\r\n`'] | '``')*
+    : '`' (~[\r\n`] | '``')*
     ;

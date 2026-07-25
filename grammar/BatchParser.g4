@@ -293,9 +293,32 @@ endlocalStmt
     : ENDLOCAL commandTail?
     ;
 
+// Unquoted SET names may include punctuation that the lexer emits as
+// separate tokens (~ @ # $ ; , ( ) * + ? . - and digits). Keep consuming
+// name parts until EQUALS / chain / newline so `set a~b=1` and `set var@x=3`
+// remain a single setStmt (live cmd; see expansion environment_variable_names).
 setTarget
-    : argWord
+    : setNamePart+
     | PERCENT_VAR
+    ;
+
+setNamePart
+    : argWord
+    | NUMBER
+    | HEX_NUMBER
+    | TILDE
+    | AT
+    | HASH
+    | DOLLAR
+    | SEMICOLON
+    | COMMA
+    | DOT
+    | PLUS
+    | MINUS
+    | ASTERISK
+    | QUESTION
+    | LPAREN
+    | RPAREN
     ;
 
 setRest
@@ -353,6 +376,9 @@ token
     | BANG_VAR
     | BANG
     | TILDE
+    | AT
+    | HASH
+    | DOLLAR
     | CARET_ESCAPE
     | CARET
     | ASTERISK

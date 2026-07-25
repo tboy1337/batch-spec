@@ -1,4 +1,4 @@
-version: 18
+version: 19
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -27,13 +27,15 @@ invalid_combinations:
   - modifiers: "*"
     reason: "%~ modifiers may not be used with %* (CALL /?)"
   # Matches forms like %~q1 or %~dq1 where a letter is outside nxfpdstaz.
-  # Does not match %~1, %~dpnx0, %~*, or %~$PATH:1. Note: %~* is still
-  # semantically invalid (see modifiers: "*" above); the letter-regex simply
-  # does not catch the star form because * is an allowed terminator.
-  - pattern: "%~[nxfpdstaz]*[^0-9*$nxfpdstaz]"
+  # Does not match %~1, %~dpnx0, %~DPNX0, %~*, or %~$PATH:1. Letter classes
+  # include both cases because modifiers are case-insensitive (FOR /?, CALL /?).
+  # Note: %~* is still semantically invalid (see modifiers: "*" above); the
+  # letter-regex simply does not catch the star form because * is an allowed
+  # terminator.
+  - pattern: "%~[nxfpdstazNXFPDSTAZ]*[^0-9*$nxfpdstazNXFPDSTAZ]"
     reason: >-
-      Percent-tilde letter modifiers must be from nxfpdstaz (CALL /?);
-      the parameter must be 0-9, *, or a path-search $ENV: form
+      Percent-tilde letter modifiers must be from nxfpdstaz (case-insensitive;
+      CALL /?, FOR /?); the parameter must be 0-9, *, or a path-search $ENV: form
 
 valid_combined_examples:
   - "%~1"
@@ -451,7 +453,13 @@ set_a:
     the expression.
   interactive_display: >-
     When SET /A runs from the interactive command line outside a script, it
-    prints the final expression value.
+    prints the final expression value (SET /?). Inside a .cmd/.bat script the
+    same expression is evaluated silently (no automatic print).
+  expression_without_assignment: >-
+    SET /A accepts a bare expression with no assignment (for example
+    set /A 1+2). Assignment operators are optional; when present they require
+    an environment variable name on the left (SET /?). In scripts the
+    expression still runs (and can set ERRORLEVEL on failure) without printing.
   unary_bang_vs_delayed: >-
     SET /A lists unary ! (logical NOT). When delayed expansion is enabled,
     ! is also the delayed-expansion delimiter, so bare ! in a SET /A expression
@@ -583,7 +591,10 @@ environment_variable_names:
   tokenizer_note: >-
     The ANTLR lexer treats %name% as a single PERCENT_VAR for any name
     characters other than '%', '=', or newlines (matching live cmd's wide
-    charset, including spaces and punctuation such as @ # $ ; [ ]). Prefer
+    charset, including spaces and punctuation such as @ # $ ; [ ]). Unquoted
+    SET targets assemble the same punctuation from adjacent tokens
+    (setNamePart: letters/digits plus ~ @ # $ ; , ( ) * + ? . -) so forms
+    such as set a~b=1 and set var@x=3 stay one setStmt. Prefer
     underscore-alnum names for portable scripts.
   case_insensitive_names: >-
     Environment variable names are case-insensitive for lookup and assignment
@@ -1158,6 +1169,11 @@ remarks:
     echoes the expanded value. Delayed !FOO! on a REM line typically remains
     literal even when delayed expansion is enabled (percent phase still
     applies; bang expansion does not rewrite the remark the same way).
+  rem_no_redirection: >-
+    Because REM remarks out the remainder of the physical line, redirection
+    operators and chained commands on that same REM line do not execute (for
+    example rem note >file.txt does not create file.txt). Prefer a separate
+    command line for real redirects.
 
 redirection:
   description: >-
@@ -1335,11 +1351,15 @@ color_command:
     console, or DefaultColor registry) (COLOR /?).
   same_color_errorlevel: >-
     COLOR /? documents ERRORLEVEL 1 when foreground and background are the
-    same (for example COLOR 00). On live Windows 10/11 cmd.exe, COLOR also
-    leaves ERRORLEVEL 1 after successful different-color changes and after
-    bare COLOR (restore); observed codes are 1 rather than 0. Do not treat
-    COLOR as clearing ERRORLEVEL or as succeeding for && chaining.
-  source: "COLOR /? (audit/cmd-help/color-help.txt); live cmd.exe"
+    same (for example COLOR 00). Microsoft Learn and SS64 describe successful
+    COLOR as ERRORLEVEL 0, but live Windows 10/11 cmd.exe also leaves
+    ERRORLEVEL 1 after successful different-color changes and after bare
+    COLOR (restore); observed codes are 1 rather than 0, and COLOR ... &&
+    does not run the right-hand side. Prefer live-host behavior over the
+    success=0 documentation when writing portable scripts.
+  source: >-
+    COLOR /? (audit/cmd-help/color-help.txt); live cmd.exe; contrast
+    Microsoft Learn color command and SS64 COLOR
   no_arg_restore: >-
     COLOR with no argument restores the colors active when CMD started
     (/T, console defaults, or DefaultColor registry) (COLOR /?).

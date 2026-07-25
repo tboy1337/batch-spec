@@ -1,0 +1,11 @@
+{
+  "description": "REM remarks out trailing redirect text on the same line (parse accepts; no separate redirect stmt)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "rem",
+    "redirection"
+  ]
+}

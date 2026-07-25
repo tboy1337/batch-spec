@@ -62,6 +62,10 @@ def test_expansion_invalid_tilde_patterns_match_bad_forms() -> None:
     for spared_by_letter_regex in (
         "%~1",
         "%~dpnx0",
+        "%~DPNX0",
+        "%~F1",
+        "%~A1",
+        "%~FTZA1",
         "%~*",
         "%~$PATH:1",
         "%~ftza1",
@@ -70,6 +74,9 @@ def test_expansion_invalid_tilde_patterns_match_bad_forms() -> None:
         assert not any_match(
             spared_by_letter_regex
         ), f"unexpected letter-regex match for {spared_by_letter_regex!r}"
+
+    for bad_upper in ("%~Q1", "%~DQ1", "%~B0"):
+        assert any_match(bad_upper), f"expected invalid pattern match for {bad_upper!r}"
 
     star_rules = [entry for entry in invalid if entry.get("modifiers") == "*"]
     assert star_rules, "expected invalid_combinations entry for %~ with %*"

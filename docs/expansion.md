@@ -8,7 +8,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 ## Topics covered
 
-- **Percent-tilde (`%~`)** - requires Command Extensions; letter modifiers (order-independent, case-insensitive), path search (`%~$ENV:n`, empty on miss; letter+`$` combos such as `%~dp$PATH:1`), bare quote-strip (`%~1`), attribute mask (`%~a`), short-name full paths (`%~sf`), locale timestamps (`%~t`), bare-vs-`f` qualification, and the multi-digit batveat (`%~10` is `%~1` plus literal `0`). With extensions off, `%~` forms are not expanded (literal `~...`). `%~*` is semantically invalid (CALL /?) even when the letter-regex does not match it.
+- **Percent-tilde (`%~`)** - requires Command Extensions; letter modifiers (order-independent, case-insensitive), path search (`%~$ENV:n`, empty on miss; letter+`$` combos such as `%~dp$PATH:1`), bare quote-strip (`%~1`), attribute mask (`%~a`), short-name full paths (`%~sf`), locale timestamps (`%~t`), bare-vs-`f` qualification, and the multi-digit batveat (`%~10` is `%~1` plus literal `0`). With extensions off, `%~` forms are not expanded (literal `~...`). `%~*` is semantically invalid (CALL /?) even when the letter-regex does not match it. The `invalid_combinations` letter-regex lists both cases (`nxfpdstaz` / `NXFPDSTAZ`) so uppercase forms such as `%~DPNX0` are not false-positive rejects.
 
 - **Percent expansion** - in scripts, undefined `%name%` / `!name!` expand to empty; on the interactive prompt undefined `%name%` often remains literal; incomplete unclosed `%` forms are not successful expansions (leading `%` typically stripped, leaving trailing text as literals).
 
@@ -24,7 +24,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **String ops** - require Command Extensions; substring with negative offsets/lengths and omitted length; replace-all; empty replacement deletes; `*` prefix replace; case-insensitive `%var:old=new%` search; missing/empty substring batveat (`%NOSUCH:~-1%` / after `SET name=` yields literal `~-1`); with extensions off, substring/replace forms expand to empty
 
-- **SET /A** - requires Command Extensions; operators with documented precedence, grouping, comma separator, hex/octal (`no_binary_literal`: not `0b` binary; `08`/`09` invalid), undefined-as-zero, bare names, 32-bit wrap on overflow, quoting rules; unary `!` interacts with delayed expansion; divide-by-zero leaves non-zero ERRORLEVEL; with extensions off, unquoted `set /A N=1+1` is a plain assignment whose name includes `/A` (quoted `set /A "..."` is a syntax error)
+- **SET /A** - requires Command Extensions; operators with documented precedence, grouping, comma separator, hex/octal (`no_binary_literal`: not `0b` binary; `08`/`09` invalid), undefined-as-zero, bare names, 32-bit wrap on overflow, quoting rules; unary `!` interacts with delayed expansion; divide-by-zero leaves non-zero ERRORLEVEL; expression-only forms (`set /A 1+2`) are valid (print interactively, silent in scripts); with extensions off, unquoted `set /A N=1+1` is a plain assignment whose name includes `/A` (quoted `set /A "..."` is a syntax error)
 
 - **Plain SET assignment** - spaces around `=` become part of the name and/or value; prefix query (`SET P`, extensions); quoted `SET "name=value"` requires extensions; missing name/prefix sets ERRORLEVEL 1; `SET name=` unsets; `.bat` vs `.cmd` ERRORLEVEL matrix after successful SET/PATH/PROMPT/ASSOC/FTYPE (and SET /A / SET /P); APPEND is absent on modern hosts
 
@@ -64,7 +64,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **EXIT** - bare `EXIT` ends the cmd process; `EXIT /B` ends the script/routine; omit exitCode to preserve ERRORLEVEL on CALL return, or pass n to set it; top-level bare `EXIT /B` under `cmd /C` may still yield process exit 0
 
-- **Remarks** - `REM` vs `::` label-style remarks; REM consumes the rest of the physical line (including a trailing `&`); percent expansion still runs on REM lines (delayed `!` typically stays literal); a `::` line containing `)` inside `( )` can close the block early -- prefer REM in paren blocks
+- **Remarks** - `REM` vs `::` label-style remarks; REM consumes the rest of the physical line (including a trailing `&` and any `>` redirect on that line); percent expansion still runs on REM lines (delayed `!` typically stays literal); a `::` line containing `)` inside `( )` can close the block early -- prefer REM in paren blocks
 
 - **PROMPT `$` codes** - `$P$G`, `$T`, `$$`, and extensions `$+` / `$M` (PROMPT /?); bare PROMPT restores displayed `$P$G` and clears the PROMPT env var
 
@@ -82,7 +82,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **RMDIR/RD** - `/S` removes a directory tree; `/Q` quiets `/S`; tree removal remains available with extensions off (RD /?)
 
-- **COLOR** - two hex digits for background/foreground; COLOR /? documents ERRORLEVEL 1 for same fg/bg, and live cmd leaves ERRORLEVEL 1 after successful COLOR too (not &&-friendly); unavailable when extensions are off (COLOR /?)
+- **COLOR** - two hex digits for background/foreground (COLOR /?: background then foreground); COLOR /? documents ERRORLEVEL 1 for same fg/bg; Microsoft Learn/SS64 describe success as 0, but live Windows 10/11 cmd leaves ERRORLEVEL 1 after successful COLOR too (not &&-friendly); unavailable when extensions are off (COLOR /?)
 
 - **DEL/ERASE** - `/S` display shows only deleted files when extensions are on (DEL /?)
 

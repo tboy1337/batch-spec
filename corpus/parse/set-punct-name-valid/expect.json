@@ -1,7 +1,8 @@
 {
-  "description": "SET names with ~ and @ punctuation (broader charset in expansion.yaml)",
+  "description": "Unquoted SET names with punctuation stay one setStmt (~ @ # $ ; ())",
   "parse": {
-    "should_parse": true
+    "should_parse": true,
+    "top_level_statement": "setStmt"
   },
   "tags": [
     "set",

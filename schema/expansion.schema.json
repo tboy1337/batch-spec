@@ -452,6 +452,9 @@
         "interactive_display": {
           "type": "string"
         },
+        "expression_without_assignment": {
+          "type": "string"
+        },
         "unary_bang_vs_delayed": {
           "type": "string"
         },
@@ -1142,6 +1145,9 @@
           "type": "string"
         },
         "percent_expansion_still_runs": {
+          "type": "string"
+        },
+        "rem_no_redirection": {
           "type": "string"
         }
       },

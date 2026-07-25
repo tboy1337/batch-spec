@@ -1,0 +1,11 @@
+{
+  "description": "Bare # $ and mid-line @ are argument tokens (not recognition errors / statement splits)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "echo",
+    "quoting"
+  ]
+}
