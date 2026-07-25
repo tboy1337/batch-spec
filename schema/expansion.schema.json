@@ -349,6 +349,9 @@
         },
         "empty_on_miss": {
           "type": "string"
+        },
+        "combine_with_letter_modifiers": {
+          "type": "string"
         }
       },
       "additionalProperties": false

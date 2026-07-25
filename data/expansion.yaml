@@ -1,4 +1,4 @@
-version: 16
+version: 18
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -53,6 +53,10 @@ path_search_modifier:
   empty_on_miss: >-
     When the named environment variable is undefined or no matching file is
     found, %~$ENV:n expands to an empty string (CALL /?).
+  combine_with_letter_modifiers: >-
+    Letter modifiers may precede the $ENV: search (for example %~dp$PATH:1
+    expands to the drive+path of the first PATH hit). The $ENV: form still
+    terminates the modifier sequence; a miss expands to empty.
 
 percent_tilde_notes:
   requires_command_extensions: >-
@@ -120,8 +124,9 @@ delayed_expansion:
     Delayed expansion is independent of Command Extensions. cmd /E:OFF /V:ON
     (or SETLOCAL DisableExtensions EnableDelayedExpansion) still expands plain
     !var! forms. Percent and delayed substring/replace ops (%var:~% / !var:~!
-    and :old=new) still require extensions; with extensions off those bang
-    forms do not perform substring/replace.
+    and :old=new) still require extensions; with extensions off those forms
+    expand to empty rather than performing substring/replace or leaving the
+    !var:~...! / %var:~...% text literal.
   enable_keywords:
     - "setlocal enabledelayedexpansion"
     - "setlocal enableextensions enabledelayedexpansion"
@@ -144,8 +149,10 @@ delayed_expansion:
   exclamation_escaping: >-
     With delayed expansion enabled, a literal ! commonly needs caret escaping
     such as ^^!. The same ^^ before a non-! character yields a single caret
-    (for example ^^2 becomes ^2), so bang escaping is phase-sensitive and not
-    identical to ordinary caret doubling for other characters.
+    (for example ^^2 becomes ^2). Extra caret pairs continue to interact with
+    bang phases (for example ^^^^! yields a single caret), so bang escaping is
+    phase-sensitive and not identical to ordinary caret doubling for other
+    characters.
   case_insensitive_search: >-
     Delayed !var:old=new! search is case-insensitive, matching percent
     %var:old=new% behavior; replacement text is literal.
@@ -166,7 +173,9 @@ delayed_expansion:
   for_accumulate_pattern: >-
     With delayed expansion enabled, a FOR body can accumulate with forms such
     as set "LIST=!LIST! %%i" so each iteration sees the updated LIST. Plain
-    %LIST% expands when the FOR block is parsed and stays fixed for the loop.
+    %LIST% expands when the FOR block is parsed and stays fixed for the loop;
+    if LIST starts empty, set LIST=%LIST% %%i therefore keeps only the last
+    iteration's contribution rather than building a growing list.
   value_with_exclamation: >-
     When delayed expansion is enabled, a value that contains ! (and often ^) can
     be corrupted or truncated during !var! expansion and inside FOR bodies.
@@ -352,8 +361,9 @@ string_operations:
   description: "Batch substring and search-replace expansion"
   requires_command_extensions: >-
     Substring (%var:~...) and replace (%var:old=new%) forms require Command
-    Extensions (SET /?). With extensions disabled these expansions do not
-    apply as documented substring/replace operations.
+    Extensions (SET /?). With extensions disabled, both percent and delayed
+    substring/replace forms expand to empty rather than performing the
+    operation or leaving the operator text literal.
   negative_offsets: >-
     Negative start counts from the end (%PATH:~-10%). Negative length trims
     from the end (%PATH:~0,-2%). Combined forms like %PATH:~7,-5% are valid.
@@ -697,7 +707,9 @@ command_extensions_off:
     set /A N=1+1 is treated as a plain assignment whose variable name includes
     the /A token (for example name "/A N" with value "1+1"), not as arithmetic.
     Quoted set /A "N=1+1" is a syntax error under OFF (quoted SET requires
-    extensions).
+    extensions). Substring/replace expansions (%var:~...%, %var:old=new%, and
+    delayed equivalents) expand to empty under OFF rather than leaving the
+    operator text literal.
   set_p_requires_extensions: >-
     SET /P requires extensions. With extensions off, set /P var=text is treated
     as a plain assignment whose variable name includes the /P token (for
@@ -732,8 +744,9 @@ command_extensions_off:
     (reported as not recognized internal/external commands).
   delayed_independent: >-
     Delayed expansion can be enabled while extensions are disabled. Plain
-    !var! still expands; substring/replace bang forms and dynamic env names
-    still need extensions (see delayed_expansion.orthogonal_to_extensions).
+    !var! still expands; substring/replace bang forms expand to empty under
+    OFF and dynamic env names still need extensions (see
+    delayed_expansion.orthogonal_to_extensions).
 
 setlocal_options:
   flags:
@@ -950,10 +963,14 @@ command_chaining:
     delayed expansion and extensions (delayed expansion off unless registry or
     an explicit /V:ON on that child enables it; extensions on by default).
     Parent SETLOCAL Enable/Disable DelayedExpansion or Extensions does not
-    automatically apply inside the pipe child, so !var! on a pipe side often
-    remains literal unless the child enables delayed expansion itself, and a
-    child script invoked via the pipe can still use extension IF/FOR/SET forms
-    even when the parent used SETLOCAL DisableExtensions.
+    automatically apply inside the pipe child. With parent delayed expansion
+    off (the usual default), !var! in pipeline statement text remains literal
+    unless the child enables delayed expansion (for example cmd /v:on /c "...").
+    With parent delayed expansion enabled, the parent still expands !var! in
+    the pipeline statement text when that line runs, so the child may never
+    see the bang forms. A child script invoked via the pipe can still use
+    extension IF/FOR/SET forms even when the parent used SETLOCAL
+    DisableExtensions.
   pipe_extensions_default: >-
     Same isolation as pipe_delayed_expansion_default for Command Extensions:
     the pipe child does not inherit the parent's SETLOCAL DisableExtensions /
@@ -1013,7 +1030,10 @@ batch_parameters:
     equals. Quotes preserve those characters inside a single argument.
   empty_quoted_argument: >-
     An explicitly empty quoted argument ("") still occupies a parameter slot.
-    For example call :label "" hop leaves %1 as an empty argument and %2=hop.
+    For example call :label "" hop leaves %1 expanded as two quote characters
+    ("") and %2=hop. Percent-tilde stripping clears the quotes: %~1 is empty.
+    Prefer %~1 or "%~1" when testing for empty content; raw %1=="" compares
+    against the two-character quote form.
   command_line_limit: >-
     The maximum length of a command line that cmd.exe accepts is 8191
     characters (Microsoft documentation for cmd.exe). Longer input is rejected
@@ -1103,9 +1123,12 @@ exit_semantics:
     routine, or ends the script) without necessarily closing the parent cmd.exe
     window. Optional exitCode sets ERRORLEVEL when using /B.
   exit_b_preserves_without_code: >-
-    EXIT /B with no exitCode leaves the prior ERRORLEVEL unchanged (both when
-    returning from CALL :label and when ending a CALLed script). Use EXIT /B n
-    when a specific code must be returned.
+    EXIT /B with no exitCode leaves the prior ERRORLEVEL unchanged when
+    returning from CALL :label (or when ending a CALLed script context that
+    returns to a parent batch). Use EXIT /B n when a specific code must be
+    returned. At top level under cmd /C, bare EXIT /B may still yield process
+    exit code 0 even when ERRORLEVEL was non-zero; fall off EOF or use
+    EXIT /B n to propagate a non-zero process exit code.
 
 remarks:
   rem: >-
@@ -1119,8 +1142,10 @@ remarks:
     used as a remark. Labels must not place : in the second character position
     for real jump targets. Inside parenthesized blocks, prefer REM: a :: line
     that contains ')' has historically been able to close the block early
-    because ')' remains significant on label lines on some hosts/versions.
-    Prefer REM inside ( ) blocks for portable scripts.
+    because ')' remains significant on label lines on some hosts/versions
+    (modern Windows 10 hosts often do not reproduce the early close, but REM
+    remains the portable choice). Prefer REM inside ( ) blocks for portable
+    scripts.
   rem_vs_label: >-
     Prefer REM for portable remarks. :: is a label form and can break or
     misparse inside parenthesized IF/FOR blocks.
@@ -1213,11 +1238,13 @@ script_encoding:
     Batch scripts are interpreted as a sequence of bytes that cmd.exe maps to
     command text. Prefer ASCII or the active console code page without a BOM.
   bom_prefixes_first_token: >-
-    A UTF-8 BOM (EF BB BF) or UTF-16 BOM at the start of a .cmd/.bat file is
-    consumed as part of the first token. A leading @echo off then becomes a
-    non-command such as '<BOM>@echo', so echo remains on and the line fails as
-    an unrecognized command. Save scripts without a BOM, or place a blank line
-    before the first command if a BOM cannot be avoided.
+    A UTF-8 BOM (EF BB BF) at the start of a .cmd/.bat file is consumed as part
+    of the first token. A leading @echo off then becomes a non-command such as
+    '<BOM>@echo', so echo remains on and the line fails as an unrecognized
+    command. A UTF-16 BOM (FF FE / FE FF) typically garbles the entire first
+    line worse than UTF-8 and breaks recognition even more severely. Save
+    scripts without a BOM, or place a blank line before the first command if a
+    BOM cannot be avoided.
   crlf_vs_lf: >-
     CRLF and LF line endings both work on modern Windows cmd for ordinary
     scripts; prefer CRLF for maximum tool compatibility.
@@ -1307,9 +1334,12 @@ color_command:
     With no argument, COLOR restores the colors from cmd.exe startup (/T,
     console, or DefaultColor registry) (COLOR /?).
   same_color_errorlevel: >-
-    COLOR sets ERRORLEVEL to 1 when foreground and background are the same
-    (for example COLOR 00) (COLOR /?).
-  source: "COLOR /? (audit/cmd-help/color-help.txt)"
+    COLOR /? documents ERRORLEVEL 1 when foreground and background are the
+    same (for example COLOR 00). On live Windows 10/11 cmd.exe, COLOR also
+    leaves ERRORLEVEL 1 after successful different-color changes and after
+    bare COLOR (restore); observed codes are 1 rather than 0. Do not treat
+    COLOR as clearing ERRORLEVEL or as succeeding for && chaining.
+  source: "COLOR /? (audit/cmd-help/color-help.txt); live cmd.exe"
   no_arg_restore: >-
     COLOR with no argument restores the colors active when CMD started
     (/T, console defaults, or DefaultColor registry) (COLOR /?).
@@ -1408,13 +1438,15 @@ prompt_codes:
     $_ CR+LF $$ literal $. With Command Extensions, $+ shows PUSHD stack depth
     and $M shows the remote name for a network drive (or empty).
   prompt_env: >-
-    %PROMPT% expands to the current prompt template string. PROMPT without
-    arguments resets to the default ($P$G). Scripts can read and rewrite the
-    template via %PROMPT% (for example prompt %PROMPT%$S).
+    %PROMPT% expands to the current prompt template string when the PROMPT
+    environment variable is defined. After a bare PROMPT reset, the PROMPT
+    environment variable is cleared, so %PROMPT% expands to empty until a new
+    PROMPT command sets it again. Appending via prompt %PROMPT%$S after a bare
+    reset therefore yields only $S, not $P$G$S.
   source: "PROMPT /? (audit/cmd-help/prompt-help.txt)"
   reset_default: >-
-    PROMPT with no arguments resets the prompt template to the default $P$G
-    (PROMPT /?).
+    PROMPT with no arguments restores the default displayed prompt ($P$G) and
+    clears the PROMPT environment variable (PROMPT /?).
 
 break_command:
   description: >-

@@ -1,0 +1,11 @@
+{
+  "description": "Empty quoted argument occupies a slot; %1 is quotes, %~1 is empty",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "call",
+    "parameters"
+  ]
+}

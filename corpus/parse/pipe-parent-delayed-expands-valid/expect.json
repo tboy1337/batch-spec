@@ -1,5 +1,5 @@
 {
-  "description": "With parent delayed expansion off, pipe-side !var! stays literal (child defaults)",
+  "description": "With parent delayed expansion on, !var! in pipeline text is expanded by the parent",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"

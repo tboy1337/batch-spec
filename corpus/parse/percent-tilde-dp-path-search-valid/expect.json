@@ -1,0 +1,11 @@
+{
+  "description": "Letter modifiers may combine with path-search %~$ENV:n forms",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "percent-tilde"
+  ]
+}

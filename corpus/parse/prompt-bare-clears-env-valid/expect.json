@@ -1,0 +1,10 @@
+{
+  "description": "Bare PROMPT clears the PROMPT environment variable (display resets to $P$G)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "prompt"
+  ]
+}
