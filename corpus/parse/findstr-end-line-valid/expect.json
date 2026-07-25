@@ -1,0 +1,11 @@
+{
+  "description": "FINDSTR /E matches at end of line",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "findstr",
+    "external"
+  ]
+}

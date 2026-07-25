@@ -1,0 +1,11 @@
+{
+  "description": "Percent-tilde letter modifiers are order-independent",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "percent-tilde"
+  ]
+}

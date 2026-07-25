@@ -1,4 +1,4 @@
-version: 20
+version: 21
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -180,9 +180,12 @@ delayed_expansion:
     iteration's contribution rather than building a growing list.
   value_with_exclamation: >-
     When delayed expansion is enabled, a value that contains ! (and often ^) can
-    be corrupted or truncated during !var! expansion and inside FOR bodies.
-    Prefer disabling delayed expansion while handling such data, or escape
-    carefully with the phase-sensitive caret rules in exclamation_escaping.
+    be corrupted at SET time and during !var! expansion or inside FOR bodies.
+    Live cmd commonly stores set "A=hi!there" as hithere (the bang and following
+    text are mangled) even before a later !A! read. Prefer disabling delayed
+    expansion while assigning or handling such data, or escape carefully with
+    the phase-sensitive caret rules in exclamation_escaping (for example
+    set "A=hi^!there" then !A!).
 
 for_loop_variables:
   batch_file_prefix: "%%"
@@ -461,11 +464,13 @@ set_a:
     an environment variable name on the left (SET /?). In scripts the
     expression still runs (and can set ERRORLEVEL on failure) without printing.
   unary_bang_vs_delayed: >-
-    SET /A lists unary ! (logical NOT). When delayed expansion is enabled,
-    ! is also the delayed-expansion delimiter, so bare ! in a SET /A expression
-    is consumed as delayed syntax first unless carefully quoted/escaped. Prefer
-    testing unary ! with delayed expansion disabled, or quote the expression
-    and avoid adjacent !name! forms.
+    SET /A lists unary ! (logical NOT). When delayed expansion is disabled,
+    set /A N=!0 yields 1. When delayed expansion is enabled, ! is also the
+    delayed-expansion delimiter, so bare ! in a SET /A expression is consumed as
+    delayed syntax first: forms such as set /A N=!Z! expand the variable before
+    arithmetic, and a lone !0 does not reliably apply unary NOT (live cmd often
+    leaves N=0). Prefer testing unary ! with delayed expansion disabled, or
+    quote/escape so SET /A still sees a literal bang.
   operator_precedence: >-
     Operators apply in decreasing precedence (SET /?): grouping (); unary
     ! ~ -; * / %; + -; << >>; &; ^; |; assignment operators; comma.
@@ -483,6 +488,11 @@ set_a:
   no_power_operator: >-
     SET /A has no exponent/power operator. ^ is bitwise XOR, not power; forms
     such as 2**3 are not valid SET /A syntax.
+  no_floating_point: >-
+    SET /A is signed 32-bit integer arithmetic only. There is no floating-point
+    type or decimal fraction result; fractional work requires scaled integers or
+    an external tool rather than native float operators (see
+    integer_division_truncates).
   failed_leaves_prior: >-
     When a SET /A assignment expression fails (divide-by-zero, invalid number,
     etc.), the target variable is left unchanged (prior value or still unset).
@@ -1226,7 +1236,8 @@ redirection:
     NUL and CON are reliable redirect targets/sources on modern Windows (for
     example >nul, >CON). Other reserved device names such as PRN, AUX, COM1,
     and LPT1 may fail as redirect targets with "The system cannot find the file
-    specified" depending on the host; treat them as OS device names, not
+    specified" depending on the host (live Windows 10 cmd often leaves
+    ERRORLEVEL 0 after that failure message); treat them as OS device names, not
     ordinary files.
 
 paren_block_expansion:
@@ -1258,10 +1269,12 @@ expansion_phases: >-
   (including line-continuation caret); (3) command recognition and execution;
   (4) when delayed expansion is enabled, !var! expansion at execution time
   (including inside already-parsed parenthesized blocks). CALL re-parses its
-  argument tail (notably doubling carets and reducing %% pairs). Pipe sides
-  run in child cmd.exe contexts with their own defaults. See percent_expansion,
-  delayed_expansion, caret_escape, double_percent, paren_block_expansion, and
-  command_chaining for details.
+  argument tail (notably doubling carets and reducing %% pairs): each CALL
+  halves %% sequences on the tail, so call echo %%NAME%% expands NAME after one
+  CALL reparse while a bare echo %%NAME%% in a script prints %NAME%. Nested CALL
+  continues reducing. Pipe sides run in child cmd.exe contexts with their own
+  defaults. See percent_expansion, delayed_expansion, caret_escape,
+  double_percent, paren_block_expansion, and command_chaining for details.
 
 script_encoding:
   description: >-
@@ -1734,10 +1747,15 @@ external_tool_notes:
     affect Batch control flow (&& / || / IF ERRORLEVEL).
   find_and_findstr: >-
     FIND and FINDSTR search text. Successful match leaves ERRORLEVEL 0; no
-    match leaves ERRORLEVEL 1 (confirmed on live Windows 10 cmd). FINDSTR
+    match leaves ERRORLEVEL 1 (confirmed on live Windows 10/11 cmd). FINDSTR
     without /C treats a quoted multi-word argument as OR of words;
     /C:"literal with spaces" searches the literal phrase (FINDSTR /?).
     Default FINDSTR matching is case-sensitive unless /I is used.
+    FINDSTR defaults to regular-expression mode (/R): metacharacters such as
+    . * ^ $ [ ] \< \> apply unless /L forces literal matching (FINDSTR /?;
+    Microsoft Learn findstr). Positional /B /E /X are line-break oriented; a
+    final line without a trailing newline can fail /E or /X matches that succeed
+    after a CRLF (or blank line) is appended (confirmed on live cmd).
     When FINDSTR cannot open a named input file it writes "FINDSTR: Cannot
     open ..." to stderr and leaves ERRORLEVEL 1 (same code as no-match). Prefer
     IF EXIST before searching, or redirect stderr (2>nul) when a missing mask
@@ -1764,11 +1782,13 @@ external_tool_notes:
     Learn robocopy). Locked files or missing delete permission can leave source
     items behind after either switch.
   robocopy_missing_named_file: >-
-    Copying one explicitly named file that does not exist commonly returns
-    ERRORLEVEL 0 (nothing copied / no failure bits) on live Windows cmd. The
-    same missing-file case with XCOPY typically returns a non-zero code such as
-    4 (see xcopy_notes). Prefer IF EXIST or wildcard sets when absence must be
-    treated as failure.
+    When the source directory exists and one explicitly named file under it does
+    not, ROBOCOPY commonly returns ERRORLEVEL 0 (nothing copied / no failure
+    bits) on live Windows cmd. A missing or inaccessible source directory path
+    is different and commonly sets serious-error bit 16. The same missing named
+    file with XCOPY typically returns a non-zero code such as 4 (see
+    xcopy_notes). Prefer IF EXIST or wildcard sets when absence must be treated
+    as failure.
   xcopy_notes: >-
     XCOPY is an external recursive copy tool (XCOPY /?). /C continues after
     errors. Return codes are tool-defined; do not assume identical semantics

@@ -1,0 +1,12 @@
+{
+  "description": "ECHO succeeds for chaining without clearing prior ERRORLEVEL",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "echo",
+    "errorlevel",
+    "chaining"
+  ]
+}

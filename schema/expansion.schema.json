@@ -479,6 +479,9 @@
         "no_power_operator": {
           "type": "string"
         },
+        "no_floating_point": {
+          "type": "string"
+        },
         "failed_leaves_prior": {
           "type": "string"
         }

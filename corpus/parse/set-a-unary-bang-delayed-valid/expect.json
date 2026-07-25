@@ -1,0 +1,12 @@
+{
+  "description": "SET /A unary bang under EnableDelayedExpansion (delayed consumes !)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "arithmetic",
+    "delayed"
+  ]
+}

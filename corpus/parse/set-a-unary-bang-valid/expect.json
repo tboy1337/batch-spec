@@ -1,0 +1,11 @@
+{
+  "description": "SET /A unary logical NOT bang operator",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "arithmetic"
+  ]
+}

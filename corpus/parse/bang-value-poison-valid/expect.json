@@ -1,0 +1,12 @@
+{
+  "description": "Delayed expansion can corrupt SET values containing bang",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "delayed",
+    "set",
+    "expansion"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Successful early command in || chain abandons remainder without parens",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "chaining"
+  ]
+}

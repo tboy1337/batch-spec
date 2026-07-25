@@ -1,0 +1,10 @@
+{
+  "description": "Redirect to PRN device name (host-dependent)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "redirection"
+  ]
+}

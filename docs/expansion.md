@@ -131,7 +131,13 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **DEL/ERASE** -- `/P` `/F` `/S` `/Q` `/A` attributes; directory operand deletes files inside; missing file often leaves ERRORLEVEL 0
 
-- **External tool notes** -- FIND/FINDSTR ERRORLEVEL, `/C` OR-vs-literal, and FINDSTR "Cannot open" (EL 1); WHERE; FORFILES; ROBOCOPY bitmask vs `&&`; ROBOCOPY `/MOV` (files) vs `/MOVE` (files and dirs); ROBOCOPY missing named file often EL 0 vs XCOPY often EL 4; TIMEOUT `-1`..`99999`
+- **External tool notes** -- FIND/FINDSTR ERRORLEVEL, `/C` OR-vs-literal, default regex vs `/L`/`/R`, `/E`/`/X` trailing-newline quirk, and FINDSTR "Cannot open" (EL 1); WHERE; FORFILES; ROBOCOPY bitmask vs `&&`; ROBOCOPY `/MOV` (files) vs `/MOVE` (files and dirs); ROBOCOPY missing named file (existing source dir) often EL 0 vs missing source path often EL 16 vs XCOPY often EL 4; TIMEOUT `-1`..`99999`
+
+- **SET /A integers only** -- no floating-point type; unary `!` conflicts with delayed expansion; expression-only forms silent in scripts
+
+- **Delayed bang poison** -- with delayed expansion on, unescaped `!` in SET values can corrupt the stored value at assignment time
+
+- **CALL reparse** -- each CALL halves `%%` on its argument tail before re-parsing
 
 ## Parse vs catalog
 

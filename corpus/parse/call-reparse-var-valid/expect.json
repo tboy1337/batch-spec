@@ -1,0 +1,11 @@
+{
+  "description": "CALL reparses and expands doubled percents on its tail",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "callStmt"
+  },
+  "tags": [
+    "call",
+    "expansion"
+  ]
+}

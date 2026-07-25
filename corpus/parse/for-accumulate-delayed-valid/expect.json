@@ -1,0 +1,12 @@
+{
+  "description": "FOR accumulate via delayed expansion in DO body",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "delayed",
+    "expansion"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "ROBOCOPY explicitly named missing file (parse smoke)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "robocopy",
+    "external"
+  ]
+}

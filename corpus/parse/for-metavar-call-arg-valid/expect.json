@@ -1,0 +1,11 @@
+{
+  "description": "FOR metavar passed into CALL as ordinary argument",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "call"
+  ]
+}

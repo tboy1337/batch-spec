@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F skips blank input lines by default",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}
