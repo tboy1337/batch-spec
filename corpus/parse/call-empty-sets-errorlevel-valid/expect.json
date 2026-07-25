@@ -1,0 +1,11 @@
+{
+  "description": "Bare (call) with no trailing space sets ERRORLEVEL 1 (parse as callStmt in group)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "groupStmt"
+  },
+  "tags": [
+    "call",
+    "errorlevel"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "CALL of a successful non-label command (echo) clears ERRORLEVEL to 0",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "callStmt"
+  },
+  "tags": [
+    "call",
+    "errorlevel"
+  ]
+}

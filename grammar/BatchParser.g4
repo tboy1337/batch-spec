@@ -249,7 +249,9 @@ forListItem
     ;
 
 callStmt
-    : CALL callTarget commandTail?
+    // Bare CALL / (CALL) / (CALL ) are valid and set ERRORLEVEL (see
+    // expansion.yaml errorlevel.call_empty_*). Target is optional.
+    : CALL callTarget? commandTail?
     ;
 
 callTarget

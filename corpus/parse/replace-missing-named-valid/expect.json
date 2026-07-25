@@ -1,0 +1,12 @@
+{
+  "description": "REPLACE missing named source under existing path often leaves ERRORLEVEL 0 (parse-only fixture)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "replace",
+    "errorlevel",
+    "negative"
+  ]
+}

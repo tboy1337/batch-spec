@@ -1,0 +1,11 @@
+{
+  "description": "Bare CALL with no target sets ERRORLEVEL 1 and parses as callStmt",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "callStmt"
+  },
+  "tags": [
+    "call",
+    "errorlevel"
+  ]
+}

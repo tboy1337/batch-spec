@@ -1,0 +1,10 @@
+{
+  "description": "REPLACE /A add-new-files form parses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "replace"
+  ]
+}

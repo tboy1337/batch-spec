@@ -848,6 +848,12 @@
         },
         "cmd_c_exit_reset": {
           "type": "string"
+        },
+        "call_empty_sets_errorlevel": {
+          "type": "string"
+        },
+        "call_space_clears_errorlevel": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1114,6 +1120,9 @@
           "type": "string"
         },
         "call_preserves_prior_errorlevel": {
+          "type": "string"
+        },
+        "call_command_clears_errorlevel": {
           "type": "string"
         },
         "call_script_returns": {
@@ -2078,6 +2087,9 @@
           "type": "string"
         },
         "reg_query": {
+          "type": "string"
+        },
+        "replace_command": {
           "type": "string"
         }
       },

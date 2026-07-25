@@ -1,0 +1,11 @@
+{
+  "description": "(call ) with trailing space after CALL clears ERRORLEVEL to 0",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "groupStmt"
+  },
+  "tags": [
+    "call",
+    "errorlevel"
+  ]
+}

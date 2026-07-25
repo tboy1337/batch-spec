@@ -1,4 +1,4 @@
-version: 24
+version: 25
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -911,6 +911,20 @@ errorlevel:
     to 0 after a prior failure without SET ERRORLEVEL= (which shadows the
     dynamic name -- see env_var_shadowing). Confirmed on live Windows 10/11
     cmd.
+  call_empty_sets_errorlevel: >-
+    A CALL with no target -- written as bare call or (call) with no trailing
+    space after the word CALL -- sets ERRORLEVEL to 1 without running a
+    subroutine or external. Confirmed on live Windows 10/11 cmd. Prefer this
+    (or COLOR 00) when a script must force a failure code without EXIT /B.
+  call_space_clears_errorlevel: >-
+    A CALL whose only "argument" is a trailing space -- written as call[space]
+    or (call ) with a space before the closing parenthesis -- sets ERRORLEVEL
+    to 0 without running a subroutine or external. The space after CALL is
+    required; (call) and (call ) are different. Confirmed on live Windows
+    10/11 cmd. Prefer this over SET ERRORLEVEL=0 (which shadows the dynamic
+    name -- see env_var_shadowing). Inside a parenthesized block, %ERRORLEVEL%
+    still shows the pre-block value; use !ERRORLEVEL! with delayed expansion
+    when reading the cleared code in the same block.
 
 cmdextversion:
   description: >-
@@ -1177,6 +1191,15 @@ call_goto:
     remains. EXIT /B n from the called context sets ERRORLEVEL to n on return.
     Prefer an explicit EXIT /B 0 at the end of routines when a clean success
     code is required.
+  call_command_clears_errorlevel: >-
+    CALL of a non-label target that succeeds clears ERRORLEVEL to 0 when the
+    called command does not itself set a non-zero code. Examples confirmed on
+    live Windows 10/11 cmd: call echo ok, call rem remark, call ver, and
+    call set "name=value". This differs from CALL :label, which preserves the
+    prior ERRORLEVEL when the routine returns without EXIT /B (see
+    call_preserves_prior_errorlevel). Bare CALL with no target uses the empty /
+    space rules under errorlevel.call_empty_sets_errorlevel and
+    errorlevel.call_space_clears_errorlevel.
   call_script_returns: >-
     CALL other.cmd (or other.bat) runs the script and returns to the caller.
     Invoking other.cmd as a bare command transfers control permanently and does
@@ -1950,3 +1973,17 @@ external_tool_notes:
     Success leaves ERRORLEVEL 0; failure (including a missing key) leaves
     ERRORLEVEL 1 (REG /? Return Code). Prefer IF ERRORLEVEL / %ERRORLEVEL%
     tests when chaining on registry lookups.
+  replace_command: >-
+    REPLACE updates matching files in a destination directory from a source
+    mask (REPLACE /?; audit/cmd-help/replace-help.txt). Default mode replaces
+    only names that already exist in the destination; /A adds new names; /U
+    updates only when the source is newer; /S recurses (incompatible with /A);
+    /R allows read-only targets. Live Windows 10/11 ERRORLEVEL: 0 when the
+    command completes without a hard failure -- including "No files replaced"
+    when a named source is missing under an existing path, when the destination
+    has no matching name, or when zero files needed updating; 3 when the source
+    or destination path is not found; 11 for invalid syntax or switch. Some
+    secondary references document ERRORLEVEL 2 for a missing source file, but
+    live cmd commonly leaves 0 for a missing named file under an existing
+    directory (stderr may still show "No files replaced"). Prefer IF EXIST on
+    the source before relying on REPLACE for presence checks.
