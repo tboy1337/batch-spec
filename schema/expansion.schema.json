@@ -320,6 +320,9 @@
         "missing_or_empty_substring_batveat": {
           "type": "string"
         },
+        "beyond_length_returns_empty": {
+          "type": "string"
+        },
         "case_insensitive_search": {
           "type": "string"
         },
@@ -443,6 +446,15 @@
         "bare_names": {
           "type": "string"
         },
+        "bare_name_numeric_truncation": {
+          "type": "string"
+        },
+        "bare_vs_expanded_noninteger": {
+          "type": "string"
+        },
+        "octal_in_variable_value": {
+          "type": "string"
+        },
         "integer_range": {
           "type": "string"
         },
@@ -480,6 +492,9 @@
           "type": "string"
         },
         "no_floating_point": {
+          "type": "string"
+        },
+        "decimal_literal_partial_assign": {
           "type": "string"
         },
         "failed_leaves_prior": {

@@ -1,0 +1,11 @@
+{
+  "description": "Percent substring past end of a populated string expands empty",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "substring"
+  ]
+}

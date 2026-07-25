@@ -1,4 +1,4 @@
-version: 21
+version: 22
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -295,7 +295,10 @@ for_f:
     inner FOR completes, the outer value is restored on modern Windows.
   input_forms: >-
     file-set; "string" (or 'string' with usebackq); 'command' (or `command`
-    with usebackq). Blank lines are skipped.
+    with usebackq). Blank lines in file and command-output input are skipped
+    (FOR /?): a physical empty line does not produce a loop iteration. A quoted
+    multi-string file-set form such as ("a" "" "b") is not a blank-line probe;
+    cmd treats that as a single string argument rather than three lines.
 
 caret_escape:
   description: >-
@@ -380,6 +383,12 @@ string_operations:
     substring forms like %var:~-1% or %NOSUCH:~0,1% expand to the literal
     ~-offset[,length] text rather than an empty string. SET name= unsets the
     name (IF DEFINED is false); it does not leave a defined empty value.
+  beyond_length_returns_empty: >-
+    When the name is defined and non-empty, a substring that starts past the
+    end of the value (for example %var:~10% on a 6-character string) expands to
+    an empty string rather than the literal ~offset text. A start within the
+    string with a length that runs past the end returns only the remaining
+    characters (for example %var:~3,10% on abcdef yields def).
   case_insensitive_search: >-
     In %var:old=new%, the search for old is case-insensitive; the replacement
     text new is inserted literally. The same case rule applies to delayed
@@ -450,6 +459,26 @@ set_a:
     An environment name that is not defined is treated as numeric 0. Names may
     appear without % percent signs inside the expression.
   bare_names: "Variable names in SET /A expressions expand without requiring %name% wrappers"
+  bare_name_numeric_truncation: >-
+    A bare environment name inside SET /A is read with SET /A's integer scanner,
+    not full percent expansion. A leading signed integer prefix is taken and any
+    following non-integer junk is ignored with ERRORLEVEL 0 (for example
+    amt1=1.99 and amt2=2.50 yields set /A sum=amt1+amt2 -> sum=3; v=12abc yields
+    set /A r=v -> r=12). A value that does not begin with a digit (for example
+    .5) is treated as 0.
+  bare_vs_expanded_noninteger: >-
+    Bare names and %name% / !name! are not equivalent when the stored value is
+    not a pure integer. Bare names truncate silently (bare_name_numeric_truncation).
+    Percent or delayed expansion substitutes the literal text first, so an
+    expression such as set /A r=%amt% with amt=1.99 sees the token 1.99, fails
+    with a non-zero ERRORLEVEL (often 1073750990 on live Windows 10/11 cmd), and
+    may still store a truncated leading integer (see decimal_literal_partial_assign).
+  octal_in_variable_value: >-
+    Leading-zero octal applies to bare-name values as well as literals: v=010
+    yields set /A r=v -> r=8. Invalid octal digits in a bare-name value truncate
+    rather than fail: v=08 or v=09 yields r=0 with ERRORLEVEL 0. By contrast,
+    literal set /A r=08 fails with Invalid number, leaves the prior value
+    unchanged, and sets a non-zero ERRORLEVEL (often 1073750991).
   integer_range: "Signed 32-bit integers (-2147483648 through 2147483647)"
   spaces_around_assignment: >-
     Unlike plain SET, SET /A allows spaces around = and other operators inside
@@ -479,9 +508,12 @@ set_a:
     -2147483648) rather than failing the expression.
   divide_by_zero_errorlevel: >-
     Division by zero and other failed SET /A expressions leave a non-zero
-    ERRORLEVEL (exact code is implementation-defined; live Windows 10 cmd often
-    uses 1073750993 for divide-by-zero and 1073750991 for invalid numeric
-    literals such as 08 or 0b10).
+    ERRORLEVEL (exact codes are implementation-defined). Live Windows 10/11 cmd
+    often uses 1073750993 for divide-by-zero, 1073750991 for invalid numeric
+    literals such as 08 or 0b10, 1073750990 for decimal-point / Missing operator
+    forms such as 1.5, and other nearby codes for malformed expressions (for
+    example a trailing operator). Treat the numeric constants as host-observed
+    hints, not portable API.
   integer_division_truncates: >-
     The / operator performs signed integer division toward zero (for example
     7/2 yields 3 and -7/2 yields -3). There is no floating-point result.
@@ -492,10 +524,20 @@ set_a:
     SET /A is signed 32-bit integer arithmetic only. There is no floating-point
     type or decimal fraction result; fractional work requires scaled integers or
     an external tool rather than native float operators (see
-    integer_division_truncates).
+    integer_division_truncates and bare_name_numeric_truncation).
+  decimal_literal_partial_assign: >-
+    A decimal-point token in the expression text (literal 1.5, or %var% / !var!
+    that expands to such text) is a failed SET /A expression (Missing operator;
+    non-zero ERRORLEVEL, often 1073750990). Despite the failure, live cmd may
+    still write a truncated leading integer into the assignment target (for
+    example set x=99 then set /A x=1.5 leaves x=1). Do not assume failure always
+    preserves the prior value for decimal forms (contrast failed_leaves_prior
+    for Invalid number / divide-by-zero).
   failed_leaves_prior: >-
-    When a SET /A assignment expression fails (divide-by-zero, invalid number,
-    etc.), the target variable is left unchanged (prior value or still unset).
+    When a SET /A assignment fails with Invalid number or divide-by-zero (for
+    example literal 08, 0b10, or 1/0), the target variable is left unchanged
+    (prior value or still unset). Decimal-point / Missing operator failures can
+    still partial-assign a truncated integer (see decimal_literal_partial_assign).
   assignment_requires_name: >-
     Assignment operators require an environment variable name on the left
     (SET /?).
@@ -976,8 +1018,12 @@ command_chaining:
     On live cmd.exe, && binds tighter than ||, so A || B && C behaves as
     A || (B && C), and A && B || C behaves as (A && B) || C. Equal-precedence
     left-to-right is not the observed model; parenthesize when intent is
-    ambiguous. Do not treat a successful || alternative as abandoning an entire
-    physical line when a later && belongs to a tighter group.
+    ambiguous. After a successful || alternative, later || alternatives are
+    skipped (including a trailing && group that belongs to a later alternative,
+    for example cmd /c exit 1 || echo B || echo C && echo D prints only B).
+    Do not assume a successful early || alternative still runs a later && that
+    was grouped into a skipped alternative; parenthesize when the && must always
+    observe the whole || chain.
   pipe_child_process: >-
     Each side of a pipe runs in a child cmd.exe context. Environment mutations
     (SET, SET /P, SETLOCAL) on a pipe side do not update the parent environment.
@@ -1379,11 +1425,14 @@ color_command:
   same_color_errorlevel: >-
     COLOR /? documents ERRORLEVEL 1 when foreground and background are the
     same (for example COLOR 00). Microsoft Learn and SS64 describe successful
-    COLOR as ERRORLEVEL 0, but live Windows 10/11 cmd.exe also leaves
-    ERRORLEVEL 1 after successful different-color changes and after bare
-    COLOR (restore); observed codes are 1 rather than 0, and COLOR ... &&
-    does not run the right-hand side. Prefer live-host behavior over the
-    success=0 documentation when writing portable scripts.
+    COLOR as ERRORLEVEL 0, but live Windows 10/11 cmd.exe leaves ERRORLEVEL 1
+    after successful different-color changes (for example COLOR 17), after same-
+    color attempts, and after bare COLOR (restore), in both .bat and .cmd
+    scripts. COLOR ... && therefore does not run the right-hand side on those
+    hosts. Prefer live-host behavior over the success=0 documentation when
+    writing portable scripts. Note: some Microsoft Learn pages invert the
+    attr digit order in prose; COLOR /? (background then foreground) is
+    authoritative and matches attr_hex.
   source: >-
     COLOR /? (audit/cmd-help/color-help.txt); live cmd.exe; contrast
     Microsoft Learn color command and SS64 COLOR

@@ -1,5 +1,5 @@
 {
-  "description": "FOR /F skips blank input lines by default",
+  "description": "FOR /F command-output form that skips blank lines from echo. between lines",
   "parse": {
     "should_parse": true,
     "top_level_statement": "forStmt"

@@ -1,0 +1,11 @@
+{
+  "description": "SET /A bare names truncate leading integers from non-integer env values",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "set-a"
+  ]
+}

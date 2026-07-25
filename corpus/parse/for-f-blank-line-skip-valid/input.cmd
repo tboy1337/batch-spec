@@ -1,2 +1,2 @@
 @echo off
-for /f "delims=" %%a in ("line1" "" "line2") do echo %%a
+for /f "delims=" %%a in ('echo line1^&echo.^&echo line2') do echo %%a

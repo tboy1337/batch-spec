@@ -1,5 +1,5 @@
 {
-  "description": "Successful early command in || chain abandons remainder without parens",
+  "description": "After a successful || alternative, later || alternatives including a trailing && group are skipped",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"

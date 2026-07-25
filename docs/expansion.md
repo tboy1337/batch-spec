@@ -16,15 +16,15 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **FOR variables / forms** - `%%i` in batch files, `%i` on the interactive command line; letter charset; `/D` `/R` `/L` `/F` forms (extensions); FOR `/R` with `(.)` includes the walk root; `/D /R` with `(*)` lists subdirs only; trailing `?` may match fewer characters; FOR `/R` without wildcards synthesizes `root\name` under each directory; FOR metavars expand in the DO body and share a session letter namespace (nested same-letter restores after inner); classic FOR non-wildcard set members are literals even when missing
 
-- **FOR /F** - `eol` / `skip` / `delims` / `tokens` / `usebackq` (and live `useback` synonym), quote forms, consecutive-delimiter collapse, empty `delims=`, space-must-be-last in `delims`, case-sensitive delimiter chars, default first token, z/Z token ceiling; `eol=` skips lines whose first token starts with that character (mid-line occurrences stay data)
+- **FOR /F** - `eol` / `skip` / `delims` / `tokens` / `usebackq` (and live `useback` synonym), quote forms, consecutive-delimiter collapse, empty `delims=`, space-must-be-last in `delims`, case-sensitive delimiter chars, default first token, z/Z token ceiling; `eol=` skips lines whose first token starts with that character (mid-line occurrences stay data); blank lines in file/command-output input are skipped (a quoted `("a" "" "b")` file-set is not a blank-line probe)
 
 - **Caret escaping** - `2^n-1` for ordinary multilevel hops; CALL doubles carets on its tail (including inside quotes); line-continuation caret must be the last character of the physical line; caret does not escape `%` (percent expansion runs first; use `%%` for a literal percent in scripts)
 
 - **Double percent** - batch `%%` literals; CALL also reduces `%%` pairs to `%` on its argument tail
 
-- **String ops** - require Command Extensions; substring with negative offsets/lengths and omitted length; replace-all; empty replacement deletes; `*` prefix replace; case-insensitive `%var:old=new%` search; missing/empty substring batveat (`%NOSUCH:~-1%` / after `SET name=` yields literal `~-1`); with extensions off, substring/replace forms expand to empty
+- **String ops** - require Command Extensions; substring with negative offsets/lengths and omitted length; past-end on a populated string yields empty (distinct from undefined/empty → literal `~offset`); replace-all; empty replacement deletes; `*` prefix replace; case-insensitive `%var:old=new%` search; missing/empty substring batveat (`%NOSUCH:~-1%` / after `SET name=` yields literal `~-1`); with extensions off, substring/replace forms expand to empty
 
-- **SET /A** - requires Command Extensions; operators with documented precedence, grouping, comma separator, hex/octal (`no_binary_literal`: not `0b` binary; `08`/`09` invalid), undefined-as-zero, bare names, 32-bit wrap on overflow, quoting rules; unary `!` interacts with delayed expansion; divide-by-zero leaves non-zero ERRORLEVEL; expression-only forms (`set /A 1+2`) are valid (print interactively, silent in scripts); with extensions off, unquoted `set /A N=1+1` is a plain assignment whose name includes `/A` (quoted `set /A "..."` is a syntax error)
+- **SET /A** - requires Command Extensions; operators with documented precedence, grouping, comma separator, hex/octal (`no_binary_literal`: not `0b` binary; `08`/`09` invalid as literals), undefined-as-zero, bare names (silent leading-integer truncation of non-integer env values; bare vs `%name%` diverge on decimals), 32-bit wrap on overflow, quoting rules; unary `!` interacts with delayed expansion; divide-by-zero / invalid literals leave non-zero ERRORLEVEL (host-specific codes); decimal literals can fail yet partial-assign; expression-only forms (`set /A 1+2`) are valid (print interactively, silent in scripts); with extensions off, unquoted `set /A N=1+1` is a plain assignment whose name includes `/A` (quoted `set /A "..."` is a syntax error)
 
 - **Plain SET assignment** - spaces around `=` become part of the name and/or value; prefix query (`SET P`, extensions); quoted `SET "name=value"` requires extensions; missing name/prefix sets ERRORLEVEL 1; `SET name=` unsets; `.bat` vs `.cmd` ERRORLEVEL matrix after successful SET/PATH/PROMPT/ASSOC/FTYPE (and SET /A / SET /P); APPEND is absent on modern hosts
 
@@ -48,7 +48,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **IF forms / parentheses** - base and extension predicates; EXIST (not EXISTS) for files and directories; quoted compare sides are string compares; string order is not raw ASCII; unquoted empty operands are a syntax error; classic `.%var%.` padding works only for simple values (breaks on spaces); no native `and`/`or` keywords inside IF; open `(` on the same line as the predicate (spaces allowed); ELSE same-line attachment
 
-- **Command chaining** - `&`, `&&`, `||`, `|`, and parenthesized groups; on live cmd `&&` binds tighter than `||`; pipe sides run in concurrent child cmd contexts (child delayed/extensions default independently of parent SETLOCAL); with parent delayed expansion on, `!var!` in the pipeline text is still expanded by the parent; `A && (B) || (C)` runs C when B fails even after successful A; ECHO/REM can succeed for chaining without clearing ERRORLEVEL; bare trailing `&` inside `( )` is a syntax error
+- **Command chaining** - `&`, `&&`, `||`, `|`, and parenthesized groups; on live cmd `&&` binds tighter than `||`; after a successful `||` alternative later alternatives are skipped (including a trailing `&&` grouped into a later alternative); pipe sides run in concurrent child cmd contexts (child delayed/extensions default independently of parent SETLOCAL); with parent delayed expansion on, `!var!` in the pipeline text is still expanded by the parent; `A && (B) || (C)` runs C when B fails even after successful A; ECHO/REM can succeed for chaining without clearing ERRORLEVEL; bare trailing `&` inside `( )` is a syntax error
 
 - **Redirection** - `>`, `>>`, `<`, `n>`, `>&`, `<&` handle duplication, NUL suppress, group redirects, leading redirects, left-to-right handle order
 
@@ -82,19 +82,19 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **RMDIR/RD** - `/S` removes a directory tree; `/Q` quiets `/S`; tree removal remains available with extensions off (RD /?)
 
-- **COLOR** - two hex digits for background/foreground (COLOR /?: background then foreground); COLOR /? documents ERRORLEVEL 1 for same fg/bg; Microsoft Learn/SS64 describe success as 0, but live Windows 10/11 cmd leaves ERRORLEVEL 1 after successful COLOR too (not &&-friendly); unavailable when extensions are off (COLOR /?)
+- **COLOR** - two hex digits for background/foreground (COLOR /?: background then foreground; some Learn pages invert that order in prose); COLOR /? documents ERRORLEVEL 1 for same fg/bg; Microsoft Learn/SS64 describe success as 0, but live Windows 10/11 cmd leaves ERRORLEVEL 1 after successful COLOR too (not &&-friendly); unavailable when extensions are off (COLOR /?)
 
-- **DEL/ERASE** - `/S` display shows only deleted files when extensions are on (DEL /?); deleting a nonexistent file often leaves ERRORLEVEL 0 despite a stderr message
+- **DEL/ERASE** - `/P` `/F` `/S` `/Q` `/A` attributes; `/S` display shows only deleted files when extensions are on (DEL /?); directory operand deletes files inside; deleting a nonexistent file often leaves ERRORLEVEL 0 despite a stderr message
 
 - **ASSOC/FTYPE** - extension associations and open-command strings; unavailable when extensions are off (ASSOC /?, FTYPE /?)
 
 - **PATH command** - display/set path; `PATH ;` clears the search path
 
-- **START** - quoted title, `/WAIT`, `/B`, `/I`; batch/internal often via new cmd; associations for non-executables
+- **START** - quoted title, `/WAIT`, `/B`, `/I`, `/MIN` `/MAX` priority, `/NODE` `/AFFINITY`, `/D`; batch/internal often via new cmd; associations for non-executables
 
 - **Expansion phases** - percent first, then caret/tokenize/execute; delayed `!` at execution; CALL reparses its tail
 
-- **SET /A arithmetic details** -- integer `/` truncates toward zero; no `**` power operator (`^` is XOR); failed assignments leave the prior value; ERRORLEVEL codes for failures are implementation-defined
+- **SET /A arithmetic details** -- integer `/` truncates toward zero; no `**` power operator (`^` is XOR); Invalid number / divide-by-zero leave the prior value; decimal literals can fail yet partial-assign; bare names silently truncate non-integer env values; ERRORLEVEL codes for failures are implementation-defined
 
 - **BREAK** -- DOS-compat internal; no-op for script control flow under Windows (does not break FOR/IF)
 
@@ -127,13 +127,9 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **CHOICE** -- dedicated section: `/C` `/N` `/CS` `/T` `/D` `/M` and ERRORLEVEL ordinals
 
-- **START** -- `/MIN` `/MAX` priority, `/NODE` `/AFFINITY`, `/D`, `/WAIT` `/B`
-
-- **DEL/ERASE** -- `/P` `/F` `/S` `/Q` `/A` attributes; directory operand deletes files inside; missing file often leaves ERRORLEVEL 0
-
 - **External tool notes** -- FIND/FINDSTR ERRORLEVEL, `/C` OR-vs-literal, default regex vs `/L`/`/R`, `/E`/`/X` trailing-newline quirk, and FINDSTR "Cannot open" (EL 1); WHERE; FORFILES; ROBOCOPY bitmask vs `&&`; ROBOCOPY `/MOV` (files) vs `/MOVE` (files and dirs); ROBOCOPY missing named file (existing source dir) often EL 0 vs missing source path often EL 16 vs XCOPY often EL 4; TIMEOUT `-1`..`99999`
 
-- **SET /A integers only** -- no floating-point type; unary `!` conflicts with delayed expansion; expression-only forms silent in scripts
+- **SET /A integers only** -- no floating-point type; unary `!` conflicts with delayed expansion; bare-name truncation vs expanded decimals; expression-only forms silent in scripts
 
 - **Delayed bang poison** -- with delayed expansion on, unescaped `!` in SET values can corrupt the stored value at assignment time
 
