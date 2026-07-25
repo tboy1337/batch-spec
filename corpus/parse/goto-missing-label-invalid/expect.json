@@ -1,0 +1,12 @@
+{
+  "description": "GOTO missing label still parses; runtime aborts the script (contrast CALL missing label continues EL 1)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "goto",
+    "negative",
+    "errorlevel"
+  ]
+}

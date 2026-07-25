@@ -1,0 +1,10 @@
+{
+  "description": "START launches a separate process (does not return like CALL of a script)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "start"
+  ]
+}

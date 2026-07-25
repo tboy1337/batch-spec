@@ -1,0 +1,10 @@
+{
+  "description": "SORT /UNIQ suppresses duplicate lines (SORT /UNIQUE; Microsoft Learn; local SORT /? may omit it)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "sort"
+  ]
+}

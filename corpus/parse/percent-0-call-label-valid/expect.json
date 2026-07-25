@@ -1,0 +1,11 @@
+{
+  "description": "Inside CALL :label, %0 expands to the :label identity",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "call",
+    "parameters"
+  ]
+}

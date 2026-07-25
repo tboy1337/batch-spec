@@ -1,0 +1,11 @@
+{
+  "description": "ATTRIB missing named file still parses (runtime often ERRORLEVEL 0 on live Win10/11)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "attrib",
+    "errorlevel"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "description": "cmd /C exit N resets ERRORLEVEL for the parent session (parse smoke)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "errorlevel",
+    "cmd",
+    "exit"
+  ]
+}

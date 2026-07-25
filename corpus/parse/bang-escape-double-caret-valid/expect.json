@@ -1,0 +1,12 @@
+{
+  "description": "With delayed expansion on, ^^^^! yields a single caret (phase-sensitive bang escape)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "delayed-expansion",
+    "caret",
+    "expansion"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Unquoted comma, equals, and semicolon split argument slots",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "call",
+    "parameters"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "description": "FOR /F leading consecutive delimiter collapses empty field (token shift)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f",
+    "expansion"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "FC compare two files parses (runtime EL 0 identical / 1 different / 2 missing)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "fc",
+    "errorlevel"
+  ]
+}

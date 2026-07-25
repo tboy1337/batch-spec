@@ -1,4 +1,4 @@
-version: 23
+version: 24
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -186,6 +186,14 @@ delayed_expansion:
     expansion while assigning or handling such data, or escape carefully with
     the phase-sensitive caret rules in exclamation_escaping (for example
     set "A=hi^!there" then !A!).
+  call_second_pass: >-
+    CALL reparses its command tail after percent expansion, so a second
+    percent-expansion pass is available. With delayed expansion enabled,
+    patterns such as call set "out=%%%name%%%" (after set name=other and
+    set other=value) expand %name% on the first pass, then expand %other% on
+    the CALL reparse, storing value in out. Related forms call echo %%var%%
+    similarly print the current value after reparse. This is distinct from
+    single-pass !%name%! indirect expansion.
 
 for_loop_variables:
   batch_file_prefix: "%%"
@@ -282,6 +290,12 @@ for_f:
   consecutive_delims: >-
     Consecutive delimiter characters collapse to one delimiter; empty fields
     between repeated delimiters are not preserved by default.
+  empty_fields_token_shift: >-
+    Because consecutive delimiters collapse, a,,b with delims=, and
+    tokens=1,2,3 yields token1=a, token2=b, and token3 empty (the middle empty
+    field is skipped). A leading delimiter such as ,a,b likewise shifts so
+    token1=a and token2=b. There is no built-in FOR /F mode that preserves
+    empty fields between collapsed delimiters.
   default_first_token: >-
     By default, /F passes the first blank-separated token from each line
     (FOR /?).
@@ -538,6 +552,11 @@ set_a:
     example literal 08, 0b10, or 1/0), the target variable is left unchanged
     (prior value or still unset). Decimal-point / Missing operator failures can
     still partial-assign a truncated integer (see decimal_literal_partial_assign).
+  signed_shift: >-
+    The << and >> operators are signed 32-bit arithmetic shifts (SET /?).
+    Arithmetic right shift preserves the sign bit: set /A s=-8^>^>1 yields -4
+    on live Windows 10/11 cmd. Left shift of -1 by 1 yields -2. Prefer caret-
+    escaping > inside scripts so redirection does not consume the operators.
   assignment_requires_name: >-
     Assignment operators require an environment variable name on the left
     (SET /?).
@@ -657,6 +676,14 @@ environment_variable_names:
     quoted SET "ProgramFiles(x86)=..." forms. Percent expansion of such names
     can interact with parenthesized blocks; keep expansions simple or use
     delayed expansion carefully.
+  ordinary_vs_dynamic: >-
+    Ordinary process environment variables such as COMPUTERNAME, USERNAME,
+    TEMP, TMP, SystemRoot, and ProgramFiles appear in SET listings and are
+    present at session start. Dynamic names listed under
+    dynamic_environment_variables (CD, DATE, TIME, RANDOM, ERRORLEVEL,
+    CMDEXTVERSION, CMDCMDLINE, HIGHESTNUMANODENUMBER) expand only with
+    Command Extensions and do not appear in SET unless shadowed by a normal
+    SET assignment. IF DEFINED works for both ordinary and shadowed names.
 
 echo_forms:
   description: >-
@@ -878,6 +905,12 @@ errorlevel:
     >= test, IF NOT ERRORLEVEL 0 is true only when ERRORLEVEL is negative, not
     when ERRORLEVEL is any non-zero value. Prefer IF %ERRORLEVEL% NEQ 0 (with
     extensions) for a non-zero test when the dynamic name is not shadowed.
+  cmd_c_exit_reset: >-
+    Running cmd /C exit N (or cmd /C "exit /B N") from a batch script sets the
+    parent session ERRORLEVEL to N. This is the usual way to force ERRORLEVEL
+    to 0 after a prior failure without SET ERRORLEVEL= (which shadows the
+    dynamic name -- see env_var_shadowing). Confirmed on live Windows 10/11
+    cmd.
 
 cmdextversion:
   description: >-
@@ -905,6 +938,11 @@ dynamic_environment_variables:
     field is commonly space-padded (a leading space before the digit), so the
     expanded string can begin with whitespace. Prefer replacing spaces or
     zero-padding before parsing time fields.
+  time_space_to_zero: >-
+    A common portable pad is %TIME: =0%, which replaces every space in the
+    dynamic TIME string with 0 so hours 0-9 become zero-padded without
+    depending on locale hour width. When the hour is already two digits the
+    replace is a no-op.
   random_modulo_bias: >-
     %RANDOM% yields an integer in 0..32767. Forms such as %RANDOM% %% N (SET /A)
     are biased unless N divides 32768 evenly, because 32768 is not a multiple of
@@ -962,9 +1000,11 @@ if_forms:
     If both sides are all decimal digits, compare-ops perform a numeric
     comparison; otherwise a string comparison. Quoting a side (for example
     "000" EQU "0") forces string comparison even when the text looks numeric.
-    String ordering is not raw ASCII byte order (for example a LSS A can be
-    true). /I forces case-insensitive string compares and also applies to the
-    string1==string2 form and to compare-ops.
+    String ordering is not raw ASCII byte order (for example on live Windows
+    10/11 cmd, "A" GTR "a" is true while raw ASCII would rank uppercase
+    before lowercase differently; quoted "10" LSS "9" is true as a
+    lexicographic string compare). /I forces case-insensitive string compares
+    and also applies to the string1==string2 form and to compare-ops.
   defined_notes: "DEFINED takes a variable name without % percent signs"
   else_same_line: >-
     ELSE must appear on the same physical line as the end of the IF command
@@ -1525,6 +1565,12 @@ start_command:
     When command is a batch script or internal cmd command, START typically
     invokes a new cmd.exe (commonly with /K for batch) rather than replacing
     the current interpreter. Prefer CALL to run another batch and return.
+  vs_call_return: >-
+    START does not return to the caller the way CALL script.cmd does: the
+    started process runs separately (optionally waited with /WAIT). A bare
+    script invoke without CALL also does not return (see
+    call_goto.call_script_returns). Use CALL for subroutine/script return;
+    use START when a new window/process is intended.
   env_and_associations: >-
     /I starts with the original environment passed to cmd.exe rather than the
     current environment. With extensions, starting a non-executable file uses
@@ -1790,6 +1836,12 @@ sort_command:
     SORT [/R] [/+n] [/M kilobytes] [/L locale] [/REC chars] [[drive1:][path1]filename1]
     [/T [drive2:][path2]] [/O [drive3:][path3]filename3]. /R reverses order;
     /+n starts compare at column n (SORT /?).
+  unique_switch: >-
+    SORT accepts /UNIQUE (and shorter prefixes such as /UNIQ) to suppress
+    duplicate lines after sorting. Microsoft Learn documents /unique; local
+    SORT /? on some Windows 10/11 hosts still omits it. Unknown switches such
+    as /NOTAREAL fail with "Invalid switch" and a non-zero ERRORLEVEL (often
+    1). Confirmed on live Windows 10/11 cmd.
   errorlevel: >-
     SORT typically leaves ERRORLEVEL 0 after a successful sort on live
     Windows 10/11 cmd; failure modes are tool-defined and less commonly used
@@ -1892,3 +1944,9 @@ external_tool_notes:
     (wait indefinitely for a key) through 99999 seconds. /T 0 returns
     immediately (useful in parse/smoke fixtures). /NOBREAK ignores keypresses
     other than CTRL+C until the timeout elapses.
+  reg_query: >-
+    REG QUERY reads registry keys/values (REG /?, REG QUERY /?;
+    audit/cmd-help/reg-help.txt, audit/cmd-help/reg-query-help.txt).
+    Success leaves ERRORLEVEL 0; failure (including a missing key) leaves
+    ERRORLEVEL 1 (REG /? Return Code). Prefer IF ERRORLEVEL / %ERRORLEVEL%
+    tests when chaining on registry lookups.

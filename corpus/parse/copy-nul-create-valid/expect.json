@@ -1,10 +1,11 @@
 {
-  "description": "TIMEOUT /T 0 /NOBREAK parses",
+  "description": "COPY NUL creates an empty file (NUL device source)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"
   },
   "tags": [
-    "timeout"
+    "copy",
+    "redirection"
   ]
 }

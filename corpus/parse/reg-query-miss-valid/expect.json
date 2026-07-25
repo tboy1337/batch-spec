@@ -1,0 +1,11 @@
+{
+  "description": "REG QUERY missing key still parses (runtime ERRORLEVEL 1 on live Win10/11)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "reg",
+    "errorlevel"
+  ]
+}

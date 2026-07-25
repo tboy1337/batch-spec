@@ -1,0 +1,11 @@
+{
+  "description": "Ordinary startup env such as COMPUTERNAME is DEFINED (not a SET-list dynamic name)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "environment"
+  ]
+}

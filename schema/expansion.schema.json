@@ -133,6 +133,9 @@
         },
         "value_with_exclamation": {
           "type": "string"
+        },
+        "call_second_pass": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -235,6 +238,9 @@
           "type": "string"
         },
         "consecutive_delims": {
+          "type": "string"
+        },
+        "empty_fields_token_shift": {
           "type": "string"
         },
         "default_first_token": {
@@ -499,6 +505,9 @@
         },
         "failed_leaves_prior": {
           "type": "string"
+        },
+        "signed_shift": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -623,6 +632,9 @@
           "type": "string"
         },
         "paren_names": {
+          "type": "string"
+        },
+        "ordinary_vs_dynamic": {
           "type": "string"
         }
       },
@@ -833,6 +845,9 @@
         },
         "not_errorlevel_negative": {
           "type": "string"
+        },
+        "cmd_c_exit_reset": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -866,6 +881,9 @@
           "minProperties": 1
         },
         "time_leading_space": {
+          "type": "string"
+        },
+        "time_space_to_zero": {
           "type": "string"
         },
         "random_modulo_bias": {
@@ -1535,6 +1553,9 @@
         "batch_and_internal": {
           "type": "string"
         },
+        "vs_call_return": {
+          "type": "string"
+        },
         "env_and_associations": {
           "type": "string"
         },
@@ -1998,6 +2019,9 @@
         "forms": {
           "type": "string"
         },
+        "unique_switch": {
+          "type": "string"
+        },
         "errorlevel": {
           "type": "string"
         },
@@ -2051,6 +2075,9 @@
           "type": "string"
         },
         "timeout_command": {
+          "type": "string"
+        },
+        "reg_query": {
           "type": "string"
         }
       },
