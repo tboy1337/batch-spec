@@ -42,7 +42,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **ERRORLEVEL / CMDEXTVERSION** - `IF ERRORLEVEL n` means `>= n`; dynamic `%ERRORLEVEL%` env-var shadowing; CHOICE sets ERRORLEVEL to the 1-based choice ordinal (255 on tool error; CTRL+C/BREAK returns 0; /CS /T /D switches); CMDEXTVERSION starts at 1 and never true when extensions are off
 
-- **Dynamic environment variables** - `%CD%`, `%DATE%`, `%TIME%`, `%RANDOM%`, `%ERRORLEVEL%`, `%CMDEXTVERSION%`, `%CMDCMDLINE%`, `%HIGHESTNUMANODENUMBER%` (SET /?; extensions required); `%TIME%` often space-pads hours 0-9; `%DATE%`/`%TIME%` follow locale-specific DATE/TIME formats (separators may include comma); `SET CD=...` shadows `%CD%` without changing process CWD
+- **Dynamic environment variables** - `%CD%`, `%DATE%`, `%TIME%`, `%RANDOM%`, `%ERRORLEVEL%`, `%CMDEXTVERSION%`, `%CMDCMDLINE%`, `%HIGHESTNUMANODENUMBER%` (SET /?; extensions required); `%TIME%` often space-pads hours 0-9; `%DATE%`/`%TIME%` follow locale-specific DATE/TIME formats (separators may include comma); `SET CD=...` shadows `%CD%` without changing process CWD; `%RANDOM% %% N` is biased unless N divides 32768
 
 - **Keyword boundaries** - do not glue keywords to `%`, `!`, or quotes (`IF%1`, `SET%x%` are not IF/SET)
 
@@ -56,7 +56,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **Batch parameters** - `%*` and `%~` require Command Extensions (literal `*` / `~...` when off); base `%0`-`%9` work without extensions; `%10` is `%1` plus literal `0`; `%0` spelling mirrors CALL text; SHIFT `/n` and bare SHIFT; `%*` unaffected by SHIFT; empty quoted `""` occupies a slot (`%1` is `""`, `%~1` empty); unquoted args split on space/tab/comma/semicolon/equals
 
-- **CALL / GOTO** - `CALL :label` return context; CALL requires colon for labels; missing CALL label continues with ERRORLEVEL 1; successful CALL without `EXIT /B` preserves prior ERRORLEVEL; bare script invoke does not return (CALL does); CALL context runs through later labels until EOF / `GOTO :EOF` / `EXIT /B`; `GOTO :EOF` vs `GOTO EOF`; case-insensitive user labels
+- **CALL / GOTO** - `CALL :label` return context; CALL requires colon for labels; missing CALL label continues with ERRORLEVEL 1; successful CALL without `EXIT /B` preserves prior ERRORLEVEL; bare script invoke does not return (CALL does); CALL context runs through later labels until EOF / `GOTO :EOF` / `EXIT /B`; deep recursive CALL aborts near stack limits ("BATCH RECURSION exceeds STACK limits"; host-dependent depth, separate from SETLOCAL's 32 cap); `GOTO :EOF` vs `GOTO EOF`; case-insensitive user labels
 
 - **Expanded GOTO/CALL targets** - `goto %name%` / `CALL :%name%` resolve after percent (or delayed) expansion; missing targets follow ordinary GOTO/CALL missing-label rules
 
@@ -84,7 +84,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **COLOR** - two hex digits for background/foreground (COLOR /?: background then foreground); COLOR /? documents ERRORLEVEL 1 for same fg/bg; Microsoft Learn/SS64 describe success as 0, but live Windows 10/11 cmd leaves ERRORLEVEL 1 after successful COLOR too (not &&-friendly); unavailable when extensions are off (COLOR /?)
 
-- **DEL/ERASE** - `/S` display shows only deleted files when extensions are on (DEL /?)
+- **DEL/ERASE** - `/S` display shows only deleted files when extensions are on (DEL /?); deleting a nonexistent file often leaves ERRORLEVEL 0 despite a stderr message
 
 - **ASSOC/FTYPE** - extension associations and open-command strings; unavailable when extensions are off (ASSOC /?, FTYPE /?)
 
@@ -129,9 +129,9 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **START** -- `/MIN` `/MAX` priority, `/NODE` `/AFFINITY`, `/D`, `/WAIT` `/B`
 
-- **DEL/ERASE** -- `/P` `/F` `/S` `/Q` `/A` attributes; directory operand deletes files inside
+- **DEL/ERASE** -- `/P` `/F` `/S` `/Q` `/A` attributes; directory operand deletes files inside; missing file often leaves ERRORLEVEL 0
 
-- **External tool notes** -- FIND/FINDSTR ERRORLEVEL and `/C` OR-vs-literal; WHERE; FORFILES; ROBOCOPY bitmask vs `&&`; XCOPY; TIMEOUT `-1`..`99999`
+- **External tool notes** -- FIND/FINDSTR ERRORLEVEL, `/C` OR-vs-literal, and FINDSTR "Cannot open" (EL 1); WHERE; FORFILES; ROBOCOPY bitmask vs `&&`; ROBOCOPY `/MOV` (files) vs `/MOVE` (files and dirs); ROBOCOPY missing named file often EL 0 vs XCOPY often EL 4; TIMEOUT `-1`..`99999`
 
 ## Parse vs catalog
 

@@ -850,6 +850,9 @@
         "time_leading_space": {
           "type": "string"
         },
+        "random_modulo_bias": {
+          "type": "string"
+        },
         "date_locale_format": {
           "type": "string"
         },
@@ -1078,6 +1081,9 @@
           "type": "string"
         },
         "call_script_returns": {
+          "type": "string"
+        },
+        "call_stack_limit": {
           "type": "string"
         },
         "goto_eof": {
@@ -1425,6 +1431,9 @@
           "type": "string"
         },
         "directory_operand": {
+          "type": "string"
+        },
+        "missing_file_errorlevel": {
           "type": "string"
         },
         "source": {
@@ -1994,6 +2003,12 @@
           "type": "string"
         },
         "robocopy_errorlevel": {
+          "type": "string"
+        },
+        "robocopy_mov_vs_move": {
+          "type": "string"
+        },
+        "robocopy_missing_named_file": {
           "type": "string"
         },
         "xcopy_notes": {

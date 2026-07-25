@@ -1,0 +1,10 @@
+{
+  "description": "FINDSTR with a missing input file still parses (Cannot open is runtime)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "findstr"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "DEL of a missing file still parses (ERRORLEVEL 0 is runtime)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "del"
+  ]
+}

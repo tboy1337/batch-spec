@@ -1,0 +1,10 @@
+{
+  "description": "Plain SET keeps spaces adjacent to equals in the name and value",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set"
+  ]
+}

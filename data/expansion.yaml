@@ -1,4 +1,4 @@
-version: 19
+version: 20
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -853,6 +853,11 @@ dynamic_environment_variables:
     field is commonly space-padded (a leading space before the digit), so the
     expanded string can begin with whitespace. Prefer replacing spaces or
     zero-padding before parsing time fields.
+  random_modulo_bias: >-
+    %RANDOM% yields an integer in 0..32767. Forms such as %RANDOM% %% N (SET /A)
+    are biased unless N divides 32768 evenly, because 32768 is not a multiple of
+    every N. Prefer rejection sampling or accept the bias for non-cryptographic
+    uses. The generator is also time-seeded pseudo-random, not a CSPRNG.
   date_locale_format: >-
     %DATE% uses the same region-specific format as the DATE command (order of
     day/month/year, separators, and optional weekday text vary by locale). Do
@@ -1080,6 +1085,15 @@ call_goto:
     CALL other.cmd (or other.bat) runs the script and returns to the caller.
     Invoking other.cmd as a bare command transfers control permanently and does
     not return to the caller when the child ends.
+  call_stack_limit: >-
+    Deep recursive CALL :label (or nested CALL of scripts) is limited by the
+    interpreter's call stack. When usage approaches the allocation (commonly
+    reported near 90 percent), cmd aborts with a message such as "BATCH
+    RECURSION exceeds STACK limits" and "BATCH PROCESSING IS ABORTED",
+    including a Recursion Count. Exact depth is host- and stack-dependent
+    (live Windows 10/11 probes often abort in the low hundreds of nested CALL
+    levels). This limit is separate from SETLOCAL's 32-level nesting cap
+    (see setlocal_options.nesting_limit).
   goto_eof: >-
     GOTO :EOF transfers control to the end of the current batch script file
     without requiring a user-defined label. A user label named :eof does not
@@ -1380,7 +1394,12 @@ del_erase_command:
   directory_operand: >-
     If a directory is specified as a name, all files within that directory are
     deleted (not the directory itself) (DEL /?).
-  source: "DEL /? (audit/cmd-help/del-help.txt)"
+  missing_file_errorlevel: >-
+    Deleting a nonexistent file commonly writes a "Could Not Find" message to
+    stderr yet leaves ERRORLEVEL 0 on live Windows 10/11 cmd (the file is
+    already absent). Do not treat a zero ERRORLEVEL after DEL as proof the
+    path existed; prefer IF EXIST before deleting when presence matters.
+  source: "DEL /? (audit/cmd-help/del-help.txt); live cmd.exe"
 
 assoc_ftype_command:
   description: >-
@@ -1719,6 +1738,10 @@ external_tool_notes:
     without /C treats a quoted multi-word argument as OR of words;
     /C:"literal with spaces" searches the literal phrase (FINDSTR /?).
     Default FINDSTR matching is case-sensitive unless /I is used.
+    When FINDSTR cannot open a named input file it writes "FINDSTR: Cannot
+    open ..." to stderr and leaves ERRORLEVEL 1 (same code as no-match). Prefer
+    IF EXIST before searching, or redirect stderr (2>nul) when a missing mask
+    is expected, especially when merging stdout/stderr into one log.
   where_command: >-
     WHERE locates files matching a pattern via PATH/PATHEXT-style search
     (WHERE /?; audit/cmd-help/where-help.txt). Useful to resolve which
@@ -1734,10 +1757,25 @@ external_tool_notes:
     success; >=8 indicates failure (Microsoft Learn KB on Robocopy return
     codes). Because successful copies often return 1, ROBOCOPY ... && next
     skips next unless scripts mask/test ERRORLEVEL explicitly.
+  robocopy_mov_vs_move: >-
+    /MOV moves files only (delete from source after copy; source directories
+    remain). /MOVE moves files and directories (delete from source after copy,
+    including source directory structure when emptied) (ROBOCOPY /?; Microsoft
+    Learn robocopy). Locked files or missing delete permission can leave source
+    items behind after either switch.
+  robocopy_missing_named_file: >-
+    Copying one explicitly named file that does not exist commonly returns
+    ERRORLEVEL 0 (nothing copied / no failure bits) on live Windows cmd. The
+    same missing-file case with XCOPY typically returns a non-zero code such as
+    4 (see xcopy_notes). Prefer IF EXIST or wildcard sets when absence must be
+    treated as failure.
   xcopy_notes: >-
     XCOPY is an external recursive copy tool (XCOPY /?). /C continues after
     errors. Return codes are tool-defined; do not assume identical semantics
-    to COPY or ROBOCOPY when chaining with && / ||.
+    to COPY or ROBOCOPY when chaining with && / ||. A missing named source
+    file commonly yields ERRORLEVEL 4 ("File not found") on live Windows cmd,
+    unlike ROBOCOPY's typical 0 for the same single missing name
+    (see robocopy_missing_named_file).
   timeout_command: >-
     TIMEOUT [/T] seconds [/NOBREAK] waits for a key or a timeout
     (TIMEOUT /?; audit/cmd-help/timeout-help.txt). Valid range includes -1

@@ -1,0 +1,10 @@
+{
+  "description": "Recursive CALL :label form parses (stack limit is runtime)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "callStmt"
+  },
+  "tags": [
+    "call"
+  ]
+}

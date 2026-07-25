@@ -1,0 +1,10 @@
+{
+  "description": "Parse ROBOCOPY /MOV (move files only)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "robocopy"
+  ]
+}
