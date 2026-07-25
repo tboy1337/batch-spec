@@ -1,0 +1,11 @@
+{
+  "description": "FIND with an invalid switch still parses (runtime ERRORLEVEL 2)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "find",
+    "errorlevel"
+  ]
+}

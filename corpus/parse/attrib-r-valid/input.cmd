@@ -1,0 +1,1 @@
+attrib +R file.txt

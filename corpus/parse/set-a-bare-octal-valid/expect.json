@@ -1,0 +1,11 @@
+{
+  "description": "SET /A bare name with leading-zero octal value parses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "set-a"
+  ]
+}

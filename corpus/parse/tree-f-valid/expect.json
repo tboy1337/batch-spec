@@ -1,0 +1,11 @@
+{
+  "description": "TREE with /F parses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "tree",
+    "external"
+  ]
+}

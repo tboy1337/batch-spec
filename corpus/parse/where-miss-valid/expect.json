@@ -1,0 +1,11 @@
+{
+  "description": "WHERE with no match still parses (runtime ERRORLEVEL 1)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "where",
+    "errorlevel"
+  ]
+}

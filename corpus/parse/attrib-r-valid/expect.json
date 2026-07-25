@@ -1,0 +1,11 @@
+{
+  "description": "ATTRIB set read-only parses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "attrib",
+    "external"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "XCOPY missing named source still parses (runtime often ERRORLEVEL 4)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "xcopy",
+    "errorlevel"
+  ]
+}

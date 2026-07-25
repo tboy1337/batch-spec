@@ -1,0 +1,11 @@
+{
+  "description": "TIMEOUT /T 0 /NOBREAK parses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "timeout",
+    "external"
+  ]
+}

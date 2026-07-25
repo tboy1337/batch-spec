@@ -1,4 +1,4 @@
-version: 22
+version: 23
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -1777,6 +1777,9 @@ more_command:
     command | MORE [options], MORE < file, or MORE /E [options] [files].
     Extended /E features include clear, formfeed expand, squeeze blank lines,
     and tab expansion (MORE /?).
+  errorlevel: >-
+    MORE typically leaves ERRORLEVEL 0 after displaying piped or redirected
+    input on live Windows 10/11 cmd; treat it as a filter, not a presence test.
   source: "MORE /? (audit/cmd-help/more-help.txt)"
 
 sort_command:
@@ -1787,6 +1790,10 @@ sort_command:
     SORT [/R] [/+n] [/M kilobytes] [/L locale] [/REC chars] [[drive1:][path1]filename1]
     [/T [drive2:][path2]] [/O [drive3:][path3]filename3]. /R reverses order;
     /+n starts compare at column n (SORT /?).
+  errorlevel: >-
+    SORT typically leaves ERRORLEVEL 0 after a successful sort on live
+    Windows 10/11 cmd; failure modes are tool-defined and less commonly used
+    for && / || chaining than FIND/FINDSTR or ROBOCOPY.
   source: "SORT /? (audit/cmd-help/sort-help.txt)"
 
 external_tool_notes:
@@ -1795,28 +1802,62 @@ external_tool_notes:
     full switch encyclopedias; they document ERRORLEVEL and parsing facts that
     affect Batch control flow (&& / || / IF ERRORLEVEL).
   find_and_findstr: >-
-    FIND and FINDSTR search text. Successful match leaves ERRORLEVEL 0; no
-    match leaves ERRORLEVEL 1 (confirmed on live Windows 10/11 cmd). FINDSTR
-    without /C treats a quoted multi-word argument as OR of words;
-    /C:"literal with spaces" searches the literal phrase (FINDSTR /?).
-    Default FINDSTR matching is case-sensitive unless /I is used.
-    FINDSTR defaults to regular-expression mode (/R): metacharacters such as
-    . * ^ $ [ ] \< \> apply unless /L forces literal matching (FINDSTR /?;
-    Microsoft Learn findstr). Positional /B /E /X are line-break oriented; a
-    final line without a trailing newline can fail /E or /X matches that succeed
-    after a CRLF (or blank line) is appended (confirmed on live cmd).
-    When FINDSTR cannot open a named input file it writes "FINDSTR: Cannot
-    open ..." to stderr and leaves ERRORLEVEL 1 (same code as no-match). Prefer
-    IF EXIST before searching, or redirect stderr (2>nul) when a missing mask
-    is expected, especially when merging stdout/stderr into one log.
+    FIND and FINDSTR search text. On both tools, a successful match leaves
+    ERRORLEVEL 0 and a no-match leaves ERRORLEVEL 1 (confirmed on live
+    Windows 10/11 cmd). Their missing-input and hard-failure codes differ:
+    FINDSTR writes "FINDSTR: Cannot open ..." for a missing named file and
+    leaves ERRORLEVEL 1 (same code as no-match). FIND on a missing named
+    file also leaves ERRORLEVEL 1 on live Windows 10/11 cmd (not always the
+    ERRORLEVEL 2 some secondary references document for every open failure).
+    FIND does use ERRORLEVEL 2 for an invalid switch and for a wildcard
+    pathname that matches no files (confirmed on live cmd). Prefer IF EXIST
+    before searching, or redirect stderr (2>nul) when a missing mask is
+    expected. FINDSTR without /C treats a quoted multi-word argument as OR
+    of words; /C:"literal with spaces" searches the literal phrase
+    (FINDSTR /?). Default FINDSTR matching is case-sensitive unless /I is
+    used. FINDSTR defaults to regular-expression mode (/R): metacharacters
+    such as . * ^ $ [ ] \< \> apply unless /L forces literal matching
+    (FINDSTR /?; Microsoft Learn findstr). Positional /B /E /X are
+    line-break oriented; a final line without a trailing newline can fail
+    /E or /X matches that succeed after a CRLF (or blank line) is appended
+    (confirmed on live cmd).
   where_command: >-
     WHERE locates files matching a pattern via PATH/PATHEXT-style search
     (WHERE /?; audit/cmd-help/where-help.txt). Useful to resolve which
-    executable a bare name would run.
+    executable a bare name would run. A successful match leaves ERRORLEVEL 0;
+    no match leaves ERRORLEVEL 1 (confirmed on live Windows 10/11 cmd).
   forfiles_command: >-
     FORFILES iterates files and can run a command per match
     (FORFILES /?; audit/cmd-help/forfiles-help.txt). Variables use @file
-    style placeholders documented in FORFILES /?.
+    style placeholders documented in FORFILES /?. One or more matches leave
+    ERRORLEVEL 0; no matches leave ERRORLEVEL 1 and write an error to stderr
+    (confirmed on live Windows 10/11 cmd). Prefer wrapping internal commands
+    and redirection in cmd /c inside /C "..." (FORFILES /?).
+  fc_command: >-
+    FC compares two files or sets of files (FC /?; audit/cmd-help/fc-help.txt).
+    Live Windows 10/11 ERRORLEVEL: 0 identical; 1 different; 2 cannot find at
+    least one file; -1 invalid syntax such as only one file argument. Because
+    successful compare is 0 and different is 1, FC ... && next runs next only
+    when the files are identical.
+  comp_command: >-
+    COMP compares two files or sets of files (COMP /?;
+    audit/cmd-help/comp-help.txt). /M suppresses the "Compare more files"
+    prompt. Live Windows 10/11 ERRORLEVEL: 0 identical; 1 different; 2 cannot
+    open a file or invalid arguments/switch. Without /M, pipe a reply
+    (for example echo n^| COMP ...) to avoid an interactive prompt.
+  attrib_command: >-
+    ATTRIB displays or changes file attributes (ATTRIB /?;
+    audit/cmd-help/attrib-help.txt). Common letters include R/A/S/H plus
+    extended NTFS flags listed in ATTRIB /?. /S recurses; /D processes
+    directories; /L targets the symlink itself. A missing named file commonly
+    leaves ERRORLEVEL 0 on live Windows 10/11 cmd despite a stderr message -
+    do not treat zero ERRORLEVEL as proof the path existed.
+  tree_command: >-
+    TREE graphically displays folder structure (TREE /?;
+    audit/cmd-help/tree-help.txt). /F includes files; /A forces ASCII line
+    drawing. A missing path commonly still leaves ERRORLEVEL 0 on live
+    Windows 10/11 cmd while writing an invalid-path message to stderr - prefer
+    IF EXIST before relying on TREE for presence checks.
   robocopy_errorlevel: >-
     ROBOCOPY returns a bitmask ERRORLEVEL: 0 synced/nothing copied; bit 1
     (1) files copied; bit 2 (2) extras; bit 4 (4) mismatches; bit 8 (8) copy
@@ -1848,4 +1889,6 @@ external_tool_notes:
   timeout_command: >-
     TIMEOUT [/T] seconds [/NOBREAK] waits for a key or a timeout
     (TIMEOUT /?; audit/cmd-help/timeout-help.txt). Valid range includes -1
-    (wait indefinitely for a key) through 99999 seconds.
+    (wait indefinitely for a key) through 99999 seconds. /T 0 returns
+    immediately (useful in parse/smoke fixtures). /NOBREAK ignores keypresses
+    other than CTRL+C until the timeout elapses.

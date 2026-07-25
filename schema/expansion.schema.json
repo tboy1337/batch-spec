@@ -1976,6 +1976,9 @@
         "forms": {
           "type": "string"
         },
+        "errorlevel": {
+          "type": "string"
+        },
         "source": {
           "type": "string"
         }
@@ -1993,6 +1996,9 @@
           "minLength": 1
         },
         "forms": {
+          "type": "string"
+        },
+        "errorlevel": {
           "type": "string"
         },
         "source": {
@@ -2018,6 +2024,18 @@
           "type": "string"
         },
         "forfiles_command": {
+          "type": "string"
+        },
+        "fc_command": {
+          "type": "string"
+        },
+        "comp_command": {
+          "type": "string"
+        },
+        "attrib_command": {
+          "type": "string"
+        },
+        "tree_command": {
           "type": "string"
         },
         "robocopy_errorlevel": {

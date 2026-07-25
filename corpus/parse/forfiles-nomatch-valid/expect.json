@@ -1,0 +1,11 @@
+{
+  "description": "FORFILES with no matching mask still parses (runtime ERRORLEVEL 1)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "forfiles",
+    "errorlevel"
+  ]
+}

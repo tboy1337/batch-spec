@@ -1,0 +1,11 @@
+{
+  "description": "FC two-file compare parses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "fc",
+    "external"
+  ]
+}
