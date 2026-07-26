@@ -1,0 +1,11 @@
+{
+  "description": "KEYS status form parses (deprecated DOS-compatibility internal; no-op under Windows)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "keys",
+    "deprecated"
+  ]
+}

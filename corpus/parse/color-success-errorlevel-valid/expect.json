@@ -1,0 +1,12 @@
+{
+  "description": "Successful COLOR leaves ERRORLEVEL 1 on live Windows 10/11 cmd (see expansion.yaml color_command.same_color_errorlevel)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "color",
+    "errorlevel",
+    "extensions"
+  ]
+}

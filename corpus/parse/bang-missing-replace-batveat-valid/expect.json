@@ -1,0 +1,12 @@
+{
+  "description": "Missing/empty delayed replace !empty:old=new! expands to literal old=new",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "delayed-expansion",
+    "string-operations"
+  ]
+}

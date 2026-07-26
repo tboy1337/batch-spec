@@ -1,0 +1,11 @@
+{
+  "description": "Parse ASSOC list after forced ERRORLEVEL; .cmd clears to 0 and .bat preserves prior (runtime in yaml)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "assoc",
+    "errorlevel"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Multilevel caret 2^n-1: ^^^& prints literal ^& so the trailing echo text is not a second command",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "caret",
+    "escaping"
+  ]
+}

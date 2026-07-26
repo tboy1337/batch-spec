@@ -326,6 +326,9 @@
         "missing_or_empty_substring_batveat": {
           "type": "string"
         },
+        "missing_or_empty_replace_batveat": {
+          "type": "string"
+        },
         "beyond_length_returns_empty": {
           "type": "string"
         },

@@ -1,0 +1,11 @@
+{
+  "description": "UTF-8 BOM is not a valid token and yields a lexer error (runtime also prefixes/breaks the first token; see expansion.yaml script_encoding)",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "encoding",
+    "script",
+    "negative"
+  ]
+}

@@ -1,4 +1,4 @@
-version: 25
+version: 26
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -395,8 +395,21 @@ string_operations:
   missing_or_empty_substring_batveat: >-
     When a name is undefined or expands to empty (including after SET name=),
     substring forms like %var:~-1% or %NOSUCH:~0,1% expand to the literal
-    ~-offset[,length] text rather than an empty string. SET name= unsets the
-    name (IF DEFINED is false); it does not leave a defined empty value.
+    ~-offset[,length] text rather than an empty string. Delayed peers such as
+    !empty:~-1! behave the same when delayed expansion is enabled. SET name=
+    unsets the name (IF DEFINED is false); it does not leave a defined empty
+    value.
+  missing_or_empty_replace_batveat: >-
+    The same undefined/empty name rule applies to replace forms. When a name is
+    undefined or expands to empty (including after SET name=), %var:old=new%
+    and delayed !var:old=new! do not yield an empty string. Percent expansion
+    removes %var: (or !var:) and continues scanning, so the remainder
+    old=new% / old=new! typically becomes the literal old=new text after the
+    trailing % / ! is consumed (for example %NOSUCH:a=b% and %EMPTY:a=b% after
+    SET EMPTY= both expand to a=b). Star-prefix forms leave the asterisk as
+    well (%EMPTY:*a=b% -> *a=b). Prefer IF DEFINED before substring/replace, or
+    use delayed expansion only after confirming the name is defined. Distinct
+    from empty_replacement_deletes (%var:old=% on a defined non-empty value).
   beyond_length_returns_empty: >-
     When the name is defined and non-empty, a substring that starts past the
     end of the value (for example %var:~10% on a 6-character string) expands to

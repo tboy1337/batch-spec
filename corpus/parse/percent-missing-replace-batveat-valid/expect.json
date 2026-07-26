@@ -1,0 +1,11 @@
+{
+  "description": "Missing/empty replace %empty:old=new% expands to literal old=new (set empty= leaves name undefined)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "string-operations"
+  ]
+}

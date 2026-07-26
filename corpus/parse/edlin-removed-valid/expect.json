@@ -1,0 +1,11 @@
+{
+  "description": "EDLIN parses as a generic command name; absent on 64-bit Windows (see commands.yaml removed_commands)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "edlin",
+    "removed"
+  ]
+}
