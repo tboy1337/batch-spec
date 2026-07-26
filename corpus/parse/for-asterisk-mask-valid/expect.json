@@ -1,0 +1,8 @@
+{
+  "description": "FOR asterisk mask matches rest of name component",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": ["for", "wildcard"]
+}

@@ -1,0 +1,8 @@
+{
+  "description": "COLOR single hex digit sets foreground only",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": ["color"]
+}

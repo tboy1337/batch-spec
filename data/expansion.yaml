@@ -1,4 +1,4 @@
-version: 29
+version: 30
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -168,10 +168,12 @@ delayed_expansion:
   block_indirect_percent_binding: >-
     Inside a parenthesized IF/FOR block, %name% is still the pre-block value, so
     !prefix%name%! builds the bang name from that frozen percent value even when
-    set name=... runs earlier in the same block. To compose a name assigned in
-    the block, bind it through a FOR metavar (FOR /F %%x in ("!name!") do ...)
-    or CALL with %~1, rather than expecting !prefix%name%! to see the in-block
-    assignment.
+    set name=... runs earlier in the same block (for example set "city=NYC"
+    then echo !food%city%! still uses the pre-block city). To compose a name
+    assigned in the block, bind it through a FOR metavar
+    (FOR /F %%x in ("!name!") do ...), CALL with %~1, or a CALL reparse such as
+    call echo %%food!city!%%, rather than expecting !prefix%name%! to see the
+    in-block assignment.
   for_accumulate_pattern: >-
     With delayed expansion enabled, a FOR body can accumulate with forms such
     as set "LIST=!LIST! %%i" so each iteration sees the updated LIST. Plain
@@ -257,6 +259,12 @@ for_forms:
     alone would not (for example *.tar matching a file whose long extension is
     .targa when a short .tar alias exists); treat mask matching as
     filesystem-dependent and inspect DIR /X when hits look unexpected.
+  wildcard_asterisk: >-
+    In classic FOR / DIR / COPY / DEL masks, * matches any remaining characters
+    in that name component, including dots (for example filea*c.txt matches
+    fileabc.txt; *.tar matches names whose final extension component is tar,
+    not *.tar.gz). Combine with wildcard_question_trailing and short-name notes
+    when diagnosing unexpected hits. Confirmed on live Windows 10/11 cmd.
   goto_exits_body: >-
     A GOTO from a FOR DO body (classic FOR or FOR /F) exits the loop early and
     continues at the target label. BREAK does not terminate FOR iteration
@@ -618,10 +626,13 @@ set_a:
     (prior value or still unset). Decimal-point / Missing operator failures can
     still partial-assign a truncated integer (see decimal_literal_partial_assign).
   signed_shift: >-
-    The << and >> operators are signed 32-bit arithmetic shifts (SET /?).
-    Arithmetic right shift preserves the sign bit: set /A s=-8^>^>1 yields -4
-    on live Windows 10/11 cmd. Left shift of -1 by 1 yields -2. Prefer caret-
-    escaping > inside scripts so redirection does not consume the operators.
+    The << and >> operators are signed 32-bit arithmetic shifts on live
+    Windows 10/11 cmd. Arithmetic right shift preserves the sign bit:
+    set /A s=-8^>^>1 yields -4; left shift of -1 by 1 yields -2. Captured
+    SET /? labels << >> as "logical shift", which understates the live
+    signed/arithmetic behavior; prefer live probes over that help wording.
+    Prefer caret-escaping > inside scripts so redirection does not consume
+    the operators.
   assignment_requires_name: >-
     Assignment operators require an environment variable name on the left
     (SET /?).
@@ -689,10 +700,10 @@ set_p:
     string is optional and may be empty (SET /P var=). Requires Command
     Extensions (see command_extensions_off.set_p_requires_extensions).
   prompt_vs_stdin: >-
-    The text after = is only the console prompt written to stderr/stdout for
-    the user; it is never taken from a pipe or redirected stdin. Piped or
-    redirected data supply the answer line that SET /P assigns to var, not the
-    prompt string (and not %*). Confirmed on live Windows 10/11 cmd.
+    The text after = is only the console prompt written to stdout for the user
+    (confirmed on live Windows 10/11 cmd with 1> / 2> separation); it is never
+    taken from a pipe or redirected stdin. Piped or redirected data supply the
+    answer line that SET /P assigns to var, not the prompt string (and not %*).
   eof_keeps_prior: >-
     If input ends immediately (EOF) or is redirected from NUL with no data,
     the prior value of var is left unchanged.
@@ -952,6 +963,13 @@ setlocal_options:
     The same parse-time percent capture used by endlocal & set "out=%in%" also
     works in a parenthesized block such as (endlocal & set "out=%in%"), because
     %in% expands when the block is parsed, before ENDLOCAL runs.
+  bare_inherits_flags: >-
+    Bare SETLOCAL with no Enable/Disable argument still opens a new local
+    scope and inherits the current Extensions and DelayedExpansion enablement
+    from the outer scope (for example EnableDelayedExpansion then a nested
+    bare SETLOCAL still expands !var!). ENDLOCAL of the nested scope restores
+    the immediately prior snapshot as usual. Confirmed on live Windows 10/11
+    cmd.
 
 errorlevel:
   if_form: >-
@@ -999,9 +1017,14 @@ errorlevel:
 cmdextversion:
   description: >-
     IF CMDEXTVERSION n is true when the Command Extensions version is >= n.
-    Never true when extensions are disabled. %CMDEXTVERSION% exposes the version.
-    The first extensions version is 1 and increments when significant enhancements
-    are added (IF /?).
+    Never true when extensions are disabled (the predicate is a syntax error
+    under /E:OFF). %CMDEXTVERSION% exposes the version. The first extensions
+    version is 1 and increments when significant enhancements are added (IF /?).
+  host_value_windows_10_11: >-
+    Live Windows 10/11 cmd.exe reports %CMDEXTVERSION%=2, so IF CMDEXTVERSION 1
+    and IF CMDEXTVERSION 2 are true while IF CMDEXTVERSION 3 is false. Treat the
+    numeric value as host/OS-specific; scripts that require a minimum should
+    use IF CMDEXTVERSION n rather than hard-coding equality to 2.
 
 dynamic_environment_variables:
   description: >-
@@ -1094,12 +1117,21 @@ if_forms:
     String ordering is not raw ASCII byte order (for example on live Windows
     10/11 cmd, "A" GTR "a" is true while raw ASCII would rank uppercase
     before lowercase differently; quoted "10" LSS "9" is true as a
-    lexicographic string compare). /I forces case-insensitive string compares
-    and also applies to the string1==string2 form and to compare-ops.
+    lexicographic string compare). Mixed letter/digit unquoted compares are
+    string compares: on live Windows 10/11 cmd, A GTR 9 is true and 9 GTR A
+    is false (letters sort after digits in that collation). /I forces
+    case-insensitive string compares and also applies to the string1==string2
+    form and to compare-ops.
   defined_notes: "DEFINED takes a variable name without % percent signs"
   else_same_line: >-
     ELSE must appear on the same physical line as the end of the IF command
     (after the THEN command or the closing ')' of a parenthesized block).
+  else_if_chaining: >-
+    There is no separate else if keyword. Multi-branch forms are ordinary
+    same-line ELSE followed by another IF (for example
+    if 1==2 (echo A) else if 1==1 (echo B) else (echo C)). Each ELSE still
+    requires same-line attachment per else_same_line. Confirmed on live
+    Windows 10/11 cmd.
   exist_files_and_directories: >-
     IF EXIST tests whether a file or directory path exists (trailing backslash
     forms commonly target directories). Wildcard masks in the EXIST operand
@@ -1187,6 +1219,13 @@ command_chaining:
     EnableExtensions state. A separate script CALLed from the pipe right-hand
     side runs under the child's default extensions (on unless that child was
     started with /E:OFF or equivalent).
+  pipe_parent_errorlevel: >-
+    After a pipeline finishes, the parent ERRORLEVEL is the exit code of the
+    rightmost pipe stage. The left stage's exit code is discarded when that
+    child cmd exits (for example findstr NOSUCH ^| ver leaves ERRORLEVEL 0,
+    while echo hi ^| findstr NOSUCH leaves a non-zero ERRORLEVEL). Capture the
+    left code inside that stage (temp file / CALL echo %%^^ERRORLEVEL%%) when
+    both sides matter. Confirmed on live Windows 10/11 cmd.
   and_or_chain_trap: >-
     In A && (B) || (C), statement C runs when A fails or when B leaves a
     non-zero ERRORLEVEL. A successful A followed by a failing B still executes
@@ -1208,9 +1247,10 @@ command_chaining:
 batch_parameters:
   description: "Batch argument references (CALL /?, SHIFT /?)"
   percent_star: >-
-    With Command Extensions, %* expands to all arguments (%1 %2 ...). With
-    extensions disabled, %* is not expanded (literal * after the leading % is
-    consumed). Base %1-%9 and %0 still expand without extensions.
+    With Command Extensions, %* expands to all arguments starting at %1
+    (%1 %2 ...) and never includes %0. With extensions disabled, %* is not
+    expanded (literal * after the leading % is consumed). Base %1-%9 and %0
+    still expand without extensions.
   percent_star_and_shift: >-
     SHIFT moves %1/%2/... but does not change the text expanded by %* (still
     the original full argument list).
@@ -1241,7 +1281,10 @@ batch_parameters:
     see percent_tilde_notes.multi_digit_parameter).
   argument_delimiters: >-
     Unquoted argument tokens are split on space, tab, comma, semicolon, and
-    equals. Quotes preserve those characters inside a single argument.
+    equals. Quotes preserve those characters inside a single argument. Example
+    confirmed on live Windows 10/11 cmd: call :label a=b c,d e;f yields six
+    slots (%1=a %2=b %3=c %4=d %5=e %6=f) while %* retains the original
+    delimiter characters (a=b c,d e;f).
   empty_quoted_argument: >-
     An explicitly empty quoted argument ("") still occupies a parameter slot.
     For example call :label "" hop leaves %1 expanded as two quote characters
@@ -1590,8 +1633,10 @@ color_command:
     requires Command Extensions (see command_extensions_off.assoc_ftype_color_gated).
   attr_hex: >-
     COLOR [attr] takes two hex digits: background then foreground (0-9, A-F).
-    With no argument, COLOR restores the colors from cmd.exe startup (/T,
-    console, or DefaultColor registry) (COLOR /?).
+    A single hex digit is also accepted and sets the foreground while leaving
+    the current background unchanged (for example COLOR 2 / COLOR A). With no
+    argument, COLOR restores the colors from cmd.exe startup (/T, console, or
+    DefaultColor registry) (COLOR /?).
   same_color_errorlevel: >-
     COLOR /? documents ERRORLEVEL 1 when foreground and background are the
     same (for example COLOR 00). Microsoft Learn and SS64 describe successful

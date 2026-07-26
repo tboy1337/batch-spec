@@ -1,0 +1,8 @@
+{
+  "description": "CALL reparse composes in-block delayed name after frozen percent",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": ["for", "delayed", "call"]
+}

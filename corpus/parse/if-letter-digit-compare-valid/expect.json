@@ -1,0 +1,8 @@
+{
+  "description": "IF compare-ops letter vs digit is a string compare",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": ["if"]
+}

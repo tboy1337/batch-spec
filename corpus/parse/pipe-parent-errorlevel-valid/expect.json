@@ -1,0 +1,8 @@
+{
+  "description": "Pipe parent ERRORLEVEL comes from rightmost stage",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": ["pipe", "errorlevel"]
+}
