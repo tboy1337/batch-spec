@@ -1,0 +1,15 @@
+{
+  "description": "SET may define a variable whose entire name is a single semicolon",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "setStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "set",
+    "expansion"
+  ]
+}

@@ -210,6 +210,10 @@
           "type": "string",
           "minLength": 1
         },
+        "wildcard_question_mid": {
+          "type": "string",
+          "minLength": 1
+        },
         "wildcard_asterisk": {
           "type": "string"
         },
@@ -271,6 +275,9 @@
           "type": "string"
         },
         "input_forms": {
+          "type": "string"
+        },
+        "bare_fileset_no_path_search": {
           "type": "string"
         },
         "unquoted_options_caret": {
@@ -660,6 +667,9 @@
             "type": "string",
             "minLength": 1
           }
+        },
+        "lone_semicolon_name": {
+          "type": "string"
         },
         "tokenizer_note": {
           "type": "string"
@@ -1428,6 +1438,9 @@
         "search_order": {
           "type": "string"
         },
+        "cwd_shadows_externals": {
+          "type": "string"
+        },
         "not_found_errorlevel": {
           "type": "string"
         },
@@ -1554,6 +1567,9 @@
           "type": "string"
         },
         "missing_file_errorlevel": {
+          "type": "string"
+        },
+        "hidden_skipped_by_default": {
           "type": "string"
         },
         "source": {
@@ -2015,6 +2031,9 @@
           "minLength": 1
         },
         "forms": {
+          "type": "string"
+        },
+        "wildcard_destination_map": {
           "type": "string"
         },
         "source": {

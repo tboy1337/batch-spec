@@ -1,0 +1,15 @@
+{
+  "description": "Expanded IF predicate true==true is valid; expansion does not inject spaces around ==",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "setStmt",
+      "ifStmt"
+    ]
+  },
+  "tags": [
+    "if",
+    "expansion"
+  ]
+}

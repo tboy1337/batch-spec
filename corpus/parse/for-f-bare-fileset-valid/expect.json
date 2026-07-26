@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F bare file-set parses; runtime resolves relative to CWD only (does not search PATH)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "description": "DEL wildcard without /A skips hidden matches; /A:H targets hidden files",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "del"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "REN with wildcards on both sides maps destination by overwriting a prefix of the preserved source stem (herfile.txt becomes yourile.txt)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "ren",
+    "wildcard"
+  ]
+}

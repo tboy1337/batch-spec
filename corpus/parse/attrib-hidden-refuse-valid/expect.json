@@ -1,0 +1,15 @@
+{
+  "description": "ATTRIB refuses non-H/S changes while hidden/system is set; clear -H/-S (or combine) before +R",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "attrib"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Mid-mask ? (not trailing / not before dot) matches exactly one character in FOR file-set masks",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "wildcard"
+  ]
+}

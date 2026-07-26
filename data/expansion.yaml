@@ -1,4 +1,4 @@
-version: 35
+version: 36
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -259,12 +259,18 @@ for_forms:
     (including the root of the walk). When the set has no wildcards (* or ?),
     FOR /R synthesizes a candidate path of root\setname under each directory
     visited (even when that file does not exist) rather than matching existing
-    files by wildcard (FOR /?).
+    files by wildcard (FOR /?). On live Windows 10/11 cmd, FOR /R %%D in (.)
+    visits depth-first: the walk root, then a subdirectory before that
+    subdirectory's siblings that sort later in the filesystem enumeration.
   slash_d_r: >-
     FOR /D /R (directories recursively) with a wildcard set such as (*) lists
     matching subdirectory names under the walk and does not emit the walk root
     itself as a match. Prefer FOR /R %%D in (.) when the root directory must be
-    included in the enumeration.
+    included in the enumeration. Enumeration order differs from FOR /R (.): on
+    live Windows 10/11 cmd, FOR /D /R %%D in (*) commonly yields sibling
+    directories before descending into a sibling's children (for example A, B,
+    then A\child), so scripts must not assume identical walk order across the
+    two forms.
   slash_l: >-
     FOR /L iterates a numeric sequence (start,step,end), inclusive of endpoints
     that the step reaches. The end need not be hit exactly; iteration stops once
@@ -286,6 +292,13 @@ for_forms:
     alone would not (for example *.tar matching a file whose long extension is
     .targa when a short .tar alias exists); treat mask matching as
     filesystem-dependent and inspect DIR /X when hits look unexpected.
+  wildcard_question_mid: >-
+    A ? that is not at the end of a name component and not immediately before a
+    dot matches exactly one character. Confirmed on live Windows 10/11 cmd:
+    sh?t.txt matches shot.txt and shut.txt but not sht.txt or shunt.txt, while
+    sh??t.txt matches shunt.txt and sh*t.txt matches all of those basenames.
+    Combine with wildcard_question_trailing when diagnosing flexible trailing-?
+    matches versus exact mid-mask ?.
   wildcard_asterisk: >-
     In classic FOR / DIR / COPY / DEL masks, * matches any remaining characters
     in that name component, including dots (for example filea*c.txt matches
@@ -386,6 +399,15 @@ for_f:
     (FOR /?): a physical empty line does not produce a loop iteration. A quoted
     multi-string file-set form such as ("a" "" "b") is not a blank-line probe;
     cmd treats that as a single string argument rather than three lines.
+  bare_fileset_no_path_search: >-
+    A bare FOR /F file-set name (for example for /f %%a in (data.txt) do ...)
+    is resolved relative to the current directory (or an explicit drive/path on
+    the name). Unlike command resolution, live Windows 10/11 cmd does not search
+    %PATH% for that file: a data.txt that exists only under a PATH directory is
+    reported as "The system cannot find the file ..." and yields no iterations.
+    Use an absolute or relative path, pushd to the directory, or a command-output
+    form such as for /f %%a in ('type "path\data.txt"') do ... when the file is
+    not in the CWD.
 
 caret_escape:
   description: >-
@@ -767,9 +789,15 @@ environment_variable_names:
     - "a~b"
     - "a b"
     - "var;x"
+    - ";"
     - "var@x"
     - "var#x"
     - "var$with.odd[chars]"
+  lone_semicolon_name: >-
+    A variable whose entire name is a single semicolon is accepted on live
+    Windows 10/11 cmd (set ";=value" then %;% expands to value). Prefer clearer
+    names in portable scripts; semicolon also appears as an argument delimiter
+    and as the default FOR /F eol comment character.
   tokenizer_note: >-
     The ANTLR lexer treats %name% as a single PERCENT_VAR for any name
     characters other than '%', '=', or newlines (matching live cmd's wide
@@ -1202,9 +1230,12 @@ if_forms:
     Percent (or delayed) expansion runs before IF parses its predicate, so the
     entire comparison text may come from a variable. Example confirmed on live
     Windows 10/11 cmd: set "b=a==a" then if %b% is a true string equality, and
-    set "b=a==b" then if %b% is false. The expanded text must still form a valid
-    IF operand sequence after expansion (spaces and metacharacters can break
-    tokenization the same way as literal operands).
+    set "b=a==b" then if %b% is false. Forms such as set "b=true==true" then
+    if %b% likewise succeed; expansion does not inject spaces around == (the
+    interpreter sees if true==true, which is valid). The expanded text must still
+    form a valid IF operand sequence after expansion (spaces and metacharacters
+    already present in the value can break tokenization the same way as literal
+    operands).
   errorlevel_variable_needs_compare: >-
     IF %ERRORLEVEL% n without == or a compare-op (EQU/NEQ/...) is a syntax
     error (for example '1 was unexpected at this time'). Use classic
@@ -1654,6 +1685,16 @@ command_resolution:
     extensions listed in %PATHEXT% in order (default commonly includes
     .COM;.EXE;.BAT;.CMD and may include scripting extensions). An explicit
     extension on the name restricts the search to that extension.
+  cwd_shadows_externals: >-
+    True internal commands (for example ECHO, DIR, SET, IF, FOR, CALL, GOTO,
+    REM) are never overridden by a same-named file in the current directory.
+    External utilities resolved via PATHEXT -- including System32 tools such as
+    label.exe and where.exe -- can be shadowed by a same-named .bat/.cmd/.exe
+    in the CWD when that extension is tried before the PATH hit. Confirmed on
+    live Windows 10/11 cmd: with label.bat or where.bat in the CWD, bare label
+    / where runs the local script instead of System32. Prefer explicit
+    paths (.\tool.bat, %SystemRoot%\System32\where.exe) when shadowing must be
+    avoided.
   not_found_errorlevel: >-
     When no matching program or script is found, cmd prints that the name is
     not recognized and sets ERRORLEVEL to 9009.
@@ -1769,6 +1810,14 @@ del_erase_command:
     stderr yet leaves ERRORLEVEL 0 on live Windows 10/11 cmd (the file is
     already absent). Do not treat a zero ERRORLEVEL after DEL as proof the
     path existed; prefer IF EXIST before deleting when presence matters.
+  hidden_skipped_by_default: >-
+    Without /A, DEL/ERASE does not delete hidden (or system) matches for a
+    wildcard. Confirmed on live Windows 10/11 cmd: with both visible.txt and
+    hidden (+H) file1.txt present, del *.txt removes visible.txt and leaves the
+    hidden file; del /a:h *.txt (or /a:-h with other filters as needed) is
+    required to target hidden files. ERRORLEVEL commonly remains 0 in both
+    cases. Prefer /A attribute filters or attrib -H before deleting when hidden
+    files must be included.
   source: "DEL /? (audit/cmd-help/del-help.txt); live cmd.exe"
 
 assoc_ftype_command:
@@ -2084,7 +2133,15 @@ ren_command:
   forms: >-
     REN [drive:][path]filename1 filename2. The destination cannot specify a
     new drive or path -- rename in place only (REN /?).
-  source: "REN /? (audit/cmd-help/ren-help.txt)"
+  wildcard_destination_map: >-
+    When both source and destination use wildcards, live Windows 10/11 cmd maps
+    the destination wildcard by overwriting a prefix of the characters that the
+    source wildcard preserved rather than inserting a longer literal stem.
+    Confirmed: ren her*.txt your*.txt renames herfile.txt to yourile.txt (the
+    four-character your stem overwrites herf of the preserved herfile stem,
+    leaving ile.txt), not yourfile.txt. Prefer explicit destination names when
+    the intended mapping is not this overwrite behavior.
+  source: "REN /? (audit/cmd-help/ren-help.txt); live cmd.exe"
 
 chcp_command:
   description: >-
@@ -2205,7 +2262,12 @@ external_tool_notes:
     extended NTFS flags listed in ATTRIB /?. /S recurses; /D processes
     directories; /L targets the symlink itself. A missing named file commonly
     leaves ERRORLEVEL 0 on live Windows 10/11 cmd despite a stderr message -
-    do not treat zero ERRORLEVEL as proof the path existed.
+    do not treat zero ERRORLEVEL as proof the path existed. While the hidden
+    (H) or system (S) attribute is set, ATTRIB refuses other attribute changes
+    and prints "Not resetting hidden file" / "Not resetting system file";
+    ERRORLEVEL often remains 0. Clear -H / -S first (or combine -H/-S with the
+    desired +R/+A change in one ATTRIB invocation) before modifying other
+    attributes on those files. Confirmed on live Windows 10/11 cmd.
   tree_command: >-
     TREE graphically displays folder structure (TREE /?;
     audit/cmd-help/tree-help.txt). /F includes files; /A forces ASCII line

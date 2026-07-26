@@ -1,0 +1,14 @@
+{
+  "description": "Bare external names resolve via CWD then PATH/PATHEXT; a CWD where.bat can shadow where.exe",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "command-resolution"
+  ]
+}
