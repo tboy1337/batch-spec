@@ -268,8 +268,56 @@ def test_statement_rule_name_returns_none_for_empty_children() -> None:
     assert run_parser._statement_rule_name(_EmptyStatement()) is None
 
 
+def test_statement_rule_name_skips_nested_statement_context() -> None:
+    class StatementContext:
+        pass
+
+    class EchoStmtContext:
+        pass
+
+    class _NestedStatement:
+        children: list[object] = [StatementContext(), EchoStmtContext()]
+
+    assert run_parser._statement_rule_name(_NestedStatement()) == "echoStmt"
+
+
+def test_statement_rule_name_returns_none_when_no_context_child() -> None:
+    class _TokenOnly:
+        children: list[object] = [object(), "literal"]
+
+    assert run_parser._statement_rule_name(_TokenOnly()) is None
+
+
+def test_collect_command_line_ignores_non_statement_children() -> None:
+    cmd = type("CommandLineContext", (), {})()
+    cmd.children = [object(), "token"]
+    assert run_parser._collect_command_line_statements(cmd) == []
+
+
 def test_collect_top_level_statements_handles_non_tree() -> None:
     assert run_parser._collect_top_level_statements(object()) == []
+
+
+def test_collect_top_level_skips_non_command_line_children() -> None:
+    line = type(
+        "LineContext",
+        (),
+        {
+            "getChildCount": lambda self: 1,
+            "getChild": lambda self, index: object(),
+        },
+    )()
+
+    tree = type(
+        "ScriptContext",
+        (),
+        {
+            "getChildCount": lambda self: 1,
+            "getChild": lambda self, index: line,
+        },
+    )()
+
+    assert run_parser._collect_top_level_statements(tree) == []
 
 
 @pytest.mark.integration
@@ -313,6 +361,13 @@ def test_parse_antlr_parses_simple_script(generated_parser: None) -> None:
     tree_again, errors_again = run_parser._parse_antlr(["echo bye"])
     assert tree_again is not None
     assert errors_again == []
+
+
+@pytest.mark.integration
+def test_parse_antlr_captures_syntax_errors(generated_parser: None) -> None:
+    _tree, errors = run_parser._parse_antlr(["if"])
+    assert errors
+    assert any("line " in error for error in errors)
 
 
 def test_main_returns_zero_when_all_cases_pass(monkeypatch: pytest.MonkeyPatch) -> None:

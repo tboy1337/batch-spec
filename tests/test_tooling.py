@@ -113,6 +113,21 @@ def test_validate_docs_encoding_rejects_c0(
     assert exc_info.value.code == 1
 
 
+def test_validate_docs_encoding_rejects_invalid_utf8(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "bad.md").write_bytes(b"# Title\n\xff\xfe invalid utf-8\n")
+    monkeypatch.setattr(validate, "DOCS_DIR", docs)
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit) as exc_info:
+        validate._validate_docs_encoding()
+
+    assert exc_info.value.code == 1
+
+
 def test_validate_docs_encoding_accepts_real_docs() -> None:
     validate._validate_docs_encoding()
 
@@ -241,6 +256,65 @@ def test_generate_parser_check_passes_when_up_to_date(
     generate_parser.main()
 
 
+def test_generate_parser_check_reports_missing_antlr_output(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    generated_dir = tmp_path / "generated" / "python"
+    generated_dir.mkdir(parents=True)
+    fingerprint = generate_parser._grammar_fingerprint()
+    init_text = '"""ANTLR-generated batch parser (do not edit by hand)."""\n'
+    for name in ("BatchLexer.py", "BatchParser.py", "BatchParserVisitor.py"):
+        (generated_dir / name).write_text("placeholder", encoding="utf-8")
+    (generated_dir / "__init__.py").write_text(init_text, encoding="utf-8")
+    (generated_dir / ".grammar-stamp").write_text(fingerprint, encoding="utf-8")
+
+    def _fake_run_antlr(output_dir: Path) -> None:
+        (output_dir / "BatchLexer.py").write_text("placeholder", encoding="utf-8")
+        (output_dir / "BatchParser.py").write_text("placeholder", encoding="utf-8")
+        # Intentionally omit BatchParserVisitor.py
+
+    monkeypatch.setattr(generate_parser, "GENERATED_DIR", generated_dir)
+    monkeypatch.setattr(generate_parser, "_run_antlr", _fake_run_antlr)
+    monkeypatch.setattr(sys, "argv", ["generate_parser.py", "--check"])
+
+    with pytest.raises(SystemExit) as exc_info:
+        generate_parser.main()
+
+    assert exc_info.value.code == 1
+    assert "ANTLR did not produce BatchParserVisitor.py" in capsys.readouterr().err
+
+
+def test_generate_parser_check_reports_file_drift(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    generated_dir = tmp_path / "generated" / "python"
+    generated_dir.mkdir(parents=True)
+    fingerprint = generate_parser._grammar_fingerprint()
+    init_text = '"""ANTLR-generated batch parser (do not edit by hand)."""\n'
+    for name in ("BatchLexer.py", "BatchParser.py", "BatchParserVisitor.py"):
+        (generated_dir / name).write_text("committed", encoding="utf-8")
+    (generated_dir / "__init__.py").write_text(init_text, encoding="utf-8")
+    (generated_dir / ".grammar-stamp").write_text(fingerprint, encoding="utf-8")
+
+    def _fake_run_antlr(output_dir: Path) -> None:
+        for name in ("BatchLexer.py", "BatchParser.py", "BatchParserVisitor.py"):
+            (output_dir / name).write_text("fresh", encoding="utf-8")
+
+    monkeypatch.setattr(generate_parser, "GENERATED_DIR", generated_dir)
+    monkeypatch.setattr(generate_parser, "_run_antlr", _fake_run_antlr)
+    monkeypatch.setattr(sys, "argv", ["generate_parser.py", "--check"])
+
+    with pytest.raises(SystemExit) as exc_info:
+        generate_parser.main()
+
+    assert exc_info.value.code == 1
+    assert "Generated file drift: BatchLexer.py" in capsys.readouterr().err
+
+
 def test_generate_parser_writes_stamp_and_init(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -269,6 +343,38 @@ def test_generate_parser_writes_stamp_and_init(
     generate_parser.generate_parser()
 
     assert not (generated_dir / "stale.txt").exists()
+    assert (generated_dir / "__init__.py").is_file()
+    stamp = (generated_dir / ".grammar-stamp").read_text(encoding="utf-8").strip()
+    assert stamp == generate_parser._grammar_fingerprint()
+
+
+def test_generate_parser_creates_missing_output_dir(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    generated_dir = tmp_path / "generated" / "python"
+    assert not generated_dir.exists()
+    grammar_dir = tmp_path / "grammar"
+    grammar_dir.mkdir()
+    (grammar_dir / "BatchLexer.g4").write_text(
+        "lexer grammar BatchLexer;\n", encoding="utf-8"
+    )
+    (grammar_dir / "BatchParser.g4").write_text(
+        "parser grammar BatchParser;\noptions { tokenVocab=BatchLexer; }\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(generate_parser, "GENERATED_DIR", generated_dir)
+    monkeypatch.setattr(generate_parser, "GRAMMAR_DIR", grammar_dir)
+    monkeypatch.setattr(
+        generate_parser.subprocess,
+        "run",
+        MagicMock(return_value=MagicMock(returncode=0)),
+    )
+
+    generate_parser.generate_parser()
+
+    assert generated_dir.is_dir()
     assert (generated_dir / "__init__.py").is_file()
     stamp = (generated_dir / ".grammar-stamp").read_text(encoding="utf-8").strip()
     assert stamp == generate_parser._grammar_fingerprint()
