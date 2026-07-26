@@ -1,4 +1,4 @@
-version: 40
+version: 41
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -338,6 +338,13 @@ for_forms:
     ?) are treated as literal strings and are iterated even when no matching
     file exists (for example FOR %%i IN (nosuch.xyz) DO ... runs once with
     %%i=nosuch.xyz). Wildcards match existing filesystem entries (FOR /?).
+  wildcard_no_match_zero_iterations: >-
+    When a classic FOR set member contains wildcards (* or ?) and no filesystem
+    entry matches, the DO body runs zero times for that mask (it does not run
+    once with the literal pattern). Prior ERRORLEVEL is left unchanged (not set
+    to 5). Confirmed on live Windows 10/11 cmd; secondary docs that claim
+    ERRORLEVEL 5 or a single literal iteration for unmatched masks are wrong
+    on current hosts.
   empty_set_zero_iterations: >-
     An empty classic FOR set (FOR %%i IN () DO ...) iterates zero times and does
     not run the DO body. Separator-only sets such as (,,) or ( ; ) likewise
@@ -749,6 +756,10 @@ set_a:
   operator_precedence: >-
     Operators apply in decreasing precedence (SET /?): grouping (); unary
     ! ~ -; * / %; + -; << >>; &; ^; |; assignment operators; comma.
+  left_associative_same_tier: >-
+    Operators at the same precedence tier associate left-to-right on live cmd
+    (for example 8/2*2 yields 8, and 8/2/2 yields 2). Parentheses change
+    grouping as usual. Confirmed on live Windows 10/11 cmd.
   overflow_wraps: >-
     Signed 32-bit overflow wraps (for example 2147483647+1 becomes
     -2147483648) rather than failing the expression.
@@ -1423,10 +1434,20 @@ if_forms:
   paren_wrapped_predicate: >-
     Wrapping the IF predicate in parentheses is not C-style grouping. Live cmd
     typically absorbs glued parentheses into the compare operands (if(1==1) /
-    if (1==1) compares text such as "(1" to "1)"), so the comparison is usually
-    false with no error and execution continues. Prefer unwrapped predicates.
-    The grammar accepts the optional outer parentheses so these lines parse as
-    ifStmt rather than hard syntax errors. Confirmed on live Windows 10/11 cmd.
+    if (1==1) / if (1 == 1) compares text such as "(1" to "1)"), so the
+    comparison is usually false with no error and execution continues. Spaces
+    around the compare-op inside glued wrapping parens still silent-false.
+    Prefer unwrapped predicates. The grammar accepts optional outer parentheses
+    without interior space so these lines parse as ifStmt rather than hard
+    syntax errors. Confirmed on live Windows 10/11 cmd.
+  paren_interior_space_fatal: >-
+    When both wrapping parentheses are present, space or tab immediately inside
+    '(' or ')' is a live syntax error (for example if ( 1==1 ), if( 1==1), and
+    if(1==1 ) abort with "was unexpected at this time" / "The syntax of the
+    command is incorrect."). Space between IF and '(' is fine. Single-sided
+    forms such as if(1==1 without a closing ')' or if 1==1) remain silent-false.
+    The grammar rejects the fatal interior-space forms via a source-text
+    predicate (lexer skips WS). Confirmed on live Windows 10/11 cmd.
   chained_eq_first_only: >-
     Classic string1==string2 splits on the first == only; further == text stays
     in the right-hand operand (if 1==1==1 compares "1" to "1==1" and is false).
@@ -2110,9 +2131,16 @@ start_command:
   errorlevel: >-
     With /WAIT, START sets ERRORLEVEL to the started process's exit code
     (confirmed on live Windows 10/11 cmd: start "" /wait cmd /c exit 7 leaves
-    ERRORLEVEL 7). Without /WAIT, START returns promptly and typically leaves
-    ERRORLEVEL 0 while the child continues asynchronously; do not use bare
-    START ... && to mean "child succeeded".
+    ERRORLEVEL 7). Without /WAIT, a successful START returns promptly while the
+    child continues asynchronously and leaves the prior ERRORLEVEL unchanged
+    (it does not clear to 0). Do not use bare START ... && to mean "child
+    succeeded". Confirmed on live Windows 10/11 cmd.
+  launch_failure_errorlevel: >-
+    When START cannot launch the target (for example a missing executable
+    name), live Windows 10/11 cmd prints a cannot-find / create-process style
+    message and sets ERRORLEVEL to 9059. Treat 9059 as a host-observed launch-
+    failure code for START, distinct from the bare missing-command 9009 used
+    when cmd itself fails to resolve an external name.
   window_and_priority: >-
     /MIN and /MAX control the initial window state. Priority class switches
     include /LOW /NORMAL /HIGH /REALTIME /ABOVENORMAL /BELOWNORMAL. /SEPARATE

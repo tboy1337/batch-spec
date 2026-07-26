@@ -224,6 +224,9 @@
           "type": "string",
           "minLength": 1
         },
+        "wildcard_no_match_zero_iterations": {
+          "type": "string"
+        },
         "set_member_delimiters": {
           "type": "string"
         },
@@ -554,6 +557,9 @@
           "type": "string"
         },
         "operator_precedence": {
+          "type": "string"
+        },
+        "left_associative_same_tier": {
           "type": "string"
         },
         "overflow_wraps": {
@@ -1121,6 +1127,9 @@
           "type": "string"
         },
         "paren_wrapped_predicate": {
+          "type": "string"
+        },
+        "paren_interior_space_fatal": {
           "type": "string"
         },
         "chained_eq_first_only": {
@@ -1745,6 +1754,9 @@
           "type": "string"
         },
         "errorlevel": {
+          "type": "string"
+        },
+        "launch_failure_errorlevel": {
           "type": "string"
         },
         "window_and_priority": {

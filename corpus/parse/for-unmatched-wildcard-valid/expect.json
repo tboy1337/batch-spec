@@ -1,0 +1,8 @@
+{
+  "description": "Classic FOR unmatched wildcard mask iterates zero times",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": ["genericCmd", "setStmt", "forStmt", "genericCmd"]
+  },
+  "tags": ["for"]
+}

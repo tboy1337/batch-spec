@@ -1,0 +1,10 @@
+{
+  "description": "SET /A same-tier operators associate left-to-right (8/2*2)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set"
+  ]
+}

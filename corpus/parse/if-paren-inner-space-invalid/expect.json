@@ -1,0 +1,10 @@
+{
+  "description": "IF comparison with space immediately inside wrapping parentheses is a live syntax error",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "if",
+    "negative"
+  ]
+}

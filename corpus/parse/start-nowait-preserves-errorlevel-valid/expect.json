@@ -1,0 +1,8 @@
+{
+  "description": "Successful START without /WAIT leaves prior ERRORLEVEL unchanged",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": ["genericCmd", "genericCmd", "genericCmd", "genericCmd"]
+  },
+  "tags": ["start", "errorlevel"]
+}

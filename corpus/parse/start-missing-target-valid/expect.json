@@ -1,0 +1,8 @@
+{
+  "description": "START of a missing target parses as genericCmd (runtime ERRORLEVEL 9059)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": ["start", "errorlevel"]
+}

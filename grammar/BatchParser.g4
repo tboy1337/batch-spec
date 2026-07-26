@@ -99,6 +99,46 @@ def _forFOptionsOk(self, text: str) -> bool:
             )
             return False
     return True
+
+def _gapHasSpaceOrTab(self, after_token, before_token) -> bool:
+    # Lexer skips WS, so inspect the underlying char stream between tokens.
+    start = after_token.stop + 1
+    stop = before_token.start - 1
+    if stop < start:
+        return False
+    gap = self._input.tokenSource.inputStream.getText(start, stop)
+    return any(ch in " \t" for ch in gap)
+
+def _tokenOf(self, node_or_token):
+    # ctx.LPAREN()/RPAREN() yield TerminalNode; compareOperand.start/stop are Tokens.
+    symbol = getattr(node_or_token, "symbol", None)
+    return symbol if symbol is not None else node_or_token
+
+def _parenCompareInteriorOk(self, ctx) -> bool:
+    # When both outer parens wrap a comparison, live cmd fatals if space/tab
+    # sits immediately inside either paren (if ( 1==1 ) / if( 1==1) /
+    # if(1==1 )). Glued forms and spaces around the compare-op remain
+    # silent-false. Single-sided paren forms stay accepted (paren absorbed).
+    lparen = ctx.LPAREN()
+    rparen = ctx.RPAREN()
+    if lparen is None or rparen is None:
+        return True
+    operands = ctx.compareOperand()
+    if len(operands) < 2:
+        return True
+    left_start = operands[0].start
+    right_stop = operands[1].stop
+    ltok = self._tokenOf(lparen)
+    rtok = self._tokenOf(rparen)
+    if self._gapHasSpaceOrTab(ltok, left_start) or self._gapHasSpaceOrTab(
+        right_stop, rtok
+    ):
+        self.notifyErrorListeners(
+            "IF paren-wrapped comparison rejects interior space/tab "
+            "immediately inside '(' or ')'"
+        )
+        return False
+    return True
 }
 
 script
@@ -258,8 +298,12 @@ ifPredicate
 // so forms like if(1==1) / if (1==1) do not hard-error. Live cmd typically
 // absorbs those parens into the operand text (silent false) rather than
 // treating them as C-style grouping -- see if_forms.paren_wrapped_predicate.
+// Interior space/tab immediately inside both wrapping parens is a live syntax
+// error (if ( 1==1 )); the predicate inspects the char stream because WS is
+// skipped by the lexer -- see if_forms.paren_interior_space_fatal.
 comparison
     : LPAREN? compareOperand compareOp compareOperand RPAREN?
+      {self._parenCompareInteriorOk($ctx)}?
     ;
 
 compareOp
