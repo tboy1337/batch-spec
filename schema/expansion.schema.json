@@ -136,6 +136,9 @@
         },
         "call_second_pass": {
           "type": "string"
+        },
+        "writing_batch_files": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -288,6 +291,9 @@
           "type": "string"
         },
         "metachar_inventory": {
+          "type": "string"
+        },
+        "writing_batch_files": {
           "type": "string"
         }
       },
@@ -589,6 +595,9 @@
         "description": {
           "type": "string",
           "minLength": 1
+        },
+        "prompt_vs_stdin": {
+          "type": "string"
         },
         "eof_keeps_prior": {
           "type": "string"
@@ -1144,6 +1153,9 @@
           "type": "string"
         },
         "call_script_returns": {
+          "type": "string"
+        },
+        "call_inherits_cwd": {
           "type": "string"
         },
         "call_script_errorlevel": {
@@ -1803,6 +1815,9 @@
           "minLength": 1
         },
         "forms": {
+          "type": "string"
+        },
+        "quotes_literal": {
           "type": "string"
         },
         "source": {

@@ -1,0 +1,12 @@
+{
+  "description": "ECHO with ^^^> when writing a child script stores ^> (one caret-escape pass while writing)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "echo",
+    "caret",
+    "expansion"
+  ]
+}

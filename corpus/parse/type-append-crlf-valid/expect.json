@@ -1,0 +1,11 @@
+{
+  "description": "TYPE then >> append; insert echo.>> when the next line must not glue onto a final line that lacked CRLF",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "type",
+    "redirection"
+  ]
+}

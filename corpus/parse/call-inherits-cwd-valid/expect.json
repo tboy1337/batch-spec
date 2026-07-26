@@ -1,0 +1,11 @@
+{
+  "description": "CALL inherits the caller's CWD; cmd does not auto-cd to the callee script directory",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "callStmt"
+  },
+  "tags": [
+    "call",
+    "cd"
+  ]
+}

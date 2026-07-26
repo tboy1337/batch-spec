@@ -1,4 +1,4 @@
-version: 28
+version: 29
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -194,6 +194,14 @@ delayed_expansion:
     the CALL reparse, storing value in out. Related forms call echo %%var%%
     similarly print the current value after reparse. This is distinct from
     single-pass !%name%! indirect expansion.
+  writing_batch_files: >-
+    With delayed expansion enabled, emitting a later-expanding bang form into
+    a child .cmd/.bat requires caret-escaping the ! in the parent so the
+    parent does not expand it while writing. A common pattern is
+    echo echo ^^!var^^!>>child, which stores echo !var! in the child for the
+    child's delayed-expansion pass (confirmed on live Windows 10/11 cmd).
+    See also double_percent.writing_batch_files and
+    caret_escape.writing_batch_files.
 
 for_loop_variables:
   batch_file_prefix: "%%"
@@ -369,6 +377,13 @@ caret_escape:
     delayed expansion commonly needs caret doubling such as ^^!. Multilevel
     re-parse uses 2^n-1 carets (or CALL doubling) rather than a single ^
     always being enough.
+  writing_batch_files: >-
+    When a parent ECHO-redirects into a child .cmd/.bat, one caret-escape pass
+    applies while writing: ^> stores >, ^^^> stores ^>, and ^^^^^> stores ^^>
+    in the child (confirmed on live Windows 10/11 cmd). Pair with
+    double_percent.writing_batch_files (%% hops) and
+    delayed_expansion.writing_batch_files (! emit) for multigenerational
+    generators.
 
 quoting:
   description: >-
@@ -410,7 +425,9 @@ double_percent:
     parent expands while writing, baking the current value into the child.
     Multilevel generators need additional %% layers per hop. This is ordinary
     percent reduction when emitting text, distinct from CALL's argument-tail
-    reparse (call_percent_reduction) though both halve %% pairs.
+    reparse (call_percent_reduction) though both halve %% pairs. Caret and
+    delayed-! emit hops are documented under caret_escape.writing_batch_files
+    and delayed_expansion.writing_batch_files.
 
 string_operations:
   substring_pattern: "%var:~start,length%"
@@ -671,6 +688,11 @@ set_p:
     SET /P var=[prompt] reads a line of input into var (SET /?). The prompt
     string is optional and may be empty (SET /P var=). Requires Command
     Extensions (see command_extensions_off.set_p_requires_extensions).
+  prompt_vs_stdin: >-
+    The text after = is only the console prompt written to stderr/stdout for
+    the user; it is never taken from a pipe or redirected stdin. Piped or
+    redirected data supply the answer line that SET /P assigns to var, not the
+    prompt string (and not %*). Confirmed on live Windows 10/11 cmd.
   eof_keeps_prior: >-
     If input ends immediately (EOF) or is redirected from NUL with no data,
     the prior value of var is left unchanged.
@@ -1022,10 +1044,14 @@ dynamic_environment_variables:
     %CMDCMDLINE% expands to the original command line that started this cmd.exe
     process (SET /?). When a script is launched via cmd /C "script.cmd args",
     the expanded value typically includes the /C switch and the quoted script
-    invocation text rather than only the script's own arguments. In-process CALL
-    of another .bat/.cmd does not rewrite %CMDCMDLINE%; the called script still
-    sees the process-original line while %0 reflects the called script's
-    invocation spelling (confirmed on live Windows 10/11 cmd).
+    invocation text rather than only the script's own arguments. Explorer-style
+    launches commonly look like cmd /c ""C:\full\path\script.cmd" " (script
+    path present in %CMDCMDLINE%), while an interactive console that later runs
+    a script often shows only the original comspec line without the script
+    name. In-process CALL of another .bat/.cmd does not rewrite %CMDCMDLINE%;
+    the called script still sees the process-original line while %0 reflects
+    the called script's invocation spelling (confirmed on live Windows 10/11
+    cmd).
   cd_shadow_vs_cwd: >-
     SET CD=value overrides %CD% expansion with that string but does not change
     the process current directory. Bare CD (and filesystem operations) still
@@ -1203,7 +1229,11 @@ batch_parameters:
     user-supplied argument. With extensions, path modifiers such as %~dp0
     apply; without extensions %~ forms are not expanded. The text of %0 mirrors
     the spelling/casing/quoting used to invoke the script or CALL :label (for
-    example CALL :MiXeD yields %0=':MiXeD').
+    example CALL :MiXeD yields %0=':MiXeD'). Explorer/file-association launches
+    commonly invoke cmd /c ""C:\full\path\script.cmd" " so %0 is a quoted full
+    path; typing a relative name from an existing prompt typically yields that
+    relative spelling without added quotes (confirmed on live Windows 10/11
+    cmd). Prefer %~f0 / %~dp0 when a canonical path is required.
   multi_digit_percent: >-
     Only %0 through %9 are parameter slots. %10 is %1 followed by literal 0
     (for example with %1=one, %10 expands to one0). The same single-digit
@@ -1261,7 +1291,16 @@ call_goto:
   call_script_returns: >-
     CALL other.cmd (or other.bat) runs the script and returns to the caller.
     Invoking other.cmd as a bare command transfers control permanently and does
-    not return to the caller when the child ends.
+    not return to the caller when the child ends. By contrast, a bare external
+    program (.exe and other non-batch PATHEXT targets) runs and returns to the
+    next line without CALL.
+  call_inherits_cwd: >-
+    CALL does not change the process current directory: the callee inherits the
+    caller's CWD. cmd.exe itself also does not auto-cd to the script directory;
+    CWD at script start is whatever the launcher set (Explorer associations
+    commonly set CWD to the script's folder before starting cmd; cmd /c from
+    another directory leaves that other directory as CWD). Confirmed on live
+    Windows 10/11 cmd for CALL and cmd /c inheritance.
   call_script_errorlevel: >-
     A CALLed .bat/.cmd inherits the caller's ERRORLEVEL and returns whatever
     ERRORLEVEL the child leaves when it ends. Commands that do not clear
@@ -1710,12 +1749,15 @@ choice_command:
   switches: >-
     CHOICE [/C choices] [/N] [/CS] [/T timeout /D choice] [/M text]. /C lists
     keys (default YN); both /C ABC and /C:ABC forms are accepted on live cmd.
-    /N hides the choice list in the prompt (the message still displays; choices
-    remain enabled); /CS makes choices case-sensitive; /T with /D selects a
-    default after timeout seconds (0-9999; 0 means immediate default); /M sets
-    message text. Keys outside the /C list sound a warning beep and do not
-    complete the prompt until a listed key (or cancel/timeout) is used
-    (CHOICE /?).
+    Without /N the prompt appends a trailing choice list of the form
+    [choices]? (after /M text when present, or alone when /M is omitted).
+    /N hides that entire trailing list including the auto-appended ? (the /M
+    message still displays; choices remain enabled). /CS makes choices
+    case-sensitive; /T with /D selects a default after timeout seconds
+    (0-9999; 0 means immediate default); /M sets message text. Keys outside
+    the /C list sound a warning beep and do not complete the prompt until a
+    listed key (or cancel/timeout) is used (CHOICE /?; confirmed on live
+    Windows 10/11 cmd).
   errorlevel_ordinal: >-
     First choice -> ERRORLEVEL 1, second -> 2, and so on. Tool errors return
     255. CTRL+C or CTRL+BREAK returns 0. When testing with IF ERRORLEVEL, list
@@ -1826,6 +1868,11 @@ title_command:
   forms: >-
     TITLE [string] sets the title bar text. Omitting string typically clears
     or sets an empty title depending on host behavior; prefer an explicit string.
+  quotes_literal: >-
+    Double quotes around or inside the TITLE argument are kept as literal
+    characters in the window title (they are not stripped). Prefer unquoted
+    text when quotes must not appear in the title bar; escape metacharacters
+    with ^ instead of relying on quotes. Confirmed on live Windows 10/11 cmd.
   source: "TITLE /? (audit/cmd-help/title-help.txt)"
 
 pause_command:

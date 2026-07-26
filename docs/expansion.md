@@ -20,7 +20,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **Caret escaping** - `2^n-1` for ordinary multilevel hops; CALL doubles carets on its tail (including inside quotes); line-continuation caret must be the last character of the physical line; caret does not escape `%` (percent expansion runs first; use `%%` for a literal percent in scripts)
 
-- **Double percent** - batch `%%` literals; CALL also reduces `%%` pairs to `%` on its argument tail; when ECHO-writing a child `.bat`/`.cmd`, `%%` in the parent becomes `%` in the child (defer expansion), while a single `%name%` expands while writing
+- **Double percent** - batch `%%` literals; CALL also reduces `%%` pairs to `%` on its argument tail; when ECHO-writing a child `.bat`/`.cmd`, `%%` in the parent becomes `%` in the child (defer expansion), while a single `%name%` expands while writing; caret write-hops reduce one escape pass per generation (`^^^>` → `^>`); with delayed expansion on, `^^!var^^!` writes `!var!` for the child
 
 - **String ops** - require Command Extensions; substring with negative offsets/lengths and omitted length; past-end on a populated string yields empty (distinct from undefined/empty → literal `~offset`); length past end returns the remainder; replace-all; empty replacement deletes; `*` prefix replace; case-insensitive `%var:old=new%` search; missing/empty substring batveat (`%NOSUCH:~-1%` / after `SET name=` yields literal `~-1`); missing/empty replace batveat (`%NOSUCH:a=b%` / after `SET name=` yields literal `a=b`, and `*` forms yield `*a=b`; delayed `!…!` peers match); with extensions off, substring/replace forms expand to empty
 
@@ -28,7 +28,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **Plain SET assignment** - spaces around `=` become part of the name and/or value; prefix query (`SET P`, extensions); quoted `SET "name=value"` requires extensions; missing name/prefix sets ERRORLEVEL 1; `SET name=` unsets; `.bat` vs `.cmd` ERRORLEVEL matrix after successful SET/PATH/PROMPT/ASSOC/FTYPE (and SET /A / SET /P); APPEND is absent on modern hosts
 
-- **SET /P** - requires extensions; optional prompt; EOF/NUL keeps prior value; a blank input line (Enter with no text) also keeps the prior value (does not assign empty / cannot clear via blank Enter); a spaces-only line assigns those spaces; `SET /P var=<file` reads the first line only; pipe-side SET /P (and plain SET / SETLOCAL) updates only the child cmd environment
+- **SET /P** - requires extensions; optional prompt (prompt text is display-only, never taken from a pipe/redirect or `%*`); EOF/NUL keeps prior value; a blank input line (Enter with no text) also keeps the prior value (does not assign empty / cannot clear via blank Enter); a spaces-only line assigns those spaces; `SET /P var=<file` reads the first line only; pipe-side SET /P (and plain SET / SETLOCAL) updates only the child cmd environment
 
 - **Environment variable names** - `=` forbidden in names; live cmd accepts `.`, `-`, `~`, spaces, and punctuation such as `@#$;[]` (prefer underscore-alnum for portability). Lexer `%name%` is a single PERCENT_VAR for any name chars other than `%`, `=`, or newlines.
 
@@ -42,7 +42,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **ERRORLEVEL / CMDEXTVERSION** - `IF ERRORLEVEL n` means `>= n`; dynamic `%ERRORLEVEL%` env-var shadowing; `cmd /C exit N` resets ERRORLEVEL without shadowing; bare `call` / `(call)` force ERRORLEVEL 1 and `call ` / `(call )` (trailing space) force 0; CHOICE sets ERRORLEVEL to the 1-based choice ordinal (255 on tool error; CTRL+C/BREAK returns 0; /CS /T /D switches); CMDEXTVERSION starts at 1 and never true when extensions are off
 
-- **Dynamic environment variables** - `%CD%`, `%DATE%`, `%TIME%`, `%RANDOM%`, `%ERRORLEVEL%`, `%CMDEXTVERSION%`, `%CMDCMDLINE%`, `%HIGHESTNUMANODENUMBER%` (SET /?; extensions required); `%TIME%` often space-pads hours 0-9 (`%TIME: =0%` zero-pads); `%DATE%`/`%TIME%` follow locale-specific DATE/TIME formats (separators may include comma); `SET CD=...` shadows `%CD%` without changing process CWD; `%RANDOM% %% N` is biased unless N divides 32768; ordinary startup env (`COMPUTERNAME`, `USERNAME`, `TEMP`, …) appears in SET listings and is distinct from these dynamic names; `%CMDCMDLINE%` is process-original and unchanged across in-process `CALL` of other scripts
+- **Dynamic environment variables** - `%CD%`, `%DATE%`, `%TIME%`, `%RANDOM%`, `%ERRORLEVEL%`, `%CMDEXTVERSION%`, `%CMDCMDLINE%`, `%HIGHESTNUMANODENUMBER%` (SET /?; extensions required); `%TIME%` often space-pads hours 0-9 (`%TIME: =0%` zero-pads); `%DATE%`/`%TIME%` follow locale-specific DATE/TIME formats (separators may include comma); `SET CD=...` shadows `%CD%` without changing process CWD; `%RANDOM% %% N` is biased unless N divides 32768; ordinary startup env (`COMPUTERNAME`, `USERNAME`, `TEMP`, …) appears in SET listings and is distinct from these dynamic names; `%CMDCMDLINE%` is process-original (Explorer-style launches often embed the script path; interactive consoles often show only comspec) and unchanged across in-process `CALL` of other scripts
 
 - **Keyword boundaries** - do not glue keywords to `%`, `!`, or quotes (`IF%1`, `SET%x%` are not IF/SET)
 
@@ -54,9 +54,9 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **Parenthesis-block expansion** - `%var%` expands when the block is parsed; `!var!` expands at execution when delayed expansion is on; nested blocks still expose only outermost-parse and current values; dual pre-block / in-block values enable swap patterns
 
-- **Batch parameters** - `%*` and `%~` require Command Extensions (literal `*` / `~...` when off); base `%0`-`%9` work without extensions; `%10` is `%1` plus literal `0`; `%0` spelling mirrors CALL text; SHIFT `/n` and bare SHIFT; `%*` unaffected by SHIFT; empty quoted `""` occupies a slot (`%1` is `""`, `%~1` empty); unquoted args split on space/tab/comma/semicolon/equals
+- **Batch parameters** - `%*` and `%~` require Command Extensions (literal `*` / `~...` when off); base `%0`-`%9` work without extensions; `%10` is `%1` plus literal `0`; `%0` spelling mirrors CALL/invocation text (Explorer-style `cmd /c ""fullpath""` commonly yields a quoted full-path `%0`; relative CLI typing keeps the as-typed spelling); SHIFT `/n` and bare SHIFT; `%*` unaffected by SHIFT; empty quoted `""` occupies a slot (`%1` is `""`, `%~1` empty); unquoted args split on space/tab/comma/semicolon/equals
 
-- **CALL / GOTO** - `CALL :label` return context; CALL requires colon for labels; missing CALL label continues with ERRORLEVEL 1; successful CALL without `EXIT /B` preserves prior ERRORLEVEL; bare `CALL` of a successful non-label non-script command (for example `call echo ok` / `call set ...`) clears ERRORLEVEL to 0; `CALL other.cmd` returns the child's final ERRORLEVEL (ECHO/REM often do not clear, so a child that only echoes can preserve the pre-CALL code; `EXIT /B n` sets it); bare script invoke does not return (CALL does); CALL context runs through later labels until EOF / `GOTO :EOF` / `EXIT /B`; deep recursive CALL aborts near stack limits ("BATCH RECURSION exceeds STACK limits"; host-dependent depth, separate from SETLOCAL's 32 cap); `GOTO :EOF` vs `GOTO EOF`; case-insensitive user labels
+- **CALL / GOTO** - `CALL :label` return context; CALL requires colon for labels; missing CALL label continues with ERRORLEVEL 1; successful CALL without `EXIT /B` preserves prior ERRORLEVEL; bare `CALL` of a successful non-label non-script command (for example `call echo ok` / `call set ...`) clears ERRORLEVEL to 0; `CALL other.cmd` returns the child's final ERRORLEVEL (ECHO/REM often do not clear, so a child that only echoes can preserve the pre-CALL code; `EXIT /B n` sets it); bare script invoke does not return (CALL does); bare external `.exe` returns without CALL; CALL inherits the caller's CWD (cmd does not auto-cd to the script directory); CALL context runs through later labels until EOF / `GOTO :EOF` / `EXIT /B`; deep recursive CALL aborts near stack limits ("BATCH RECURSION exceeds STACK limits"; host-dependent depth, separate from SETLOCAL's 32 cap); `GOTO :EOF` vs `GOTO EOF`; case-insensitive user labels
 
 - **Expanded GOTO/CALL targets** - `goto %name%` / `CALL :%name%` resolve after percent (or delayed) expansion; missing targets follow ordinary GOTO/CALL missing-label rules
 
@@ -98,7 +98,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **BREAK** -- DOS-compat internal; no-op for script control flow under Windows (does not break FOR/IF)
 
-- **CHOICE defaults** -- omitted `/C` uses `YN`; `/C ABC` and `/C:ABC` both accepted; `/N` hides the choice list; keys outside `/C` beep and wait for a listed key
+- **CHOICE defaults** -- omitted `/C` uses `YN`; `/C ABC` and `/C:ABC` both accepted; without `/N` the prompt appends `[choices]?`; `/N` hides that entire trailing list including the auto-`?`; keys outside `/C` beep and wait for a listed key
 
 - **FOR /F unquoted options** -- caret-escaped `tokens^=...^ delims^=...` when quotes cannot wrap options
 
@@ -122,7 +122,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **COPY / MOVE / REN / DIR / TYPE** -- overwrite `/Y` defaults in batch; `copy nul file` empty-file idiom; DIRCMD; REN in-place only; TYPE display (EL 0 success / 1 missing file); TYPE then `>>` append glues onto a final line that lacked CRLF
 
-- **TITLE / PAUSE / CLS / VER / VOL / MKLINK** -- console/session builtins and link creation forms
+- **TITLE / PAUSE / CLS / VER / VOL / MKLINK** -- console/session builtins and link creation forms; TITLE keeps surrounding/embedded quotes as literal title-bar text
 - **CHCP / DOSKEY / HELP / MORE / SORT** -- code page, macros/history, help lookup, and common pipe filters; SORT `/UNIQUE` (prefix `/UNIQ`) drops duplicate lines (Microsoft Learn; local SORT /? may omit it)
 
 - **CHOICE** -- dedicated section: `/C` `/N` `/CS` `/T` `/D` `/M` and ERRORLEVEL ordinals

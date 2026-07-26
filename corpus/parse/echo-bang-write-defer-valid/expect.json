@@ -1,0 +1,12 @@
+{
+  "description": "ECHO with ^^!var^^! when writing a child script stores !var! for the child's delayed expansion",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "echo",
+    "delayed-expansion",
+    "expansion"
+  ]
+}

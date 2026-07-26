@@ -1,0 +1,12 @@
+{
+  "description": "CALL another script does not rewrite %CMDCMDLINE%; parent and child see the process-original line",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "call",
+    "expansion",
+    "cmdcmdline"
+  ]
+}
