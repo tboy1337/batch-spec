@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F tokens=1-27 from %%a implies ASCII successor %%{ for the 27th token (live past-z chain)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "expansion"
+  ]
+}

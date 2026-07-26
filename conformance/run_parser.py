@@ -92,6 +92,16 @@ def _top_level_statement_name(tree: object) -> str | None:
     return _statement_rule_name(statements[-1])
 
 
+def _top_level_statement_names(tree: object) -> list[str]:
+    """Ordered rule names for all script-level statements."""
+    names: list[str] = []
+    for stmt in _collect_top_level_statements(tree):
+        name = _statement_rule_name(stmt)
+        if name is not None:
+            names.append(name)
+    return names
+
+
 def _parse_antlr(lines: List[str]) -> tuple[object | None, list[str]]:
     if str(GENERATED_DIR) not in sys.path:
         sys.path.insert(0, str(GENERATED_DIR))
@@ -133,6 +143,34 @@ _IMPLEMENTATIONS: dict[str, Callable[[List[str]], tuple[object | None, list[str]
 }
 
 
+def _check_top_level_expectations(
+    case_id: str,
+    tree: object,
+    parse_meta: dict[str, object],
+) -> str | None:
+    """Validate optional top_level_statement / top_level_statements expects."""
+    expected_stmt = parse_meta.get("top_level_statement")
+    if isinstance(expected_stmt, str) and expected_stmt:
+        actual_stmt = _top_level_statement_name(tree)
+        if actual_stmt != expected_stmt:
+            return (
+                f"{case_id}: expected top-level statement {expected_stmt!r}, "
+                f"got {actual_stmt!r}"
+            )
+
+    expected_stmts = parse_meta.get("top_level_statements")
+    if isinstance(expected_stmts, list) and expected_stmts:
+        if not all(isinstance(item, str) and item for item in expected_stmts):
+            return f"{case_id}: top_level_statements must be a non-empty string list"
+        actual_stmts = _top_level_statement_names(tree)
+        if actual_stmts != expected_stmts:
+            return (
+                f"{case_id}: expected top-level statements {expected_stmts!r}, "
+                f"got {actual_stmts!r}"
+            )
+    return None
+
+
 def _check_case(
     case_id: str,
     input_path: Path,
@@ -161,16 +199,7 @@ def _check_case(
     if errors:
         return f"{case_id}: expected clean parse, got errors: {'; '.join(errors)}"
 
-    expected_stmt = parse_meta.get("top_level_statement")
-    if isinstance(expected_stmt, str) and expected_stmt:
-        actual_stmt = _top_level_statement_name(tree)
-        if actual_stmt != expected_stmt:
-            return (
-                f"{case_id}: expected top-level statement {expected_stmt!r}, "
-                f"got {actual_stmt!r}"
-            )
-
-    return None
+    return _check_top_level_expectations(case_id, tree, parse_meta)
 
 
 def main() -> int:

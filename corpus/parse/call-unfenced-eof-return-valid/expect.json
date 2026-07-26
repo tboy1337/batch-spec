@@ -1,17 +1,18 @@
 {
-  "description": "REM after || remarks through EOL so trailing & echo is absorbed into remStmt (live non-execution)",
+  "description": "Unfenced CALL :label falls through to physical EOF and returns (AFTER_CALL still a later statement)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
       "genericCmd",
-      "remStmt",
+      "callStmt",
+      "genericCmd",
+      "gotoStmt",
       "genericCmd"
     ]
   },
   "tags": [
-    "remarks",
-    "command-chaining"
+    "call"
   ]
 }

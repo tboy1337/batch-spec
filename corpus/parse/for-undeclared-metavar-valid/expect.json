@@ -1,0 +1,11 @@
+{
+  "description": "Undeclared FOR metavar %%c in DO body parses; live expands as literal %c (catalog undeclared_metavar_literal)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "expansion"
+  ]
+}

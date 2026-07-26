@@ -201,6 +201,38 @@ def test_check_case_top_level_statement_mismatch(tmp_path: Path) -> None:
     assert message == "stmt-case: expected top-level statement 'ifStmt', got None"
 
 
+def test_check_case_top_level_statements_mismatch(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.cmd"
+    input_path.write_text("echo hi\n", encoding="utf-8")
+    impl = _mock_impl(tree=object(), errors=[])
+
+    message = run_parser._check_case(
+        "stmts-case",
+        input_path,
+        {"parse": {"top_level_statements": ["ifStmt", "genericCmd"]}},
+        impl,
+    )
+
+    assert message == (
+        "stmts-case: expected top-level statements ['ifStmt', 'genericCmd'], got []"
+    )
+
+
+def test_check_case_top_level_statements_rejects_non_strings(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.cmd"
+    input_path.write_text("echo hi\n", encoding="utf-8")
+    impl = _mock_impl(tree=object(), errors=[])
+
+    message = run_parser._check_case(
+        "stmts-bad",
+        input_path,
+        {"parse": {"top_level_statements": ["genericCmd", 1]}},
+        impl,
+    )
+
+    assert message == "stmts-bad: top_level_statements must be a non-empty string list"
+
+
 @pytest.mark.integration
 def test_top_level_statement_helpers_with_real_tree(
     generated_parser: None,
@@ -209,6 +241,32 @@ def test_top_level_statement_helpers_with_real_tree(
     assert tree is not None
     assert errors == []
     assert run_parser._top_level_statement_name(tree) == "ifStmt"
+    assert run_parser._top_level_statement_names(tree) == ["ifStmt"]
+
+
+@pytest.mark.integration
+def test_top_level_statements_rem_absorption_vs_glue(
+    generated_parser: None,
+) -> None:
+    absorbed, err_a = run_parser._parse_antlr(
+        ["echo before&rem note & echo NO", "echo after"]
+    )
+    glued, err_g = run_parser._parse_antlr(
+        ["echo before&rem) note & echo YES", "echo after"]
+    )
+    assert absorbed is not None and err_a == []
+    assert glued is not None and err_g == []
+    assert run_parser._top_level_statement_names(absorbed) == [
+        "genericCmd",
+        "remStmt",
+        "genericCmd",
+    ]
+    assert run_parser._top_level_statement_names(glued) == [
+        "genericCmd",
+        "genericCmd",
+        "genericCmd",
+        "genericCmd",
+    ]
 
 
 @pytest.mark.integration

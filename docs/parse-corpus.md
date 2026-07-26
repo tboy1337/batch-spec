@@ -26,6 +26,7 @@ for new fixtures.
 | should_parse: false | Pass only when the parse is not clean (errors and/or no usable tree) |
 | expect_syntax_errors | Pass only when the implementation reports syntax errors |
 | top_level_statement | Optional rule name of the **last script-level** statement (`ifStmt`, `forStmt`, `setStmt`, `genericCmd`, `detachedElseStmt`, ...). Nested statements inside IF/FOR/group blocks are ignored |
+| top_level_statements | Optional ordered list of rule names for **all** script-level statements. Use when last-only is insufficient (for example REM absorption vs punctuation glue). Nested statements inside IF/FOR/group blocks are ignored |
 
 `should_parse: true` must not be combined with `expect_syntax_errors: true`.
 `should_parse: false` must not be combined with `expect_syntax_errors: true`.

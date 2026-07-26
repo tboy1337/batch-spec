@@ -1,0 +1,19 @@
+{
+  "description": "EXIT /B after CALL :label returns to caller (AFTER_CALL still parses as later statement)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "callStmt",
+      "genericCmd",
+      "gotoStmt",
+      "exitStmt"
+    ]
+  },
+  "tags": [
+    "call",
+    "goto",
+    "exit"
+  ]
+}

@@ -1,8 +1,14 @@
 {
-  "description": "REM after && remarks through EOL so trailing & echo is not a separate statement (live non-execution)",
+  "description": "REM after && remarks through EOL so trailing & echo is absorbed into remStmt (live non-execution)",
   "parse": {
     "should_parse": true,
-    "top_level_statement": "genericCmd"
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "remStmt",
+      "genericCmd"
+    ]
   },
   "tags": [
     "remarks",

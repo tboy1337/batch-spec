@@ -1,17 +1,17 @@
 {
-  "description": "REM after || remarks through EOL so trailing & echo is absorbed into remStmt (live non-execution)",
+  "description": "ECHO can &&-succeed without clearing prior ERRORLEVEL (catalog success_is_errorlevel_zero)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
       "genericCmd",
-      "remStmt",
+      "genericCmd",
       "genericCmd"
     ]
   },
   "tags": [
-    "remarks",
-    "command-chaining"
+    "command-chaining",
+    "errorlevel"
   ]
 }

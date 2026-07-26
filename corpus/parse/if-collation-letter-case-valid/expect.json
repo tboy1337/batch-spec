@@ -1,0 +1,17 @@
+{
+  "description": "IF string collation letter-case chain a LSS A LSS b LSS B and digit-before-letter (catalog compare_ops_notes)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "ifStmt",
+      "ifStmt",
+      "ifStmt",
+      "ifStmt"
+    ]
+  },
+  "tags": [
+    "if"
+  ]
+}

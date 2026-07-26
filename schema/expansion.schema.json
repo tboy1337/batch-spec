@@ -169,6 +169,9 @@
         },
         "metavar_adjacent_literal": {
           "type": "string"
+        },
+        "undeclared_metavar_literal": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1101,6 +1104,9 @@
         },
         "success_is_errorlevel_zero": {
           "type": "string"
+        },
+        "call_script_or_stale_errorlevel": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1174,6 +1180,9 @@
           "type": "string"
         },
         "call_preserves_prior_errorlevel": {
+          "type": "string"
+        },
+        "call_vs_goto_exit_b": {
           "type": "string"
         },
         "call_command_clears_errorlevel": {
@@ -2127,6 +2136,9 @@
         "description": {
           "type": "string",
           "minLength": 1
+        },
+        "hostname_command": {
+          "type": "string"
         },
         "find_and_findstr": {
           "type": "string"

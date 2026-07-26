@@ -1,0 +1,19 @@
+{
+  "description": "Bang-bearing value stored with delayed off; %V% vs !V! read under delayed on (catalog value_with_exclamation)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "setlocalStmt",
+      "setStmt",
+      "setlocalStmt",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "expansion",
+    "delayed-expansion"
+  ]
+}

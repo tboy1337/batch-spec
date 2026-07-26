@@ -1,17 +1,19 @@
 {
-  "description": "REM after || remarks through EOL so trailing & echo is absorbed into remStmt (live non-execution)",
+  "description": "rem) without space is not REM (keyword trailer ')'); trailing & echo remains chained genericCmd",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
       "genericCmd",
-      "remStmt",
+      "genericCmd",
+      "genericCmd",
       "genericCmd"
     ]
   },
   "tags": [
     "remarks",
-    "command-chaining"
+    "command-chaining",
+    "keyword-boundaries"
   ]
 }

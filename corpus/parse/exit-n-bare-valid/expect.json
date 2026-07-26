@@ -1,0 +1,15 @@
+{
+  "description": "Bare EXIT n (no /B) parses as exitStmt; live terminates cmd with that process exit code",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "exitStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "exit"
+  ]
+}

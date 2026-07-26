@@ -10,8 +10,9 @@ def _atLineStart(self) -> bool:
     return prefix.strip() == ""
 
 def _keywordTrailerOk(self) -> bool:
-    # After matching the keyword text, reject glue to percent/bang/quotes.
-    # Live cmd: IF%1, SET%x%, FOR%%i become non-keywords after expansion.
+    # After matching the keyword text, reject glue to percent/bang/quotes
+    # and ')'. Live cmd: IF%1, SET%x%, FOR%%i, rem), if) become non-keywords
+    # (WORD + trailing punctuation). Bare rem( remains REM (trailer '(' ok).
     la = self._input.LA(1)
     return la not in (
         ord('%'),
@@ -19,6 +20,7 @@ def _keywordTrailerOk(self) -> bool:
         ord('"'),
         ord("'"),
         ord('`'),
+        ord(')'),
     )
 
 def _invalidPercentTildeAccept(self) -> bool:

@@ -1,4 +1,4 @@
-version: 33
+version: 35
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -189,12 +189,18 @@ delayed_expansion:
     iteration's contribution rather than building a growing list.
   value_with_exclamation: >-
     When delayed expansion is enabled, a value that contains ! (and often ^) can
-    be corrupted at SET time and during !var! expansion or inside FOR bodies.
-    Live cmd commonly stores set "A=hi!there" as hithere (the bang and following
-    text are mangled) even before a later !A! read. Prefer disabling delayed
-    expansion while assigning or handling such data, or escape carefully with
-    the phase-sensitive caret rules in exclamation_escaping (for example
-    set "A=hi^!there" then !A!).
+    be corrupted at SET time if delayed expansion is already on during the
+    assignment. Live cmd commonly stores set "A=hi!there" as hithere (the bang
+    and following text are mangled) even before a later read. Prefer disabling
+    delayed expansion while assigning such data, or escape carefully with the
+    phase-sensitive caret rules in exclamation_escaping (for example
+    set "A=hi^!there" then !A!). Separately, once an intact bang-bearing value
+    exists (stored with delayed off), reading it with %var% re-scans the
+    inserted text for !name! under delayed expansion and can mangle it, while
+    direct !var! keeps embedded ! characters (confirmed on live Windows 10/11
+    cmd: store aa!bb!cc with delayed off, then with delayed on %V% yields aacc
+    and !V! yields aa!bb!cc). Prefer !var! (or delayed off) when values may
+    contain !.
   call_second_pass: >-
     CALL reparses its command tail after percent expansion, so a second
     percent-expansion pass is available. With delayed expansion enabled,
@@ -231,6 +237,13 @@ for_loop_variables:
     from %%~n modifiers (tilde forms) and from %~10 / %%~n0 parameter-style
     multi-digit batveats. Prefer letters for metavars when a digit suffix is
     intended as a literal.
+  undeclared_metavar_literal: >-
+    A %%letter form that is not an active FOR metavariable in the current DO
+    body expands as a literal %letter (the %% percent-escape), not as empty.
+    Example: FOR /F "tokens=1-2" %%a IN ("one two three") DO echo %%c prints
+    %c because only %%a and %%b were implied. Digits are valid FOR letters;
+    multi-token implication walks ASCII succession from the declared letter
+    (including digit starts such as %%7 -> %%8 -> %%9), not only a-z / A-Z.
 
 for_forms:
   description: >-
@@ -312,10 +325,13 @@ for_f:
       (delims=D does not treat lowercase d as a delimiter).
     tokens: >-
       tokens=x,y,m-n selects token indexes; a trailing * assigns the remainder
-      of the line to one variable. Up to 26 tokens may be requested. Additional
-      FOR variables are implied alphabetically from the declared letter. The
-      implied chain must not attempt to declare a variable past z or Z
-      (FOR /?).
+      of the line to one variable. Additional FOR variables are implied by
+      ASCII succession from the declared letter (not only a-z / A-Z): for
+      example tokens=1-27 starting at %%a assigns the 27th token to %%{ on live
+      Windows 10/11 cmd. FOR /? and some references claim a 26-token / past-z
+      ceiling; live cmd continues past z/Z, though some successor characters
+      are unusable in DO text (notably | as a pipe). Prefer staying within
+      a-z / A-Z for portable scripts.
     usebackq: >-
       usebackq switches quoting: backtick `command` for command output, single
       quotes for literal strings, and double quotes for filenames. Without
@@ -800,8 +816,9 @@ echo_forms:
     plus LPAREN because '(' is a distinct token; both forms parse as ordinary
     commands.
   echo_on_off: >-
-    ECHO ON and ECHO OFF toggle command echoing. A leading @ suppresses
-    echoing for that single statement (@echo off).
+    ECHO ON and ECHO OFF toggle command echoing on stdout. A leading @ suppresses
+    echoing for that single statement (@echo off). ECHO OFF / @echo off does not
+    suppress stderr; redirect with 2>nul or >nul 2>&1 when stderr must be quiet.
   bare_or_whitespace_status: >-
     ECHO with no arguments, or with only whitespace arguments, prints the
     current ECHO is on/off status rather than a blank line.
@@ -1097,19 +1114,21 @@ dynamic_environment_variables:
 
 keyword_boundaries:
   description: >-
-    Builtin keywords must not be glued to %, !, or quote marks. Live cmd expands
-    percent forms first, so IF%1 and SET%x% are not recognized as IF/SET.
-    When the glued expansion is non-empty (for example SET%x% with x=1 becomes
-    SET1=...), cmd reports the result as not recognized. When the expansion is
-    empty (undefined x), SET%x%=hello becomes SET=hello and yields "The syntax
-    of the command is incorrect." Spaced forms (IF %1, SET %x%, FOR %%i) are
-    required.
+    Builtin keywords must not be glued to %, !, quote marks, or ')'. Live cmd
+    expands percent forms first, so IF%1 and SET%x% are not recognized as
+    IF/SET. Gluing ')' (for example rem) or if)) likewise yields a non-keyword
+    command name. When the glued expansion is non-empty (for example SET%x% with
+    x=1 becomes SET1=...), cmd reports the result as not recognized. When the
+    expansion is empty (undefined x), SET%x%=hello becomes SET=hello and yields
+    "The syntax of the command is incorrect." Spaced forms (IF %1, SET %x%,
+    FOR %%i) are required. Note rem( without space remains REM (see remarks).
   reject_glue_after_keyword:
     - "%"
     - "!"
     - "\""
     - "'"
     - "`"
+    - ")"
 
 if_forms:
   description: "IF predicates (IF /?)"
@@ -1132,14 +1151,14 @@ if_forms:
     If both sides are all decimal digits, compare-ops perform a numeric
     comparison; otherwise a string comparison. Quoting a side (for example
     "000" EQU "0") forces string comparison even when the text looks numeric.
-    String ordering is not raw ASCII byte order (for example on live Windows
-    10/11 cmd, "A" GTR "a" is true while raw ASCII would rank uppercase
-    before lowercase differently; quoted "10" LSS "9" is true as a
-    lexicographic string compare). Mixed letter/digit unquoted compares are
-    string compares: on live Windows 10/11 cmd, A GTR 9 is true and 9 GTR A
-    is false (letters sort after digits in that collation). /I forces
-    case-insensitive string compares and also applies to the string1==string2
-    form and to compare-ops.
+    String ordering is not raw ASCII byte order. On live Windows 10/11 cmd the
+    collation ranks digits before letters and uses a letter-case chain where
+    a LSS A, A LSS b, and b LSS B are all true (so a < A < b < B), while raw
+    ASCII would rank uppercase before lowercase differently; quoted "10" LSS
+    "9" is true as a lexicographic string compare. Mixed letter/digit unquoted
+    compares are string compares: A GTR 9 is true and 9 GTR A is false. /I
+    forces case-insensitive string compares and also applies to the
+    string1==string2 form and to compare-ops.
   defined_notes: "DEFINED takes a variable name without % percent signs"
   else_same_line: >-
     ELSE must appear on the same physical line as the end of the IF command
@@ -1264,13 +1283,21 @@ command_chaining:
     command on that physical line) is a syntax error. Terminate with & rem, or
     escape a literal ampersand as ^&, rather than leaving a dangling separator.
   success_is_errorlevel_zero: >-
-    && and || primarily follow command success/failure for chaining. Many
-    builtins (notably ECHO and REM) can succeed for && / || without clearing a
-    prior non-zero ERRORLEVEL, so a later IF %ERRORLEVEL% test can still see the
-    stale code. Tools that return non-zero on partial success (notably ROBOCOPY
-    bitmasks; see external_tool_notes) can make && skip follow-on commands even
-    when the operation was useful. Prefer explicit IF ERRORLEVEL /
-    IF %ERRORLEVEL% tests when wrapping such tools.
+    && and || follow command success/failure for chaining; they are NOT the
+    same as IF %ERRORLEVEL% EQU 0. Many builtins (notably ECHO and REM, and in
+    .bat files successful SET / PATH / PROMPT) can succeed for && / || without
+    clearing a prior non-zero ERRORLEVEL, so a later IF %ERRORLEVEL% test can
+    still see the stale code. CALL of another .bat/.cmd likewise does not clear
+    ERRORLEVEL to 0 on success (see call_goto.call_script_errorlevel and
+    call_script_or_stale_errorlevel). Tools that return non-zero on partial
+    success (notably ROBOCOPY bitmasks; see external_tool_notes) can make &&
+    skip follow-on commands even when the operation was useful. Prefer explicit
+    IF ERRORLEVEL / IF %ERRORLEVEL% tests when wrapping such tools.
+  call_script_or_stale_errorlevel: >-
+    Because successful CALL of a .bat/.cmd does not set ERRORLEVEL to 0, a form
+    such as call other.cmd || handler can false-fire when ERRORLEVEL was already
+    non-zero before the CALL. Reset with cmd /C exit 0 (or an equivalent clear)
+    before relying on || / && around CALLed scripts.
 
 batch_parameters:
   description: "Batch argument references (CALL /?, SHIFT /?)"
@@ -1301,7 +1328,10 @@ batch_parameters:
     commonly invoke cmd /c ""C:\full\path\script.cmd" " so %0 is a quoted full
     path; typing a relative name from an existing prompt typically yields that
     relative spelling without added quotes (confirmed on live Windows 10/11
-    cmd). Prefer %~f0 / %~dp0 when a canonical path is required.
+    cmd). Prefer %~f0 / %~dp0 when a canonical path is required. Redirecting
+    into %0 (for example echo text>%0) expands the target to the running script
+    path and can truncate/overwrite that file while it still executes -- avoid
+    writing to %0.
   multi_digit_percent: >-
     Only %0 through %9 are parameter slots. %10 is %1 followed by literal 0
     (for example with %1=one, %10 expands to one0). The same single-digit
@@ -1334,8 +1364,10 @@ call_goto:
   description: "CALL :label and GOTO :EOF (CALL /?, GOTO /?)"
   call_label: >-
     CALL :label arguments creates a new batch context at the label. Control
-    returns to the statement after CALL when the called context reaches EOF
-    (or GOTO :EOF / EXIT /B). Reaching EOF a second time exits the script.
+    returns to the statement after CALL when the called context reaches physical
+    EOF, or when it executes GOTO :EOF / EXIT /B. A later mainline EOF then ends
+    the script; fenced routines that return via GOTO :EOF / EXIT /B never need
+    a "second EOF" to exit the CALL.
   call_context_runs_to_eof: >-
     After CALL :label, execution continues from the statement following the
     label through subsequent lines and label fallthrough until the called
@@ -1356,6 +1388,12 @@ call_goto:
     remains. EXIT /B n from the called context sets ERRORLEVEL to n on return.
     Prefer an explicit EXIT /B 0 at the end of routines when a clean success
     code is required.
+  call_vs_goto_exit_b: >-
+    EXIT /B n after CALL :label returns to the caller with ERRORLEVEL n (the
+    statement after CALL still runs). The same EXIT /B n reached via GOTO :label
+    ends the current script context without returning to a CALL site (there is
+    none). Prefer CALL when an abort routine must return; prefer GOTO when it
+    must terminate the script.
   call_command_clears_errorlevel: >-
     CALL of a non-label, non-batch-script target that succeeds clears ERRORLEVEL
     to 0 when the called command does not itself set a non-zero code. Examples
@@ -1446,8 +1484,10 @@ exit_semantics:
   description: "EXIT [/B] [exitCode] (EXIT /?)"
   bare_exit: >-
     Bare EXIT (without /B) terminates the cmd.exe process (closes the console
-    session when it is the top-level interpreter). Prefer EXIT /B inside batch
-    scripts when only the script/routine should end.
+    session when it is the top-level interpreter). An optional exitCode after
+    bare EXIT (EXIT n, still without /B) sets the process exit code and still
+    terminates cmd.exe (EXIT /?). Prefer EXIT /B inside batch scripts when only
+    the script/routine should end; use EXIT /B n to set ERRORLEVEL on return.
   exit_b: >-
     EXIT /B exits the current batch script context (returns from a CALL :label
     routine, or ends the script) without necessarily closing the parent cmd.exe
@@ -1476,10 +1516,13 @@ remarks:
     program names ("not recognized") while later &-chained commands still run.
   rem_punctuation_glue: >-
     Gluing punctuation to REM without whitespace (for example rem. rem/ rem:
-    rem[ rem]) yields a non-REM token on live Windows 10/11 cmd, so a trailing
-    & command on the same physical line still runs. True REM (REM followed by
-    whitespace, end of line, or a statement separator such as &) remarks out
-    the remainder of the line. Prefer spaced REM note over rem. hacks.
+    rem[ rem] rem)) yields a non-REM token on live Windows 10/11 cmd, so a
+    trailing & command on the same physical line still runs (rem) is reported
+    as an unrecognized command name). By contrast, rem( with no space after
+    REM is still the REM command and remarks out the remainder of the line.
+    True REM (REM followed by whitespace, end of line, or a statement separator
+    such as &) also remarks out the remainder of the line. Prefer spaced
+    REM note over rem. / rem) hacks.
   double_colon: >-
     A line starting with :: is a label whose second character is :, commonly
     used as a remark. Real jump targets must not place : in the second
@@ -2107,6 +2150,11 @@ external_tool_notes:
     Language-impacting notes for common external PATH tools. These are not
     full switch encyclopedias; they document ERRORLEVEL and parsing facts that
     affect Batch control flow (&& / || / IF ERRORLEVEL).
+  hostname_command: >-
+    hostname.exe is a stock System32 utility listed under builtin_commands. It
+    prints the computer's host name to stdout; for scripts that need the machine
+    name as data, prefer the ordinary environment variable %COMPUTERNAME%
+    (distinct from the dynamic SET /? names). hostname is not a cmd internal.
   find_and_findstr: >-
     FIND and FINDSTR search text. On both tools, a successful match leaves
     ERRORLEVEL 0 and a no-match leaves ERRORLEVEL 1 (confirmed on live

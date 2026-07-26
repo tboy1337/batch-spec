@@ -28,6 +28,15 @@
           "type": "string",
           "minLength": 1,
           "description": "Rule name of the last script-level statement (not nested in IF/FOR/group blocks), e.g. ifStmt, forStmt."
+        },
+        "top_level_statements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Ordered rule names of all script-level statements (not nested in IF/FOR/group blocks). Use when last-only top_level_statement is insufficient (e.g. REM absorption vs glue)."
         }
       },
       "additionalProperties": false,

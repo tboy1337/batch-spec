@@ -1,5 +1,5 @@
 {
-  "description": "REM after || remarks through EOL so trailing & echo is absorbed into remStmt (live non-execution)",
+  "description": "rem( without space remains REM and absorbs trailing & echo into remStmt",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
