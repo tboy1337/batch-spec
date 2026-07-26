@@ -1,0 +1,18 @@
+{
+  "description": "Percent expands whole physical line before & chain runs",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "setStmt",
+      "setStmt",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "expansion",
+    "percent"
+  ]
+}

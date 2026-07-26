@@ -1,0 +1,15 @@
+{
+  "description": "Bare drive-letter command switches process drive; parse smoke for related forms",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "remStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "directory"
+  ]
+}

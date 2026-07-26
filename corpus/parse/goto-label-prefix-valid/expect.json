@@ -1,0 +1,19 @@
+{
+  "description": "GOTO label matching is prefix-oriented (goto lab hits :lab)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "gotoStmt",
+      "genericCmd",
+      "genericCmd",
+      "gotoStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "goto",
+    "labels"
+  ]
+}

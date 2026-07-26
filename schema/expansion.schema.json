@@ -280,6 +280,9 @@
         "bare_fileset_no_path_search": {
           "type": "string"
         },
+        "command_stdout_only": {
+          "type": "string"
+        },
         "unquoted_options_caret": {
           "type": "string"
         }
@@ -433,6 +436,9 @@
           "type": "string"
         },
         "timestamp_format": {
+          "type": "string"
+        },
+        "dp0_trailing_backslash_quote": {
           "type": "string"
         }
       },
@@ -646,6 +652,9 @@
           "type": "string"
         },
         "incomplete_unclosed": {
+          "type": "string"
+        },
+        "compound_line_expansion": {
           "type": "string"
         }
       },
@@ -963,6 +972,9 @@
           "type": "string"
         },
         "cd_shadow_vs_cwd": {
+          "type": "string"
+        },
+        "undocumented_equals_exitcode": {
           "type": "string"
         }
       },
@@ -1478,6 +1490,9 @@
         "cd_slash_d": {
           "type": "string"
         },
+        "bare_drive_letter": {
+          "type": "string"
+        },
         "cd_drive_query": {
           "type": "string"
         },
@@ -1852,6 +1867,9 @@
         "ascii_vs_binary_ctrl_z": {
           "type": "string"
         },
+        "concatenation": {
+          "type": "string"
+        },
         "missing_source_errorlevel": {
           "type": "string"
         },
@@ -2039,6 +2057,9 @@
           "minLength": 1
         },
         "forms": {
+          "type": "string"
+        },
+        "cross_volume": {
           "type": "string"
         },
         "source": {

@@ -1,0 +1,10 @@
+{
+  "description": "FINDSTR /G reads search strings from file; /F reads file list",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "findstr"
+  ]
+}

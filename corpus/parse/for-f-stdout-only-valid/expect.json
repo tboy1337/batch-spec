@@ -1,0 +1,10 @@
+{
+  "description": "FOR /F command form captures stdout only; stderr is not tokenized",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for"
+  ]
+}

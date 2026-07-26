@@ -1,0 +1,15 @@
+{
+  "description": "FOR /L empty range (start past end) runs DO body zero times",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "for"
+  ]
+}

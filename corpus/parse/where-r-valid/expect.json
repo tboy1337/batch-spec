@@ -1,0 +1,10 @@
+{
+  "description": "WHERE /R recursively searches from a directory",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "where"
+  ]
+}

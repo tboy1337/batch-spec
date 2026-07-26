@@ -1,0 +1,10 @@
+{
+  "description": "TIMEOUT with redirected stdin fails with non-zero ERRORLEVEL",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "timeout"
+  ]
+}

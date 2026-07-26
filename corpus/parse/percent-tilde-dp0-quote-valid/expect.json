@@ -1,0 +1,11 @@
+{
+  "description": "%~dp0 ends with backslash; prefer quote forms that avoid backslash-quote escape",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "percent"
+  ]
+}

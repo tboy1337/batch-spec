@@ -1,0 +1,10 @@
+{
+  "description": "MKLINK /H creates a hard link",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "mklink"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Undocumented %=ExitCode% hex and %=ExitCodeAscii% after external exit",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "expansion",
+    "errorlevel"
+  ]
+}

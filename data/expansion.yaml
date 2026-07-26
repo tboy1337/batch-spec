@@ -1,4 +1,4 @@
-version: 37
+version: 38
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -104,6 +104,13 @@ percent_tilde_notes:
     %~t / %%~t expands to the file's last-write date/time using the locale's
     DATE/TIME formatting (separators and AM/PM style vary). Missing files
     expand the timestamp field to empty (CALL /?).
+  dp0_trailing_backslash_quote: >-
+    %~dp0 (and other %~dp forms) always end with a trailing backslash. Closing
+    a quoted path immediately after that backslash then appending more text
+    (for example "%~dp0"foo) can treat the \" as an escaped quote and break
+    the intended argument boundary. Prefer "%~dp0foo" or "%~dp0%foo%" so the
+    closing quote does not follow the trailing backslash. Confirmed on live
+    Windows 10/11 cmd that %~dp0 ends with \.
 
 percent_expansion:
   undefined_is_empty: >-
@@ -118,6 +125,13 @@ percent_expansion:
     In scripts, cmd typically strips the leading % and leaves the following text
     as literals (for example %NOSUCH becomes NOSUCH; a lone % may yield empty).
     Prefer always-closed %name% / %% forms for portable scripts.
+  compound_line_expansion: >-
+    Percent expansion runs over the entire physical line before any chained
+    command on that line executes. Confirmed on live Windows 10/11 cmd:
+    set "x=1" then set "x=2"&echo %x% prints 1 (the pre-line value), while a
+    following echo %x% prints 2. The same pre-command binding applies across
+    && on a successful left-hand side. Prefer delayed expansion or CALL
+    reparse when a later chained command must see an earlier same-line SET.
 
 delayed_expansion:
   pattern: "!VAR!"
@@ -274,11 +288,14 @@ for_forms:
   slash_l: >-
     FOR /L iterates a numeric sequence (start,step,end), inclusive of endpoints
     that the step reaches. The end need not be hit exactly; iteration stops once
-    the index passes the end in the step direction. A step of 0 never advances
-    the index, so the end condition is never met: on live Windows 10/11 cmd the
-    DO body repeats forever. Neither GOTO nor EXIT /B from that DO body
-    terminates the loop (the process must be interrupted or ended with bare
-    EXIT); avoid step 0 entirely.
+    the index passes the end in the step direction. When the start is already
+    past the end for a positive step (for example for /l %%i in (5,1,3)) or
+    before the end for a negative step, the DO body runs zero times (confirmed
+    on live Windows 10/11 cmd). A step of 0 never advances the index, so the
+    end condition is never met: on live Windows 10/11 cmd the DO body repeats
+    forever. Neither GOTO nor EXIT /B from that DO body terminates the loop
+    (the process must be interrupted or ended with bare EXIT); avoid step 0
+    entirely.
   slash_f: >-
     FOR /F parses text from a file-set, a quoted string, or command output; see
     for_f for option details.
@@ -409,6 +426,12 @@ for_f:
     (FOR /?): a physical empty line does not produce a loop iteration. A quoted
     multi-string file-set form such as ("a" "" "b") is not a blank-line probe;
     cmd treats that as a single string argument rather than three lines.
+  command_stdout_only: >-
+    The FOR /F command-output form captures only the command's stdout as token
+    lines. Stderr still prints to the console (or follows redirects on the
+    command) but does not become FOR tokens. Confirmed on live Windows 10/11
+    cmd: for /f %%a in ('cmd /c "echo OUT&echo ERR 1>&2"') yields token OUT
+    while ERR appears on stderr.
   bare_fileset_no_path_search: >-
     A bare FOR /F file-set name (for example for /f %%a in (data.txt) do ...)
     is resolved relative to the current directory (or an explicit drive/path on
@@ -1113,6 +1136,20 @@ dynamic_environment_variables:
     CMDEXTVERSION: Command Processor Extensions version number
     CMDCMDLINE: original command line that invoked the Command Processor
     HIGHESTNUMANODENUMBER: highest NUMA node number on this machine
+    "=ExitCode": >-
+      Undocumented; 8-digit zero-padded hexadecimal of the most recent exit code
+      from an external program or EXIT /B (for example cmd /c exit 65 yields
+      00000041). Hidden from SET listings because the name begins with '='.
+    "=ExitCodeAscii": >-
+      Undocumented peer of =ExitCode; expands to the ASCII character for the
+      least-significant byte when that byte is printable (for example 65 -> A).
+      Non-printable codes such as 0 or 1 expand to empty on live Windows 10/11
+      cmd.
+  undocumented_equals_exitcode: >-
+    %=ExitCode% and %=ExitCodeAscii% are not listed in SET /?. They become
+    available after an external command or EXIT /B runs. Ordinary SET cannot
+    define names containing '=', so these values cannot be shadowed via SET.
+    Confirmed on live Windows 10/11 cmd after cmd /c exit 65 / exit 0 / exit 1.
   time_leading_space: >-
     %TIME% uses the same format as the TIME command. For hours 0-9 the hour
     field is commonly space-padded (a leading space before the digit), so the
@@ -1688,17 +1725,20 @@ paren_block_expansion:
     in-block values (for example swapping two variables with percent expansion
     inside one block).
 expansion_phases: >-
-  Approximate cmd parsing phases for a statement: (1) percent (%var%, %n, %*,
-  %~) expansion; (2) special-character / caret processing and tokenization
-  (including line-continuation caret); (3) command recognition and execution;
-  (4) when delayed expansion is enabled, !var! expansion at execution time
-  (including inside already-parsed parenthesized blocks). CALL re-parses its
-  argument tail (notably doubling carets and reducing %% pairs): each CALL
-  halves %% sequences on the tail, so call echo %%NAME%% expands NAME after one
-  CALL reparse while a bare echo %%NAME%% in a script prints %NAME%. Nested CALL
-  continues reducing. Pipe sides run in child cmd.exe contexts with their own
-  defaults. See percent_expansion, delayed_expansion, caret_escape,
-  double_percent, paren_block_expansion, and command_chaining for details.
+  Approximate cmd parsing phases for a physical line: (1) percent (%var%, %n,
+  %*, %~) expansion across the whole line (including all & / && / || segments)
+  before any chained command runs; (2) special-character / caret processing and
+  tokenization (including line-continuation caret); (3) command recognition and
+  execution of each chain segment; (4) when delayed expansion is enabled,
+  !var! expansion at execution time (including inside already-parsed
+  parenthesized blocks). CALL re-parses its argument tail (notably doubling
+  carets and reducing %% pairs): each CALL halves %% sequences on the tail, so
+  call echo %%NAME%% expands NAME after one CALL reparse while a bare echo
+  %%NAME%% in a script prints %NAME%. Nested CALL continues reducing. Pipe
+  sides run in child cmd.exe contexts with their own defaults. See
+  percent_expansion.compound_line_expansion, percent_expansion,
+  delayed_expansion, caret_escape, double_percent, paren_block_expansion, and
+  command_chaining for details.
 
 script_encoding:
   description: >-
@@ -1753,6 +1793,13 @@ directory_commands:
     Without /D, CD D:\path sets that drive's current directory but does not
     switch the process to drive D: (CD /?). /D requires Command Extensions
     (see command_extensions_off.directory_and_prompt_gated).
+  bare_drive_letter: >-
+    A bare drive letter command such as D: (or Z: after SUBST) switches the
+    process to that drive while restoring that drive's saved current directory
+    (often the drive root if it has not been visited). Confirmed on live
+    Windows 10/11 cmd with SUBST Z: mapping: Z: changes %CD% to Z:\ and a later
+    C: returns to the prior C: path. This is distinct from CD without /D, which
+    updates another drive's directory without switching the process drive.
   cd_drive_query: >-
     CD drive: with no path displays the current directory on that drive.
     CD with no arguments displays the current drive and directory.
@@ -2077,6 +2124,10 @@ copy_command:
     copies through it. Confirmed on live Windows 10/11 cmd for a five-byte
     source AB^ZCD: copy /A yields a three-byte file (through Ctrl+Z) while
     copy /B yields all five bytes. Prefer /B when binary fidelity matters.
+  concatenation: >-
+    Multiple sources joined with + are concatenated into one destination
+    (COPY /?). Confirmed on live Windows 10/11 cmd: copy /y a.txt+b.txt out.txt
+    writes the contents of a.txt followed by b.txt into out.txt.
   missing_source_errorlevel: >-
     COPY of a missing named source leaves ERRORLEVEL 1 (confirmed on live
     Windows 10/11 cmd). Successful copy leaves ERRORLEVEL 0.
@@ -2162,7 +2213,8 @@ dir_command:
   switches: >-
     Common switches include /A attributes, /B bare, /S recurse, /W wide,
     /O sort order, /T time field, /X short names, /P pause, /Q owner, /R ADS
-    (DIR /?). Full switch matrix is in DIR /?.
+    streams (lists alternate data streams when present; DIR /?). Full switch
+    matrix is in DIR /?.
   dircmd_env: >-
     DIRCMD supplies default switches (for example SET DIRCMD=/B). Override a
     preset by prefixing the switch with - (for example DIR /-W) (DIR /?).
@@ -2181,6 +2233,12 @@ move_command:
     directory. /Y suppresses overwrite prompts; /-Y forces prompts. COPYCMD
     may preset /Y; batch scripts default to suppress prompts similarly to COPY
     (MOVE /?).
+  cross_volume: >-
+    Moving a file to a different volume is allowed and succeeds as a
+    copy-then-delete of the source (the source path is gone after a successful
+    move). Confirmed on live Windows 10/11 cmd using SUBST to create a second
+    volume letter: move /y %TEMP%\file Z:\file leaves ERRORLEVEL 0, creates the
+    destination, and removes the source.
   source: "MOVE /? (audit/cmd-help/move-help.txt)"
 
 ren_command:
@@ -2293,12 +2351,19 @@ external_tool_notes:
     (FINDSTR /?; Microsoft Learn findstr). Positional /B /E /X are
     line-break oriented; a final line without a trailing newline can fail
     /E or /X matches that succeed after a CRLF (or blank line) is appended
-    (confirmed on live cmd).
+    (confirmed on live cmd). FINDSTR /G:file reads search strings from a file
+    (/ for console) and /F:file reads the filename list from a file (/ for
+    console) (FINDSTR /?; audit/cmd-help/findstr-help.txt). Confirmed on live
+    Windows 10/11 cmd: findstr /G:needles.txt hay.txt and findstr /F:files.txt
+    needle leave ERRORLEVEL 0 on a successful match.
   where_command: >-
     WHERE locates files matching a pattern via PATH/PATHEXT-style search
     (WHERE /?; audit/cmd-help/where-help.txt). Useful to resolve which
     executable a bare name would run. A successful match leaves ERRORLEVEL 0;
     no match leaves ERRORLEVEL 1 (confirmed on live Windows 10/11 cmd).
+    WHERE /R dir pattern recursively searches from dir (WHERE /?). Confirmed on
+    live Windows 10/11 cmd: where /r . wave2.cmd from a directory containing
+    that file leaves ERRORLEVEL 0 and prints the match path.
   forfiles_command: >-
     FORFILES iterates files and can run a command per match
     (FORFILES /?; audit/cmd-help/forfiles-help.txt). Variables use @file
@@ -2360,16 +2425,23 @@ external_tool_notes:
   xcopy_notes: >-
     XCOPY is an external recursive copy tool (XCOPY /?). /C continues after
     errors. Return codes are tool-defined; do not assume identical semantics
-    to COPY or ROBOCOPY when chaining with && / ||. A missing named source
-    file commonly yields ERRORLEVEL 4 ("File not found") on live Windows cmd,
-    unlike ROBOCOPY's typical 0 for the same single missing name
-    (see robocopy_missing_named_file).
+    to COPY or ROBOCOPY when chaining with && / ||. Confirmed on live Windows
+    10/11 cmd: a successful copy leaves ERRORLEVEL 0; a missing named source
+    file leaves ERRORLEVEL 4 ("File not found"), unlike ROBOCOPY's typical 0
+    for the same single missing name (see robocopy_missing_named_file). An empty
+    source directory with a wildcard (xcopy src\*.* dst\) left ERRORLEVEL 0 on
+    this host even when no files were copied -- do not assume every "no files"
+    condition is non-zero without probing the host.
   timeout_command: >-
     TIMEOUT [/T] seconds [/NOBREAK] waits for a key or a timeout
     (TIMEOUT /?; audit/cmd-help/timeout-help.txt). Valid range includes -1
     (wait indefinitely for a key) through 99999 seconds. /T 0 returns
     immediately (useful in parse/smoke fixtures). /NOBREAK ignores keypresses
-    other than CTRL+C until the timeout elapses.
+    other than CTRL+C until the timeout elapses. When stdin is redirected
+    (for example timeout /t 0 <nul or a pipe into TIMEOUT), live Windows 10/11
+    cmd commonly fails with a message that input redirection is not supported
+    and leaves a non-zero ERRORLEVEL (confirmed EL 1 for /t 0 with <nul and
+    with a piped empty line).
   reg_query: >-
     REG QUERY reads registry keys/values (REG /?, REG QUERY /?;
     audit/cmd-help/reg-help.txt, audit/cmd-help/reg-query-help.txt).

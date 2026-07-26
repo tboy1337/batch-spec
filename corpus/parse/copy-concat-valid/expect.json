@@ -1,0 +1,10 @@
+{
+  "description": "COPY concatenates sources joined with + into one destination",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "copy"
+  ]
+}

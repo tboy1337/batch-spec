@@ -1,0 +1,10 @@
+{
+  "description": "MOVE across volumes is copy-then-delete; parse smoke for MOVE form",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "move"
+  ]
+}
