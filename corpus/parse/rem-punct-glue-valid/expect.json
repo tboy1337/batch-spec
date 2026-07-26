@@ -1,0 +1,11 @@
+{
+  "description": "Punctuation-glued rem. is not REM (WORD); trailing & echo remains a chained genericCmd (live execution)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "remarks",
+    "command-chaining"
+  ]
+}

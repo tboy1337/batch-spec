@@ -50,6 +50,7 @@ builtin_commands:
   - goto
   - gpresult
   - help
+  - hostname
   - icacls
   - if
   - ipconfig

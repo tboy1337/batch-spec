@@ -126,7 +126,8 @@ statement
         {self._laIf()}? ifStmt
       | {self._laFor()}? forStmt
       // REM remarks out the rest of the physical line (live cmd), including
-      // after & / && / ||; remTail consumes separators so they are not chained.
+      // after & / && / ||; remStmt (~NEWLINE)* absorbs separators so they are
+      // not chained as separate statements.
       | {self._laRem()}? remStmt
       | callStmt
       | gotoStmt

@@ -1,0 +1,10 @@
+{
+  "description": "FOR metavar with adjacent literal digit suffix (%%n0 is %%n plus literal 0)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for"
+  ]
+}

@@ -1,4 +1,4 @@
-version: 32
+version: 33
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -224,6 +224,13 @@ for_loop_variables:
   case_sensitive: >-
     FOR variable letters are case-sensitive (%i and %I are distinct). Up to 52
     active FOR variables may be in use (a-z and A-Z).
+  metavar_adjacent_literal: >-
+    After a FOR metavariable expands, immediately adjacent literal text stays
+    attached with no separator (for example in a batch file %%n0 is the value of
+    %%n followed by literal 0, not a two-digit metavariable). This is distinct
+    from %%~n modifiers (tilde forms) and from %~10 / %%~n0 parameter-style
+    multi-digit batveats. Prefer letters for metavars when a digit suffix is
+    intended as a literal.
 
 for_forms:
   description: >-
@@ -1467,6 +1474,12 @@ remarks:
     REM is recognized only as a complete command token. Longer spellings such
     as REMCASE or remark are not REM; live cmd may treat them as external
     program names ("not recognized") while later &-chained commands still run.
+  rem_punctuation_glue: >-
+    Gluing punctuation to REM without whitespace (for example rem. rem/ rem:
+    rem[ rem]) yields a non-REM token on live Windows 10/11 cmd, so a trailing
+    & command on the same physical line still runs. True REM (REM followed by
+    whitespace, end of line, or a statement separator such as &) remarks out
+    the remainder of the line. Prefer spaced REM note over rem. hacks.
   double_colon: >-
     A line starting with :: is a label whose second character is :, commonly
     used as a remark. Real jump targets must not place : in the second
