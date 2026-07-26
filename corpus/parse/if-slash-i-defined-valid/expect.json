@@ -1,0 +1,10 @@
+{
+  "description": "IF /I is accepted before DEFINED with no semantic change",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if"
+  ]
+}

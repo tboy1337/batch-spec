@@ -1,0 +1,11 @@
+{
+  "description": "Classic IF ERRORLEVEL accepts a leading-minus numeric literal",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "errorlevel"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "SETLOCAL duplicate same-category flags parse; last wins at runtime",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setlocalStmt"
+  },
+  "tags": [
+    "setlocal",
+    "extensions"
+  ]
+}

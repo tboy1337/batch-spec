@@ -1,0 +1,10 @@
+{
+  "description": "Quoted empty FOR set member is one iteration",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for"
+  ]
+}

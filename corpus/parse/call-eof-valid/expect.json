@@ -1,5 +1,5 @@
 {
-  "description": "CALL :EOF subroutine terminator",
+  "description": "CALL :EOF is an ordinary label call (not GOTO :EOF); missing label continues",
   "parse": {
     "should_parse": true,
     "top_level_statement": "callStmt"

@@ -191,12 +191,25 @@ elseClause
     | ELSE statement
     ;
 
+// Live cmd: IF ERRORLEVEL accepts a literal (optional leading minus), or a
+// percent/bang/FOR expansion that yields digits after the percent pass
+// (IF ERRORLEVEL %n% / !n!). Same shape for CMDEXTVERSION.
 ifErrorlevelStmt
-    : ERRORLEVEL NUMBER
+    : ERRORLEVEL MINUS? NUMBER
+    | ERRORLEVEL PERCENT_VAR
+    | ERRORLEVEL PERCENT_ARG
+    | ERRORLEVEL PERCENT_TILDE
+    | ERRORLEVEL BANG_VAR
+    | ERRORLEVEL FOR_VAR
     ;
 
 ifCmdextversionStmt
-    : CMDEXTVERSION NUMBER
+    : CMDEXTVERSION MINUS? NUMBER
+    | CMDEXTVERSION PERCENT_VAR
+    | CMDEXTVERSION PERCENT_ARG
+    | CMDEXTVERSION PERCENT_TILDE
+    | CMDEXTVERSION BANG_VAR
+    | CMDEXTVERSION FOR_VAR
     ;
 
 ifExistOperand
@@ -241,8 +254,12 @@ ifPredicate
     | DQ_STRING {self._expandedPredicateOk()}?
     ;
 
+// Optional outer parentheses around a comparison are accepted at parse time
+// so forms like if(1==1) / if (1==1) do not hard-error. Live cmd typically
+// absorbs those parens into the operand text (silent false) rather than
+// treating them as C-style grouping -- see if_forms.paren_wrapped_predicate.
 comparison
-    : compareOperand compareOp compareOperand
+    : LPAREN? compareOperand compareOp compareOperand RPAREN?
     ;
 
 compareOp
@@ -334,9 +351,14 @@ forBody
 // Classic FOR set members split on space/tab (token gaps) and on comma,
 // semicolon, and equals (same delimiters as batch args; see expansion
 // for_forms.set_member_delimiters). Consecutive separators collapse.
+// Empty sets ( ) and separator-only sets (,,) are valid and iterate zero
+// times on live cmd. forListItem+ covers space/tab-separated members
+// (WS is skipped by the lexer).
 forList
-    : forListItem (forListSep+ forListItem)*
-    | forListItem+
+    : forListItem (forListSep+ forListItem)* forListSep*
+    | forListItem+ forListSep*
+    | forListSep+
+    |
     ;
 
 forListSep

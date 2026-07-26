@@ -1,0 +1,13 @@
+{
+  "description": "Invalid SHIFT /n is a non-fatal runtime error; line still parses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "shiftStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "shift"
+  ]
+}

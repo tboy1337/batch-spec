@@ -1,0 +1,10 @@
+{
+  "description": "ENDLOCAL ignores trailing arguments at parse and runtime",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "endlocalStmt"
+  },
+  "tags": [
+    "setlocal"
+  ]
+}

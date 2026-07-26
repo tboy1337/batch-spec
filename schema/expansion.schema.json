@@ -139,6 +139,9 @@
         },
         "writing_batch_files": {
           "type": "string"
+        },
+        "midline_enable_immediate": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -232,6 +235,10 @@
         },
         "goto_exits_body": {
           "type": "string"
+        },
+        "empty_set_zero_iterations": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "additionalProperties": false
@@ -454,6 +461,15 @@
           "type": "string"
         },
         "dp0_trailing_backslash_quote": {
+          "type": "string"
+        },
+        "f_overrides_component_selectors": {
+          "type": "string"
+        },
+        "bare_quote_strip_leading_trailing": {
+          "type": "string"
+        },
+        "directory_zat_modifiers": {
           "type": "string"
         }
       },
@@ -900,6 +916,21 @@
         },
         "bare_inherits_flags": {
           "type": "string"
+        },
+        "flag_order_and_duplicates": {
+          "type": "string"
+        },
+        "quoted_flag_rejected": {
+          "type": "string"
+        },
+        "endlocal_call_level_scoped": {
+          "type": "string"
+        },
+        "endlocal_ignores_extra_arguments": {
+          "type": "string"
+        },
+        "pushd_stack_not_restored": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -929,6 +960,9 @@
           "type": "string"
         },
         "call_space_clears_errorlevel": {
+          "type": "string"
+        },
+        "classic_number_forms": {
           "type": "string"
         }
       },
@@ -1085,6 +1119,18 @@
         },
         "errorlevel_variable_needs_compare": {
           "type": "string"
+        },
+        "paren_wrapped_predicate": {
+          "type": "string"
+        },
+        "chained_eq_first_only": {
+          "type": "string"
+        },
+        "leading_plus_numeric": {
+          "type": "string"
+        },
+        "slash_i_before_non_compare": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1199,6 +1245,9 @@
         },
         "shift_vacates_high_slots": {
           "type": "string"
+        },
+        "shift_invalid_parameter": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1271,6 +1320,12 @@
           "type": "string"
         },
         "expanded_label_target": {
+          "type": "string"
+        },
+        "call_label_fresh_parameters": {
+          "type": "string"
+        },
+        "call_eof_not_special": {
           "type": "string"
         }
       },

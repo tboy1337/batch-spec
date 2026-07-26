@@ -1,0 +1,10 @@
+{
+  "description": "CALL :label with no args creates a fresh parameter context",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "call"
+  ]
+}

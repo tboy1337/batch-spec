@@ -1,0 +1,10 @@
+{
+  "description": "Leading plus on numeric compare-op operands is accepted",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if"
+  ]
+}

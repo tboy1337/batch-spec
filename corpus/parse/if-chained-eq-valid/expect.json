@@ -1,0 +1,10 @@
+{
+  "description": "Classic == splits on the first operator only",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if"
+  ]
+}

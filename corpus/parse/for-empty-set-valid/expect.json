@@ -1,0 +1,10 @@
+{
+  "description": "Empty classic FOR set iterates zero times",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "for"
+  ]
+}

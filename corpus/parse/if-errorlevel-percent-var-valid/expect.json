@@ -1,0 +1,12 @@
+{
+  "description": "Classic IF ERRORLEVEL accepts a percent-expanded number slot",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "errorlevel",
+    "expansion"
+  ]
+}

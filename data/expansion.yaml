@@ -1,4 +1,4 @@
-version: 39
+version: 40
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -100,6 +100,26 @@ percent_tilde_notes:
     based on the current directory when the argument has no drive/path; this
     happens even when the target file does not exist. Combining F with other
     letters (for example %~Ff1) is equivalent for qualification (CALL /?).
+  f_overrides_component_selectors: >-
+    When F is combined with component-selector letters (n/x/d/p), live cmd still
+    expands to the fully qualified path: %~fnx1, %~nxf1, %~df1, %~pf1, and peers
+    all yield the same full path as %~f1. F dominates; the other letters do not
+    narrow the result to name/ext/drive/path alone. Confirmed on live Windows
+    10/11 cmd.
+  bare_quote_strip_leading_trailing: >-
+    %~1 removes at most one leading quote character and one trailing quote
+    character by position. Interior quotes remain (call :label "a""b" with an
+    embedded doubled pair keeps interior quotes after strip; call :label
+    "abc"def"ghi" yields abc"def"ghi for %~1). An unbalanced leading or trailing
+    quote is still stripped on that side alone. Confirmed on live Windows 10/11
+    cmd.
+  directory_zat_modifiers: >-
+    %~z / %~a / %~t apply to directory arguments as well as files. For an
+    existing directory, %~z returns a filesystem-dependent size value (often 0
+    for a newly created empty directory and a non-zero value for some populated
+    directories), not the empty miss used for missing paths. %~a / %~t likewise
+    report directory attributes and timestamps. Confirmed on live Windows 10/11
+    cmd; treat exact %~z digits as host/filesystem-dependent.
   short_name_form: >-
     The s modifier requests short (8.3) name components. %~s1 / %%~s and
     combinations such as %~sf1 expand to a fully qualified path whose path
@@ -170,6 +190,12 @@ delayed_expansion:
     - "cmd /V:OFF"
     - "SETLOCAL DisableDelayedExpansion"
     - "registry Command Processor DelayedExpansion=0"
+  midline_enable_immediate: >-
+    SETLOCAL EnableDelayedExpansion takes effect for later chained commands on
+    the same physical line. Confirmed on live Windows 10/11 cmd: set "x=1" then
+    setlocal enabledelayedexpansion & echo !x! prints 1 (not literal !x!).
+    Percent expansion remains bound for the whole line before any command runs
+    (see percent_expansion.compound_line_expansion).
   substring_pattern: "!var:~start,length!"
   replacement_pattern: "!var:old=new!"
   digit_leading_names: >-
@@ -312,6 +338,13 @@ for_forms:
     ?) are treated as literal strings and are iterated even when no matching
     file exists (for example FOR %%i IN (nosuch.xyz) DO ... runs once with
     %%i=nosuch.xyz). Wildcards match existing filesystem entries (FOR /?).
+  empty_set_zero_iterations: >-
+    An empty classic FOR set (FOR %%i IN () DO ...) iterates zero times and does
+    not run the DO body. Separator-only sets such as (,,) or ( ; ) likewise
+    yield zero iterations after consecutive delimiters collapse. A quoted empty
+    member ("") is one iteration whose metavar text is two quote characters.
+    Confirmed on live Windows 10/11 cmd; the grammar accepts empty and
+    separator-only forList forms.
   set_member_delimiters: >-
     Unquoted members in a classic FOR %%i IN (set) are split on the same
     delimiters as batch arguments: space, tab, comma, semicolon, and equals
@@ -1110,12 +1143,46 @@ setlocal_options:
     bare SETLOCAL still expands !var!). ENDLOCAL of the nested scope restores
     the immediately prior snapshot as usual. Confirmed on live Windows 10/11
     cmd.
+  flag_order_and_duplicates: >-
+    The two optional SETLOCAL flag categories (Extensions and DelayedExpansion)
+    may appear in either order. If the same category appears twice in one
+    SETLOCAL command, the last occurrence wins (for example
+    setlocal enableextensions disableextensions leaves extensions off).
+    Confirmed on live Windows 10/11 cmd.
+  quoted_flag_rejected: >-
+    Quoting a SETLOCAL flag (setlocal "enableextensions") is not recognized:
+    cmd prints "Invalid parameter to SETLOCAL command" and sets ERRORLEVEL 1.
+    When one token is valid and another is garbage in the same command
+    (setlocal disableextensions foobar), the valid flag is still applied even
+    though the bad token also triggers that message and ERRORLEVEL 1.
+    Confirmed on live Windows 10/11 cmd.
+  endlocal_call_level_scoped: >-
+    ENDLOCAL only closes a SETLOCAL opened at the same CALL level. An ENDLOCAL
+    with nothing to close at the current level is a silent no-op (no message;
+    ERRORLEVEL unchanged). A SETLOCAL left open inside CALL :label is closed
+    when that subroutine returns (EXIT /B or fallthrough). Confirmed on live
+    Windows 10/11 cmd.
+  endlocal_ignores_extra_arguments: >-
+    Unlike SETLOCAL, ENDLOCAL performs no argument validation: trailing garbage
+    (endlocal foobar) produces no error message and no ERRORLEVEL change; the
+    matching scope still closes. Confirmed on live Windows 10/11 cmd.
+  pushd_stack_not_restored: >-
+    ENDLOCAL restores the current directory from the matching SETLOCAL but does
+    not restore the PUSHD directory stack. A PUSHD performed inside the local
+    scope leaves its stack entry after ENDLOCAL, so an extra POPD may be needed
+    to unwind fully. Confirmed on live Windows 10/11 cmd.
 
 errorlevel:
   if_form: >-
     IF ERRORLEVEL n is true when the current exit code is greater than or equal
     to n (not equality). Prefer IF %ERRORLEVEL% EQU n for exact tests when the
     dynamic ERRORLEVEL name is not shadowed.
+  classic_number_forms: >-
+    Classic IF ERRORLEVEL / IF CMDEXTVERSION accept an optional leading minus on
+    a numeric literal (IF ERRORLEVEL -1 uses ordinary >= semantics) and accept a
+    percent/bang/FOR expansion in the number position after the percent pass
+    (IF ERRORLEVEL %n% behaves like IF ERRORLEVEL <expanded digits>). Confirmed
+    on live Windows 10/11 cmd; the grammar accepts these forms as ifStmt.
   variable_form: "%ERRORLEVEL% / !ERRORLEVEL! hold the numeric exit code as text"
   env_var_shadowing: >-
     A user-defined environment variable named ERRORLEVEL (also CMDCMDLINE,
@@ -1353,6 +1420,26 @@ if_forms:
     error (for example '1 was unexpected at this time'). Use classic
     IF ERRORLEVEL n (>= semantics) or IF %ERRORLEVEL% EQU n for an exact test
     when the dynamic ERRORLEVEL name is not shadowed.
+  paren_wrapped_predicate: >-
+    Wrapping the IF predicate in parentheses is not C-style grouping. Live cmd
+    typically absorbs glued parentheses into the compare operands (if(1==1) /
+    if (1==1) compares text such as "(1" to "1)"), so the comparison is usually
+    false with no error and execution continues. Prefer unwrapped predicates.
+    The grammar accepts the optional outer parentheses so these lines parse as
+    ifStmt rather than hard syntax errors. Confirmed on live Windows 10/11 cmd.
+  chained_eq_first_only: >-
+    Classic string1==string2 splits on the first == only; further == text stays
+    in the right-hand operand (if 1==1==1 compares "1" to "1==1" and is false).
+    Confirmed on live Windows 10/11 cmd.
+  leading_plus_numeric: >-
+    Compare-ops treat a leading + on an otherwise numeric operand as numeric
+    (+5 EQU 5 is true), matching leading-minus acceptance for negatives.
+    Confirmed on live Windows 10/11 cmd.
+  slash_i_before_non_compare: >-
+    IF /? documents /I for string compares, but live cmd also accepts /I before
+    EXIST / DEFINED / ERRORLEVEL / CMDEXTVERSION with no behavioral change
+    (if /i defined FOO matches if defined FOO). Confirmed on live Windows 10/11
+    cmd.
 
 if_block_parentheses:
   description: >-
@@ -1455,6 +1542,10 @@ batch_parameters:
   shift_n: >-
     With extensions, SHIFT /n starts shifting at argument n where n is 0..8
     (SHIFT /?). SHIFT /9 is invalid.
+  shift_invalid_parameter: >-
+    Invalid SHIFT /n forms (/9, /99, /-1, /abc, and similar) print
+    "Invalid parameter to SHIFT command", set ERRORLEVEL 1, and continue the
+    script (non-fatal). Confirmed on live Windows 10/11 cmd.
   shift_default: >-
     Bare SHIFT (no /n) shifts starting at %0: the former %1 becomes the new %0,
     former %2 becomes %1, and so on.
@@ -1511,6 +1602,10 @@ call_goto:
     EOF, or when it executes GOTO :EOF / EXIT /B. A later mainline EOF then ends
     the script; fenced routines that return via GOTO :EOF / EXIT /B never need
     a "second EOF" to exit the CALL.
+  call_label_fresh_parameters: >-
+    CALL :label with no explicit arguments does not inherit the caller's %1..%9
+    or %*; those slots are empty in the called context until arguments are
+    passed on the CALL line. Confirmed on live Windows 10/11 cmd.
   call_context_runs_to_eof: >-
     After CALL :label, execution continues from the statement following the
     label through subsequent lines and label fallthrough until the called
@@ -1525,6 +1620,12 @@ call_goto:
   call_missing_label: >-
     CALL :missinglabel sets ERRORLEVEL to 1 and continues with the next
     statement (it does not abort the script).
+  call_eof_not_special: >-
+    Unlike GOTO :EOF, CALL :EOF is not an end-of-file / return shortcut. Cmd
+    searches for a user label named EOF; when none exists it reports that the
+    batch label cannot be found, sets ERRORLEVEL 1, and continues (same as any
+    missing CALL :label). Prefer EXIT /B or GOTO :EOF to return or end a
+    routine. Confirmed on live Windows 10/11 cmd.
   call_preserves_prior_errorlevel: >-
     A successful CALL :label that returns without EXIT /B (falling through to
     EOF of the routine) does not clear ERRORLEVEL to 0; the prior exit code

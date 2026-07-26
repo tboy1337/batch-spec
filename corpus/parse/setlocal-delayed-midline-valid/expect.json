@@ -1,0 +1,15 @@
+{
+  "description": "SETLOCAL EnableDelayedExpansion then chained delayed expand on one line",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "setStmt",
+      "setlocalStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "setlocal",
+    "delayed"
+  ]
+}
