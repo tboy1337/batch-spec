@@ -1,8 +1,5 @@
 @echo off
-goto lab
+goto has
 echo miss
-:label_full
-echo full
-goto :eof
-:lab
-echo prefix
+:has space
+echo hit

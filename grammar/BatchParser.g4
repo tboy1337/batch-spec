@@ -331,9 +331,18 @@ forBody
     | statement
     ;
 
+// Classic FOR set members split on space/tab (token gaps) and on comma,
+// semicolon, and equals (same delimiters as batch args; see expansion
+// for_forms.set_member_delimiters). Consecutive separators collapse.
 forList
-    : forListItem (COMMA forListItem)*
+    : forListItem (forListSep+ forListItem)*
     | forListItem+
+    ;
+
+forListSep
+    : COMMA
+    | SEMICOLON
+    | EQUALS
     ;
 
 forListItem

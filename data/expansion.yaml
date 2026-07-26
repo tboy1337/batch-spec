@@ -1,4 +1,4 @@
-version: 38
+version: 39
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -55,6 +55,12 @@ path_search_modifier:
   empty_on_miss: >-
     When the named environment variable is undefined or no matching file is
     found, %~$ENV:n expands to an empty string (CALL /?).
+  cwd_not_implicit: >-
+    Path search walks only the semicolon-separated directories listed in the
+    named environment variable. A file that exists only in the current
+    directory is a miss (empty expansion) unless that CWD path is present in
+    the env var. First listed match wins (CALL /?; confirmed on live Windows
+    10/11 cmd).
   combine_with_letter_modifiers: >-
     Letter modifiers may precede the $ENV: search (for example %~dp$PATH:1
     expands to the drive+path of the first PATH hit). The $ENV: form still
@@ -168,7 +174,9 @@ delayed_expansion:
   replacement_pattern: "!var:old=new!"
   digit_leading_names: >-
     Environment names that start with a digit expand with delayed !name! forms;
-    percent %1name% is parsed as argument %1 plus literal text.
+    percent %1name% is parsed as argument %1 plus literal text (not %1name%).
+    Likewise %*name% is always %* plus literal text; a name cannot start with *
+    for percent expansion.
   exclamation_escaping: >-
     With delayed expansion enabled, a literal ! commonly needs caret escaping
     such as ^^!. The same ^^ before a non-! character yields a single caret
@@ -304,6 +312,23 @@ for_forms:
     ?) are treated as literal strings and are iterated even when no matching
     file exists (for example FOR %%i IN (nosuch.xyz) DO ... runs once with
     %%i=nosuch.xyz). Wildcards match existing filesystem entries (FOR /?).
+  set_member_delimiters: >-
+    Unquoted members in a classic FOR %%i IN (set) are split on the same
+    delimiters as batch arguments: space, tab, comma, semicolon, and equals
+    (FOR /?; confirmed on live Windows 10/11 cmd). Example: FOR %%i IN (a,b;c=d)
+    yields four iterations a, b, c, d. A quoted member stays one iteration,
+    including internal = / , / ; (for example "a=b").
+  percent_star_as_set: >-
+    FOR %%i IN (%*) DO ... expands %* first, then re-tokenizes that text with
+    classic FOR set delimiters (see set_member_delimiters). Unquoted a=b or e;f
+    become separate iterations; a quoted argument such as "c d" remains one
+    member (quotes typically still visible on the metavar). This is distinct
+    from walking %%1.. via SHIFT. Cross-ref batch_parameters.percent_star.
+  multiple_set_members_or_masks: >-
+    A classic FOR set may list multiple literal members and/or masks (space-
+    and/or comma-separated). Each mask is expanded independently (for example
+    *.txt *.csv or Italy*.jpg,Italy*.bmp). Combine with set_member_delimiters
+    when diagnosing unexpected splits on = / ; / ,.
   wildcard_question_trailing: >-
     In FOR file-set masks, a trailing ? (or ? immediately before a dot) can match
     fewer characters than the number of question marks, including matching a
@@ -351,14 +376,21 @@ for_f:
       characters in the same eol= value are not a multi-character comment
       prefix and commonly break option-string parsing on live cmd (for example
       eol=#x yields a message such as x" was unexpected at this time).
-    skip: "skip=n skips the first n lines of each input"
+    skip: >-
+      skip=n skips the first n lines of each input file (or each string /
+      command-output unit). In a multi-file fileset such as IN (a.txt b.txt),
+      skip applies independently to each file in listed order, not once across
+      the whole fileset (FOR /?; confirmed on live Windows 10/11 cmd).
     delims: >-
       delims=xxx replaces the default delimiter set (space and tab). An empty
       delims= means no delimiters (whole line is one token); confirmed for forms
       such as FOR /F "delims=" %%a IN ("a b c"). When a space is included among
       delimiters it must be the last character of the delims= value; otherwise
-      the options string can misparse. Delimiter characters are case-sensitive
-      (delims=D does not treat lowercase d as a delimiter).
+      the options string can misparse. Prefer placing the delims= clause last
+      among FOR /F options so a trailing space delimiter sits immediately
+      before the closing quote (for example "tokens=1,2 delims=, "). Delimiter
+      characters are case-sensitive (delims=D does not treat lowercase d as a
+      delimiter).
     tokens: >-
       tokens=x,y,m-n selects token indexes; a trailing * assigns the remainder
       of the line to one variable. Additional FOR variables are implied by
@@ -422,10 +454,19 @@ for_f:
     inner FOR completes, the outer value is restored on modern Windows.
   input_forms: >-
     file-set; "string" (or 'string' with usebackq); 'command' (or `command`
-    with usebackq). Blank lines in file and command-output input are skipped
-    (FOR /?): a physical empty line does not produce a loop iteration. A quoted
-    multi-string file-set form such as ("a" "" "b") is not a blank-line probe;
-    cmd treats that as a single string argument rather than three lines.
+    with usebackq). A bare/multi fileset IN (a.txt b.txt) opens files in listed
+    order (each file is a separate input for skip= and eol=). Blank lines in
+    file and command-output input are skipped (FOR /?): a physical empty line
+    does not produce a loop iteration. A quoted multi-string file-set form such
+    as ("a" "" "b") is not a blank-line probe; cmd treats that as a single
+    string argument rather than three lines.
+  string_embedded_quotes: >-
+    Without usebackq, a double-quoted string input may contain an even number of
+    embedded " characters as paired quotes (for example
+    for /f "tokens=1-3" %%a in ("one ""two"" three") do ...). Confirmed on live
+    Windows 10/11 cmd: tokens become one, ""two"", three. A solitary unescaped "
+    inside that form commonly breaks parsing; prefer usebackq with '...' when
+    the data holds awkward quote mixes.
   command_stdout_only: >-
     The FOR /F command-output form captures only the command's stdout as token
     lines. Stderr still prints to the console (or follows redirects on the
@@ -816,9 +857,12 @@ environment_variable_names:
     SET /? forbids '=' inside a variable name. Live cmd.exe accepts a wider
     charset than [A-Za-z_][A-Za-z0-9_]* -- including '.', '-', '~', and many
     punctuation characters (for example %a~b%, %var;x%, %var@x%, %var#x%,
-    and %var$with.odd[chars]% after a matching SET). Quoted SET "a b=value"
-    can define names that contain spaces; percent expansion then uses matching
-    %a b% forms. Prefer underscore-alnum names for portability.
+    %ab)%, and %var$with.odd[chars]% after a matching SET). Names that start
+    with a digit or '*' are not reachable via %name% (those spellings are
+    %0-%9 / %* plus trailing text); use delayed !1abc! for digit-leading names.
+    Quoted SET "a b=value" can define names that contain spaces; percent
+    expansion then uses matching %a b% forms. Prefer underscore-alnum names for
+    portability.
   forbidden_in_name: "="
   accepted_examples:
     - "my.var"
@@ -1546,6 +1590,9 @@ call_goto:
     Ordinary GOTO targets are matched case-insensitively. A leading colon on
     the GOTO operand is optional for user labels (goto foo and goto :foo both
     match :Foo). A missing label aborts with an error and does not continue.
+    goto lab does not match a distinct longer label such as :label (that
+    folklore is false on live Windows 10/11 cmd); see label_call_vs_goto_spaces
+    for the real prefix rule on spaced label lines.
   label_first_match: >-
     When the same label text appears more than once, GOTO and CALL :label
     resolve to the first matching label in file order; later duplicates are

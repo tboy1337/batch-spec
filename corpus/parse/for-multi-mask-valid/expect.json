@@ -1,0 +1,14 @@
+{
+  "description": "Classic FOR set may list multiple masks expanded independently",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for"
+  ]
+}

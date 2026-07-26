@@ -1,5 +1,5 @@
 {
-  "description": "GOTO prefix matches spaced label lines (goto has hits :has space), not longer names like :label",
+  "description": "goto lab does not match a distinct longer label :label (exact/case-insensitive only)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",

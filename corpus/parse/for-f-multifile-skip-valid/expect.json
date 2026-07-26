@@ -1,0 +1,14 @@
+{
+  "description": "FOR /F skip=n applies per file in a multi-file fileset",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for"
+  ]
+}

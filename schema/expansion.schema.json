@@ -221,6 +221,15 @@
           "type": "string",
           "minLength": 1
         },
+        "set_member_delimiters": {
+          "type": "string"
+        },
+        "percent_star_as_set": {
+          "type": "string"
+        },
+        "multiple_set_members_or_masks": {
+          "type": "string"
+        },
         "goto_exits_body": {
           "type": "string"
         }
@@ -275,6 +284,9 @@
           "type": "string"
         },
         "input_forms": {
+          "type": "string"
+        },
+        "string_embedded_quotes": {
           "type": "string"
         },
         "bare_fileset_no_path_search": {
@@ -397,6 +409,9 @@
           "type": "string"
         },
         "empty_on_miss": {
+          "type": "string"
+        },
+        "cwd_not_implicit": {
           "type": "string"
         },
         "combine_with_letter_modifiers": {

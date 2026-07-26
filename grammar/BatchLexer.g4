@@ -170,8 +170,11 @@ INVALID_PERCENT_TILDE
 // Names must not start with '~': %~... is percent-tilde (rules above).
 fragment ENV_NAME_CHAR : ~[%=\r\n] ;
 fragment ENV_NAME_CHAR_NO_COLON : ~[%:=\r\n] ;
-fragment ENV_NAME_START : ~[%=\r\n~] ;
-fragment ENV_NAME_START_NO_COLON : ~[%:=\r\n~] ;
+// Digits and '*' cannot start %name%: %0-%9 / %* are always PERCENT_ARG
+// (longest-match would otherwise treat "%*) do echo %" as one PERCENT_VAR
+// when a later %% closes the name). Digit-leading names use !name! instead.
+fragment ENV_NAME_START : ~[%=\r\n~0-9*] ;
+fragment ENV_NAME_START_NO_COLON : ~[%:=\r\n~0-9*] ;
 
 PERCENT_VAR_SUBSTRING
     : '%' ENV_NAME_START_NO_COLON ENV_NAME_CHAR_NO_COLON* ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '%'

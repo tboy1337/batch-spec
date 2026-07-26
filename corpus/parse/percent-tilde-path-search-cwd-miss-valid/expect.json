@@ -1,17 +1,15 @@
 {
-  "description": "GOTO prefix matches spaced label lines (goto has hits :has space), not longer names like :label",
+  "description": "%~$ENV:n path search does not implicitly include CWD unless listed in ENV",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
-      "gotoStmt",
-      "genericCmd",
       "genericCmd"
     ]
   },
   "tags": [
-    "goto",
-    "labels"
+    "expansion",
+    "percent-tilde"
   ]
 }

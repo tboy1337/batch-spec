@@ -1,0 +1,15 @@
+{
+  "description": "FOR /F non-usebackq string input may contain paired embedded quotes",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for",
+    "quoting"
+  ]
+}

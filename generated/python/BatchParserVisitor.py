@@ -169,6 +169,11 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by BatchParser#forListSep.
+    def visitForListSep(self, ctx:BatchParser.ForListSepContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by BatchParser#forListItem.
     def visitForListItem(self, ctx:BatchParser.ForListItemContext):
         return self.visitChildren(ctx)
