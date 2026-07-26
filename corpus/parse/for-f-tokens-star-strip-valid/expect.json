@@ -1,0 +1,16 @@
+{
+  "description": "FOR /F tokens=* strips leading delims; empty delims= preserves spaces",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

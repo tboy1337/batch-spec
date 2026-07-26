@@ -1,0 +1,15 @@
+{
+  "description": "FOR /L step 0 never terminates; GOTO/EXIT /B do not escape",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "remStmt",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for"
+  ]
+}

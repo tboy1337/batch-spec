@@ -1,0 +1,3 @@
+@echo off
+if 2147483648 EQU 2147483647 echo clamp
+if 9999999999 EQU 2147483647 echo clamp2

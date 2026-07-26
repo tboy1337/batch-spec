@@ -1,0 +1,16 @@
+{
+  "description": "SET /A modulo sign follows dividend (toward-zero division)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "setStmt",
+      "setStmt"
+    ]
+  },
+  "tags": [
+    "set",
+    "set-a"
+  ]
+}

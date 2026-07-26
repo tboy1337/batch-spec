@@ -1,0 +1,14 @@
+{
+  "description": "Output redirect creates target before command runs",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "redirection"
+  ]
+}

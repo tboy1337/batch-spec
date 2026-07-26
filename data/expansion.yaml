@@ -1,4 +1,4 @@
-version: 36
+version: 37
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -274,7 +274,11 @@ for_forms:
   slash_l: >-
     FOR /L iterates a numeric sequence (start,step,end), inclusive of endpoints
     that the step reaches. The end need not be hit exactly; iteration stops once
-    the index passes the end in the step direction.
+    the index passes the end in the step direction. A step of 0 never advances
+    the index, so the end condition is never met: on live Windows 10/11 cmd the
+    DO body repeats forever. Neither GOTO nor EXIT /B from that DO body
+    terminates the loop (the process must be interrupted or ended with bare
+    EXIT); avoid step 0 entirely.
   slash_f: >-
     FOR /F parses text from a file-set, a quoted string, or command output; see
     for_f for option details.
@@ -306,10 +310,12 @@ for_forms:
     not *.tar.gz). Combine with wildcard_question_trailing and short-name notes
     when diagnosing unexpected hits. Confirmed on live Windows 10/11 cmd.
   goto_exits_body: >-
-    A GOTO from a FOR DO body (classic FOR or FOR /F) exits the loop early and
-    continues at the target label. BREAK does not terminate FOR iteration
-    (see break_command.not_loop_break). Confirmed on live Windows 10/11 cmd for
-    both FOR %%i IN (...) DO ... & GOTO :label and parenthesized DO bodies.
+    A GOTO from a FOR DO body exits the loop early and continues at the target
+    label for classic FOR, FOR /F, and FOR /L with a non-zero step. BREAK does
+    not terminate FOR iteration (see break_command.not_loop_break). Confirmed on
+    live Windows 10/11 cmd for both FOR %%i IN (...) DO ... & GOTO :label and
+    parenthesized DO bodies. FOR /L with step 0 is excluded: GOTO and EXIT /B
+    do not escape that infinite loop (see slash_l).
 
 for_f:
   description: "FOR /F parsing options and input forms (FOR /?)"
@@ -344,7 +350,11 @@ for_f:
       Windows 10/11 cmd. FOR /? and some references claim a 26-token / past-z
       ceiling; live cmd continues past z/Z, though some successor characters
       are unusable in DO text (notably | as a pipe). Prefer staying within
-      a-z / A-Z for portable scripts.
+      a-z / A-Z for portable scripts. tokens=* still applies leading-delimiter
+      stripping first (default space/tab), so leading spaces are removed before
+      the remainder is assigned; use empty delims= when leading whitespace must
+      be preserved (confirmed: tokens=* on "   spaced" yields spaced, while
+      delims= yields the spaced string including leading spaces).
     usebackq: >-
       usebackq switches quoting: backtick `command` for command output, single
       quotes for literal strings, and double quotes for filenames. Without
@@ -656,6 +666,10 @@ set_a:
   integer_division_truncates: >-
     The / operator performs signed integer division toward zero (for example
     7/2 yields 3 and -7/2 yields -3). There is no floating-point result.
+  modulo_sign: >-
+    The remainder operator follows toward-zero division: the sign of the
+    result matches the dividend. Confirmed on live Windows 10/11 cmd:
+    set /A r=-7%%3 yields -1 and set /A r=7%%-3 yields 1 (batch %% escaping).
   no_power_operator: >-
     SET /A has no exponent/power operator. ^ is bitwise XOR, not power; forms
     such as 2**3 are not valid SET /A syntax.
@@ -1186,7 +1200,13 @@ if_forms:
     "9" is true as a lexicographic string compare. Mixed letter/digit unquoted
     compares are string compares: A GTR 9 is true and 9 GTR A is false. /I
     forces case-insensitive string compares and also applies to the
-    string1==string2 form and to compare-ops.
+    string1==string2 form and to compare-ops. When both sides look numeric,
+    cmd accepts leading-zero octal and 0x hex (010 EQU 8 and 0x10 EQU 16 are
+    true). Invalid octal digit strings such as 08 or 09 are not numeric: they
+    fall back to string compare, so 09 EQU 9 is false. Out-of-range all-digit
+    operands clamp to signed 32-bit extremes for the numeric compare
+    (2147483648 EQU 2147483647 and 9999999999 EQU 2147483647 are true; likewise
+    -2147483649 EQU -2147483648).
   defined_notes: "DEFINED takes a variable name without % percent signs"
   else_same_line: >-
     ELSE must appear on the same physical line as the end of the IF command
@@ -1221,6 +1241,17 @@ if_forms:
     empty expansion for simple values, but breaks when the expanded text
     contains spaces or IF metacharacters (the line re-tokenizes). Prefer
     quoted compares or IF DEFINED for robust empty/undefined handling.
+  trailing_spaces_significant: >-
+    Trailing spaces in an expanded operand are significant and are not
+    stripped before == or compare-ops. After set "v=sad ", if "%v%"=="sad" and
+    if %v% EQU sad are false while if "%v%"=="sad " is true (confirmed on live
+    Windows 10/11 cmd). Quote both sides when trailing whitespace must match.
+  exist_special_devices: >-
+    IF EXIST treats some reserved device names as present: if exist nul is
+    true on live Windows 10/11 cmd, while if exist nul\ (trailing backslash) is
+    false. Do not probe if exist con in unattended scripts -- opening CON as a
+    path can block waiting on console I/O. Prefer IF EXIST for ordinary files
+    and directories; see also redirection.special_devices.
   no_and_or_keywords: >-
     IF has no native boolean AND/OR keywords. Tokens such as and / or after a
     completed IF command are parsed as separate commands (often yielding
@@ -1478,6 +1509,11 @@ call_goto:
     Ordinary GOTO targets are matched case-insensitively. A leading colon on
     the GOTO operand is optional for user labels (goto foo and goto :foo both
     match :Foo). A missing label aborts with an error and does not continue.
+  label_first_match: >-
+    When the same label text appears more than once, GOTO and CALL :label
+    resolve to the first matching label in file order; later duplicates are
+    ignored (confirmed: goto mid hits the first :mid and never the second).
+    Prefer unique labels.
   label_line_form: >-
     A label is a line beginning with a colon (GOTO /?). Indented labels are
     accepted by cmd; prefer a colon in column 0 for portable scripts.
@@ -1615,6 +1651,11 @@ redirection:
     stderr to file. command 2>&1 >file first duplicates stderr to the current
     stdout (often the console), then redirects stdout alone to file, so stderr
     may remain on the console.
+  create_before_execute: >-
+    An output redirect opens/creates (or truncates with >) the target before
+    the command runs. A failing or missing command can still leave a zero-byte
+    file (confirmed: nosuchcmd >r.txt creates r.txt of size 0). Prefer IF
+    EXIST / error checks when an empty redirect artifact would be misleading.
   special_devices: >-
     NUL and CON are reliable redirect targets/sources on modern Windows (for
     example >nul, >CON). Other reserved device names such as PRN, AUX, COM1,
@@ -1724,6 +1765,10 @@ directory_commands:
     delimiters, so an unquoted path with spaces is accepted (for example
     cd \path\start menu). Without extensions, such paths require quotes
     (CD /?).
+  cd_missing_errorlevel: >-
+    CD/CHDIR to a nonexistent path leaves ERRORLEVEL 1 (confirmed on live
+    Windows 10/11 cmd). Prefer IF EXIST before CD when absence must be handled
+    without relying on ERRORLEVEL alone.
   pushd_popd_stack: >-
     PUSHD path stores the current directory then changes to path. POPD returns
     to the pushed directory. With extensions, PUSHD accepts UNC paths and maps
@@ -2027,6 +2072,14 @@ copy_command:
   nul_source: >-
     copy nul filename is a common idiom to create an empty file
     (NUL is a special device; see redirection.special_devices).
+  ascii_vs_binary_ctrl_z: >-
+    /A (ASCII) stops at the first Ctrl+Z (0x1A) in the source; /B (binary)
+    copies through it. Confirmed on live Windows 10/11 cmd for a five-byte
+    source AB^ZCD: copy /A yields a three-byte file (through Ctrl+Z) while
+    copy /B yields all five bytes. Prefer /B when binary fidelity matters.
+  missing_source_errorlevel: >-
+    COPY of a missing named source leaves ERRORLEVEL 1 (confirmed on live
+    Windows 10/11 cmd). Successful copy leaves ERRORLEVEL 0.
   source: "COPY /? (audit/cmd-help/copy-help.txt)"
 
 type_command:
@@ -2113,6 +2166,10 @@ dir_command:
   dircmd_env: >-
     DIRCMD supplies default switches (for example SET DIRCMD=/B). Override a
     preset by prefixing the switch with - (for example DIR /-W) (DIR /?).
+  no_match_errorlevel: >-
+    DIR with a mask that matches nothing leaves ERRORLEVEL 1 (confirmed on live
+    Windows 10/11 cmd for dir /b nosuch_zzz*.qqq). A successful listing leaves
+    ERRORLEVEL 0.
   source: "DIR /? (audit/cmd-help/dir-help.txt)"
 
 move_command:
@@ -2141,6 +2198,11 @@ ren_command:
     four-character your stem overwrites herf of the preserved herfile stem,
     leaving ile.txt), not yourfile.txt. Prefer explicit destination names when
     the intended mapping is not this overwrite behavior.
+  destination_exists_errorlevel: >-
+    REN fails with ERRORLEVEL 1 when the destination name already exists
+    ("A duplicate file name exists, or the file cannot be found.") Confirmed
+    on live Windows 10/11 cmd: ren a.txt b.txt with both files present leaves
+    EL 1 and keeps both names.
   source: "REN /? (audit/cmd-help/ren-help.txt); live cmd.exe"
 
 chcp_command:

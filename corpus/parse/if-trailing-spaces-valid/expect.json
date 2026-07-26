@@ -1,0 +1,17 @@
+{
+  "description": "Trailing spaces in IF operands are significant",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "setStmt",
+      "ifStmt",
+      "ifStmt"
+    ]
+  },
+  "tags": [
+    "if",
+    "set"
+  ]
+}

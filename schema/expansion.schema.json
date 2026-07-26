@@ -534,6 +534,9 @@
         "integer_division_truncates": {
           "type": "string"
         },
+        "modulo_sign": {
+          "type": "string"
+        },
         "no_power_operator": {
           "type": "string"
         },
@@ -1032,6 +1035,9 @@
         "exist_files_and_directories": {
           "type": "string"
         },
+        "exist_special_devices": {
+          "type": "string"
+        },
         "empty_unquoted_operands": {
           "type": "string"
         },
@@ -1039,6 +1045,9 @@
           "type": "string"
         },
         "operand_padding": {
+          "type": "string"
+        },
+        "trailing_spaces_significant": {
           "type": "string"
         },
         "no_and_or_keywords": {
@@ -1219,6 +1228,9 @@
         "goto_label_matching": {
           "type": "string"
         },
+        "label_first_match": {
+          "type": "string"
+        },
         "label_line_form": {
           "type": "string"
         },
@@ -1325,6 +1337,9 @@
           "type": "string"
         },
         "handle_order": {
+          "type": "string"
+        },
+        "create_before_execute": {
           "type": "string"
         },
         "special_devices": {
@@ -1470,6 +1485,9 @@
           "type": "string"
         },
         "cd_spaces_not_delimiters": {
+          "type": "string"
+        },
+        "cd_missing_errorlevel": {
           "type": "string"
         },
         "pushd_popd_stack": {
@@ -1831,6 +1849,12 @@
         "nul_source": {
           "type": "string"
         },
+        "ascii_vs_binary_ctrl_z": {
+          "type": "string"
+        },
+        "missing_source_errorlevel": {
+          "type": "string"
+        },
         "source": {
           "type": "string"
         }
@@ -1995,6 +2019,9 @@
         "dircmd_env": {
           "type": "string"
         },
+        "no_match_errorlevel": {
+          "type": "string"
+        },
         "source": {
           "type": "string"
         }
@@ -2034,6 +2061,9 @@
           "type": "string"
         },
         "wildcard_destination_map": {
+          "type": "string"
+        },
+        "destination_exists_errorlevel": {
           "type": "string"
         },
         "source": {

@@ -1,0 +1,16 @@
+{
+  "description": "IF compare-ops accept octal/hex; invalid octal falls back to string compare",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "ifStmt",
+      "ifStmt",
+      "ifStmt"
+    ]
+  },
+  "tags": [
+    "if"
+  ]
+}

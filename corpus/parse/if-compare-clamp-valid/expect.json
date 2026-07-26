@@ -1,0 +1,15 @@
+{
+  "description": "IF compare-ops clamp out-of-range digit operands to signed 32-bit",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "ifStmt",
+      "ifStmt"
+    ]
+  },
+  "tags": [
+    "if"
+  ]
+}

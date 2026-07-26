@@ -1,0 +1,17 @@
+{
+  "description": "Duplicate labels: GOTO uses first match in file order",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "gotoStmt",
+      "genericCmd",
+      "gotoStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "goto"
+  ]
+}

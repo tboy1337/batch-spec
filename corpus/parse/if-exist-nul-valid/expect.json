@@ -1,0 +1,15 @@
+{
+  "description": "IF EXIST nul is true; trailing nul\\ is false (catalog exist_special_devices)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "ifStmt",
+      "ifStmt"
+    ]
+  },
+  "tags": [
+    "if"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "description": "CD to missing path leaves ERRORLEVEL 1",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "cd"
+  ]
+}

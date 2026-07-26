@@ -1,0 +1,16 @@
+{
+  "description": "REN when destination exists fails with ERRORLEVEL 1",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "ren"
+  ]
+}

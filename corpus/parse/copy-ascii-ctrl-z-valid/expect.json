@@ -1,0 +1,15 @@
+{
+  "description": "COPY /A stops at Ctrl+Z; /B copies through",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "copy"
+  ]
+}
