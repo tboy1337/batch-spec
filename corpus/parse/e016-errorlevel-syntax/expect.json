@@ -1,8 +1,7 @@
 {
-  "description": "Invalid cmd.exe IF %ERRORLEVEL% NUMBER syntax; parses as generic command, not IF",
+  "description": "IF %ERRORLEVEL% NUMBER without compare-op is a live syntax error",
   "parse": {
-    "should_parse": true,
-    "top_level_statement": "genericCmd"
+    "expect_syntax_errors": true
   },
   "tags": [
     "if",

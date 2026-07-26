@@ -7,6 +7,23 @@ def _notForToken(self) -> bool:
     from BatchLexer import BatchLexer  # isort: skip
     return self._input.LA(1) != BatchLexer.FOR
 
+def _laIf(self) -> bool:
+    from BatchLexer import BatchLexer  # isort: skip
+    return self._input.LA(1) == BatchLexer.IF
+
+def _laFor(self) -> bool:
+    from BatchLexer import BatchLexer  # isort: skip
+    return self._input.LA(1) == BatchLexer.FOR
+
+def _laElse(self) -> bool:
+    from BatchLexer import BatchLexer  # isort: skip
+    return self._input.LA(1) == BatchLexer.ELSE
+
+def _genericCmdStartOk(self) -> bool:
+    # Do not let genericCmd absorb IF/FOR/ELSE; those have dedicated rules
+    # so invalid IF predicates surface as syntax errors (live cmd).
+    return not (self._laIf() or self._laFor() or self._laElse())
+
 def _notLonelyParen(self) -> bool:
     from BatchLexer import BatchLexer  # isort: skip
     la1 = self._input.LA(1)
@@ -39,6 +56,44 @@ def _notOpenParenThen(self) -> bool:
     from BatchLexer import BatchLexer  # isort: skip
     # Same-line '(' after the predicate starts a paren block (IF /?).
     return self._input.LA(1) != BatchLexer.LPAREN
+
+def _expandedPredicateOk(self) -> bool:
+    # After %var% / %1 / !var! as a full expanded predicate, another operand
+    # without a compare-op is a live syntax error (IF %ERRORLEVEL% 1).
+    from BatchLexer import BatchLexer  # isort: skip
+    return self._input.LA(1) not in (
+        BatchLexer.NUMBER,
+        BatchLexer.HEX_NUMBER,
+        BatchLexer.PERCENT_VAR,
+        BatchLexer.PERCENT_VAR_SUBSTRING,
+        BatchLexer.PERCENT_VAR_REPLACE,
+        BatchLexer.PERCENT_ARG,
+        BatchLexer.PERCENT_TILDE,
+        BatchLexer.BANG_VAR,
+        BatchLexer.BANG_VAR_SUBSTRING,
+        BatchLexer.BANG_VAR_REPLACE,
+        BatchLexer.DQ_STRING,
+        BatchLexer.MINUS,
+    )
+
+def _forFOptionsOk(self, text: str) -> bool:
+    # Live cmd accepts only one eol= comment character; eol=#x and similar
+    # multi-character values are syntax errors ("x" was unexpected...).
+    import re  # isort: skip
+
+    body = text[1:-1] if len(text) >= 2 and text[0] == '"' else text
+    for match in re.finditer(r"(?i)\beol=(\S*)", body):
+        value = match.group(1)
+        # Stop at next option-like token boundary inside the value.
+        value = re.split(r"(?i)\b(?:skip|delims|tokens|usebackq|useback)=", value, maxsplit=1)[
+            0
+        ]
+        if len(value) > 1:
+            self.notifyErrorListeners(
+                f"FOR /F eol= accepts one character; got {value!r}"
+            )
+            return False
+    return True
 }
 
 script
@@ -61,8 +116,10 @@ commandLine
 
 statement
     : AT? (
-        ifStmt
-      | forStmt
+        // Commit on IF/FOR so invalid predicates report syntax errors instead
+        // of silently falling through to genericCmd (live cmd syntax rejects).
+        {self._laIf()}? ifStmt
+      | {self._laFor()}? forStmt
       | callStmt
       | gotoStmt
       | setStmt
@@ -70,9 +127,18 @@ statement
       | endlocalStmt
       | exitStmt
       | shiftStmt
+      // Newline-detached ELSE is not IF's elseClause: live cmd treats it as an
+      // unknown command, and a following (block) still runs as a group.
+      | detachedElseStmt
       | groupStmt
       | genericCmd
       )
+    ;
+
+// Detached ELSE (not same-line elseClause). Matches `else echo`, `else if ...`,
+// and `else ( ... )` so orphan paren groups parse like live cmd.
+detachedElseStmt
+    : ELSE (groupStmt | commandTail)?
     ;
 
 exitStmt
@@ -148,9 +214,17 @@ ifPredicate
     | NOT? DEFINED ifDefinedOperand
     | NOT? EXIST ifExistOperand
     | NOT? comparison
-    | DQ_STRING
-    | PERCENT_TILDE
-    | argWord
+    // Expanded predicate forms (e.g. if %b% when b=a==a). Reject when another
+    // operand follows without a compare-op (IF %ERRORLEVEL% 1).
+    | PERCENT_VAR {self._expandedPredicateOk()}?
+    | PERCENT_VAR_SUBSTRING {self._expandedPredicateOk()}?
+    | PERCENT_VAR_REPLACE {self._expandedPredicateOk()}?
+    | PERCENT_ARG {self._expandedPredicateOk()}?
+    | PERCENT_TILDE {self._expandedPredicateOk()}?
+    | BANG_VAR {self._expandedPredicateOk()}?
+    | BANG_VAR_SUBSTRING {self._expandedPredicateOk()}?
+    | BANG_VAR_REPLACE {self._expandedPredicateOk()}?
+    | DQ_STRING {self._expandedPredicateOk()}?
     ;
 
 comparison
@@ -167,9 +241,17 @@ compareOp
     | GEQ
     ;
 
+// One IF compare side. Allow stacked atoms so classic padding forms such as
+// .%EMPTY%.==.. tokenize/parse (DOT + PERCENT_VAR + DOT). Exclude compareOp
+// tokens so `a EQU b` does not swallow the operator into the left operand.
 compareOperand
+    : compareOperandPart+
+    ;
+
+compareOperandPart
     : DQ_STRING
     | PERCENT_TILDE
+    | INVALID_PERCENT_TILDE
     | PERCENT_VAR_SUBSTRING
     | PERCENT_VAR_REPLACE
     | PERCENT_VAR
@@ -179,9 +261,19 @@ compareOperand
     | BANG_VAR_SUBSTRING
     | BANG_VAR_REPLACE
     | BANG_VAR
-    | argWord
-    | MINUS? NUMBER
-    | MINUS? HEX_NUMBER
+    | WORD
+    | NUMBER
+    | HEX_NUMBER
+    | DOT
+    | MINUS
+    | PLUS
+    | ASTERISK
+    | QUESTION
+    | TILDE
+    | HASH
+    | DOLLAR
+    | AT
+    | CARET_ESCAPE
     ;
 
 forStmt
@@ -198,7 +290,7 @@ forSlashMod
     ;
 
 forFOptions
-    : DQ_STRING
+    : DQ_STRING {self._forFOptionsOk($DQ_STRING.text)}?
     | forFOptionAnchor forFOptionExtra*
     ;
 
@@ -328,7 +420,7 @@ setRest
     ;
 
 genericCmd
-    : {self._notForToken() and self._notLonelyParen()}? commandTail
+    : {self._notForToken() and self._notLonelyParen() and self._genericCmdStartOk()}? commandTail
     ;
 
 commandTail
@@ -367,6 +459,7 @@ token
     | SQ_STRING
     | BACKTICK_STRING
     | PERCENT_TILDE
+    | INVALID_PERCENT_TILDE
     | PERCENT_VAR_SUBSTRING
     | PERCENT_VAR_REPLACE
     | PERCENT_VAR

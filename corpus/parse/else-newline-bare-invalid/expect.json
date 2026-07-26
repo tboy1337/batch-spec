@@ -1,7 +1,7 @@
 {
-  "description": "ELSE after newline following non-paren THEN is not attached (cmd-invalid form)",
+  "description": "ELSE after newline following non-paren THEN is detached (unknown command, not IF else)",
   "parse": {
-    "top_level_statement": "genericCmd",
+    "top_level_statement": "detachedElseStmt",
     "should_parse": true
   },
   "tags": [

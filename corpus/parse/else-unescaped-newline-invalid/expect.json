@@ -1,7 +1,8 @@
 {
-  "description": "IF block ELSE on separate line without caret continuation",
+  "description": "Newline-detached ELSE after IF block: else is unknown command; orphan (block) still runs",
   "parse": {
-    "expect_syntax_errors": true
+    "should_parse": true,
+    "top_level_statement": "detachedElseStmt"
   },
   "tags": [
     "if",

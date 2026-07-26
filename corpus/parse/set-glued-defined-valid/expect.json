@@ -1,0 +1,11 @@
+{
+  "description": "SET glued to non-empty percent expansion parses as genericCmd (SET1 not SET)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "set",
+    "negative"
+  ]
+}

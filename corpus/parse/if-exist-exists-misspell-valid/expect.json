@@ -1,8 +1,7 @@
 {
-  "description": "IF EXISTS misspelling is not EXIST; still parse-accepted",
+  "description": "IF EXISTS misspelling is a live syntax error (keyword is EXIST)",
   "parse": {
-    "should_parse": true,
-    "top_level_statement": "ifStmt"
+    "expect_syntax_errors": true
   },
   "tags": [
     "if",

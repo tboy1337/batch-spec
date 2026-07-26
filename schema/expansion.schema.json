@@ -401,6 +401,9 @@
         "multi_digit_parameter": {
           "type": "string"
         },
+        "syntax_rejects": {
+          "type": "string"
+        },
         "modifier_order_independent": {
           "type": "string"
         },
@@ -1026,6 +1029,9 @@
           "type": "string"
         },
         "expanded_predicate": {
+          "type": "string"
+        },
+        "errorlevel_variable_needs_compare": {
           "type": "string"
         }
       },

@@ -1,8 +1,7 @@
 {
-  "description": "FOR /F eol= multi-character value is not a multi-char comment prefix (runtime options parse failure; grammar still accepts)",
+  "description": "FOR /F eol= multi-character value is a live syntax error",
   "parse": {
-    "should_parse": true,
-    "top_level_statement": "forStmt"
+    "expect_syntax_errors": true
   },
   "tags": [
     "for",

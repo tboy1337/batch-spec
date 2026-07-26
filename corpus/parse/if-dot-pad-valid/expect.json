@@ -1,8 +1,8 @@
 {
-  "description": "Classic .%var%. IF operand padding form (parse acceptance)",
+  "description": "Classic .%var%. IF operand padding form",
   "parse": {
     "should_parse": true,
-    "top_level_statement": "genericCmd"
+    "top_level_statement": "ifStmt"
   },
   "tags": [
     "if",

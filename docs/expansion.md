@@ -8,7 +8,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 ## Topics covered
 
-- **Percent-tilde (`%~`)** - requires Command Extensions; letter modifiers (order-independent, case-insensitive), path search (`%~$ENV:n`, empty on miss; letter+`$` combos such as `%~dp$PATH:1`), bare quote-strip (`%~1`), attribute mask (`%~a`), short-name full paths (`%~sf`), locale timestamps (`%~t`), bare-vs-`f` qualification, and the multi-digit batveat (`%~10` is `%~1` plus literal `0`). With extensions off, `%~` forms are not expanded (literal `~...`). `%~*` is semantically invalid (CALL /?) even when the letter-regex does not match it. The `invalid_combinations` letter-regex lists both cases (`nxfpdstaz` / `NXFPDSTAZ`) so uppercase forms such as `%~DPNX0` are not false-positive rejects.
+- **Percent-tilde (`%~`)** - requires Command Extensions; letter modifiers (order-independent, case-insensitive), path search (`%~$ENV:n`, empty on miss; letter+`$` combos such as `%~dp$PATH:1`), bare quote-strip (`%~1`), attribute mask (`%~a`), short-name full paths (`%~sf`), locale timestamps (`%~t`), bare-vs-`f` qualification, and the multi-digit batveat (`%~10` is `%~1` plus literal `0`). With extensions off, `%~` forms are not expanded (literal `~...`). Invalid forms (`%~*`, unknown letters such as `%~q1`, `%~name%` spellings) are live syntax errors and the grammar reports them as such. The `invalid_combinations` letter-regex lists both cases (`nxfpdstaz` / `NXFPDSTAZ`) so uppercase forms such as `%~DPNX0` are not false-positive rejects.
 
 - **Percent expansion** - in scripts, undefined `%name%` / `!name!` expand to empty; on the interactive prompt undefined `%name%` often remains literal; incomplete unclosed `%` forms are not successful expansions (leading `%` typically stripped, leaving trailing text as literals).
 
@@ -46,7 +46,7 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 - **Keyword boundaries** - do not glue keywords to `%`, `!`, or quotes (`IF%1`, `SET%x%` are not IF/SET)
 
-- **IF forms / parentheses** - base and extension predicates; EXIST (not EXISTS) for files and directories; quoted compare sides are string compares; string order is not raw ASCII; letter-vs-digit unquoted compares are string compares (`A` GTR `9`); unquoted empty operands are a syntax error; classic `.%var%.` padding works only for simple values (breaks on spaces); no native `and`/`or` keywords inside IF; `else if` is same-line ELSE plus another IF (not a separate keyword); open `(` on the same line as the predicate (spaces allowed); ELSE same-line attachment; the full predicate text may come from expansion (`set "b=a==a"` then `if %b%`)
+- **IF forms / parentheses** - base and extension predicates; EXIST (not EXISTS) for files and directories; quoted compare sides are string compares; string order is not raw ASCII; letter-vs-digit unquoted compares are string compares (`A` GTR `9`); unquoted empty operands are a syntax error; classic `.%var%.` padding works only for simple values (breaks on spaces); no native `and`/`or` keywords inside IF; `else if` is same-line ELSE plus another IF (not a separate keyword); open `(` on the same line as the predicate (spaces allowed); ELSE same-line attachment (newline-detached ELSE is an unknown command; a following orphan `(block)` may still run); `IF %ERRORLEVEL% n` without a compare-op is a syntax error; the full predicate text may come from expansion (`set "b=a==a"` then `if %b%`)
 
 - **Command chaining** - `&`, `&&`, `||`, `|`, and parenthesized groups; on live cmd `&&` binds tighter than `||`; after a successful `||` alternative later alternatives are skipped (including a trailing `&&` grouped into a later alternative); pipe sides run in concurrent child cmd contexts (child delayed/extensions default independently of parent SETLOCAL); parent ERRORLEVEL after a pipe is the rightmost stage's exit code; with parent delayed expansion on, `!var!` in the pipeline text is still expanded by the parent; `A && (B) || (C)` runs C when B fails even after successful A; ECHO/REM can succeed for chaining without clearing ERRORLEVEL; bare trailing `&` inside `( )` is a syntax error
 
@@ -137,17 +137,16 @@ Primary reference text is captured under [`audit/cmd-help/`](../audit/cmd-help/)
 
 ## Parse vs catalog
 
-The ANTLR grammar is intentionally permissive for parse-structure conformance.
+The ANTLR grammar reports syntax errors for forms that live `cmd.exe` rejects
+as syntax (for example invalid `%~` modifiers / `%~*`, empty unquoted IF
+operands, `IF EXISTS` misspelling, `IF %ERRORLEVEL% n` without a compare-op,
+and multi-character `FOR /F eol=` values). Corpus fixtures for those forms use
+`expect_syntax_errors: true`.
 
-Forms that are semantically invalid (for example an unknown `%~` letter such as
-
-`%~q1`, or `%~*` which CALL /? forbids) may still `should_parse: true` in the
-
-corpus so tools can document tokenizer acceptance. Treat this YAML as the
-
-semantic companion: see `invalid_combinations` and related notes for rejection
-
-guidance. Consumers (for example Blinter) should treat this YAML as the semantic
-
-companion to the ANTLR grammar, not as a full cmd.exe simulator.
+Forms that fail only at runtime with non-syntax behavior (wrong ERRORLEVEL,
+"not recognized", sticky success codes, expansion batveats) may still
+`should_parse: true`. Treat [`data/expansion.yaml`](../data/expansion.yaml) as
+the semantic companion for those cases — see `invalid_combinations` and related
+notes. Consumers (for example Blinter) should use the YAML alongside the
+grammar, not as a full cmd.exe simulator.
 

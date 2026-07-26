@@ -34,6 +34,11 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by BatchParser#detachedElseStmt.
+    def visitDetachedElseStmt(self, ctx:BatchParser.DetachedElseStmtContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by BatchParser#exitStmt.
     def visitExitStmt(self, ctx:BatchParser.ExitStmtContext):
         return self.visitChildren(ctx)
@@ -111,6 +116,11 @@ class BatchParserVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by BatchParser#compareOperand.
     def visitCompareOperand(self, ctx:BatchParser.CompareOperandContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#compareOperandPart.
+    def visitCompareOperandPart(self, ctx:BatchParser.CompareOperandPartContext):
         return self.visitChildren(ctx)
 
 

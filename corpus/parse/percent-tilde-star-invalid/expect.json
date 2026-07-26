@@ -1,12 +1,11 @@
 {
-  "description": "Invalid %~* still tokenizes (CALL /? forbids tilde with %*; parse accepts)",
+  "description": "%~* is a live syntax error (CALL /? forbids percent-tilde with %*)",
   "parse": {
-    "should_parse": true,
-    "top_level_statement": "genericCmd"
+    "expect_syntax_errors": true
   },
   "tags": [
     "expansion",
-    "percent-tilde",
+    "parameters",
     "negative"
   ]
 }

@@ -1,4 +1,4 @@
-version: 30
+version: 31
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -69,8 +69,15 @@ percent_tilde_notes:
     extensions.
   bare_quote_strip: "%~1 strips surrounding quotes from the parameter with no letter modifiers"
   multi_digit_parameter: >-
-    %~10 is %~1 followed by literal 0; a single digit, *, or a path-search
-    $ENV: form terminates %~ (CALL /?).
+    %~10 is %~1 followed by literal 0; a single digit or a path-search $ENV:
+    form terminates %~ (CALL /?). %~* is not a valid terminator (CALL /?
+    forbids percent-tilde with %*) and is a live / grammar syntax error.
+  syntax_rejects: >-
+    Live cmd rejects invalid percent-tilde forms with a path-operator message
+    and "The syntax of the command is incorrect." (exit 255). Covered rejects
+    include unknown letter modifiers (%~q1 / %~q1%), %~*, and %~name% spellings
+    that look like env vars. The grammar emits syntax errors for those forms;
+    valid %~1 / %~dp0 / %~$PATH:1 remain clean parses.
   modifier_order_independent: >-
     Letter modifiers may be combined in any order (%~dpnx0 and %~nxdp0 are
     equivalent).
@@ -1084,8 +1091,12 @@ dynamic_environment_variables:
 keyword_boundaries:
   description: >-
     Builtin keywords must not be glued to %, !, or quote marks. Live cmd expands
-    percent forms first, so IF%1 and SET%x% become IF1 / SET1 and are not
-    recognized as IF/SET. Spaced forms (IF %1, SET %x%, FOR %%i) are required.
+    percent forms first, so IF%1 and SET%x% are not recognized as IF/SET.
+    When the glued expansion is non-empty (for example SET%x% with x=1 becomes
+    SET1=...), cmd reports the result as not recognized. When the expansion is
+    empty (undefined x), SET%x%=hello becomes SET=hello and yields "The syntax
+    of the command is incorrect." Spaced forms (IF %1, SET %x%, FOR %%i) are
+    required.
   reject_glue_after_keyword:
     - "%"
     - "!"
@@ -1125,7 +1136,12 @@ if_forms:
   defined_notes: "DEFINED takes a variable name without % percent signs"
   else_same_line: >-
     ELSE must appear on the same physical line as the end of the IF command
-    (after the THEN command or the closing ')' of a parenthesized block).
+    (after the THEN command or the closing ')' of a parenthesized block). A
+    newline-detached ELSE is not the IF elseClause: live cmd reports
+    "'ELSE'/'else' is not recognized as an internal or external command" and
+    continues. When the detached line is `else (` … `)`, the parenthesized
+    block still runs as an independent command group, so both the IF THEN body
+    and the orphan block can execute (confirmed on live Windows 10/11 cmd).
   else_if_chaining: >-
     There is no separate else if keyword. Multi-branch forms are ordinary
     same-line ELSE followed by another IF (for example
@@ -1141,11 +1157,11 @@ if_forms:
     Unquoted empty IF operands cause a syntax error (for example IF == text or
     IF %EMPTY%==x when EMPTY is undefined and expands to nothing). Prefer
     quoted compares such as IF "%var%"=="value" or IF DEFINED for presence
-    tests.
+    tests. The grammar reports these as syntax errors to match live cmd.
   exist_spelling: >-
     The file/directory test keyword is EXIST (IF /?), not EXISTS. A misspelled
-    IF EXISTS ... is not recognized as the EXIST form and typically fails as a
-    syntax error at runtime (for example 'nul was unexpected at this time').
+    IF EXISTS ... is a live syntax error (for example 'nul was unexpected at
+    this time'). The grammar rejects this form as a syntax error.
   operand_padding: >-
     Classic unquoted padding such as IF .%var%.==.value. can guard against
     empty expansion for simple values, but breaks when the expanded text
@@ -1163,6 +1179,11 @@ if_forms:
     set "b=a==b" then if %b% is false. The expanded text must still form a valid
     IF operand sequence after expansion (spaces and metacharacters can break
     tokenization the same way as literal operands).
+  errorlevel_variable_needs_compare: >-
+    IF %ERRORLEVEL% n without == or a compare-op (EQU/NEQ/...) is a syntax
+    error (for example '1 was unexpected at this time'). Use classic
+    IF ERRORLEVEL n (>= semantics) or IF %ERRORLEVEL% EQU n for an exact test
+    when the dynamic ERRORLEVEL name is not shadowed.
 
 if_block_parentheses:
   description: >-

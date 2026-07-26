@@ -47,7 +47,7 @@ def _build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
                     "pytest",
                     "--cov=scripts",
                     "--cov=conformance",
-                    "--cov-fail-under=90",
+                    "--cov-fail-under=95",
                 ],
             ),
         ]

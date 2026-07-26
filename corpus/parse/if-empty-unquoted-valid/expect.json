@@ -1,8 +1,7 @@
 {
-  "description": "Unquoted empty IF operands (semantic syntax error; parse acceptance)",
+  "description": "Unquoted empty IF operands are a live syntax error",
   "parse": {
-    "should_parse": true,
-    "top_level_statement": "genericCmd"
+    "expect_syntax_errors": true
   },
   "tags": [
     "if",

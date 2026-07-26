@@ -20,6 +20,22 @@ def _keywordTrailerOk(self) -> bool:
         ord("'"),
         ord('`'),
     )
+
+def _invalidPercentTildeAccept(self) -> bool:
+    # Longest-match may prefer this rule over a shorter valid PERCENT_TILDE
+    # (e.g. %~10 should be %~1 plus literal 0; %~2+%~3 must not glue on '+').
+    # Reject INVALID when any prefix is a complete valid percent-tilde.
+    import re  # isort: skip
+
+    text = self.text
+    valid = re.compile(
+        r"^%~(?:[nxfpdstazNXFPDSTAZ]*\$[A-Za-z_][A-Za-z0-9_]*:[0-9]"
+        r"|[nxfpdstazNXFPDSTAZ]*[0-9])$"
+    )
+    for end in range(3, len(text) + 1):
+        if valid.match(text[:end]):
+            return False
+    return True
 }
 
 fragment DIGIT : [0-9] ;
@@ -114,26 +130,55 @@ BACKTICK_STRING
     : '`' (~'`' | '``')* '`'
     ;
 
+// Valid CALL/? percent-tilde for batch parameters (%~1, %~dp0, %~$PATH:1).
+// Letter metavars use FOR_VAR_TILDE (%%~). Modifiers are nxfpdstaz only.
 PERCENT_TILDE
-    : '%' '~' ([a-zA-Z]* '$' [a-zA-Z_][a-zA-Z0-9_]* ':' [0-9a-zA-Z*] | [a-zA-Z]* [0-9a-zA-Z*])
+    : '%' '~' (
+        [nxfpdstazNXFPDSTAZ]* '$' [a-zA-Z_][a-zA-Z0-9_]* ':' [0-9]
+      | [nxfpdstazNXFPDSTAZ]* [0-9]
+      )
+    ;
+
+// Live cmd rejects other %~ forms as invalid path-operator substitution
+// (including %~*, bad letters, and %~name% that look like env vars).
+// Same-length ties prefer PERCENT_TILDE (declared above).
+INVALID_PERCENT_TILDE
+    : '%' '~' (
+        '*'
+      | (~[%\r\n \t&|<>()^,;=+*/])+ '%'?
+      )
+      {self._invalidPercentTildeAccept()}?
+      {
+        self.getErrorListenerDispatch().syntaxError(
+            self,
+            None,
+            self._tokenStartLine,
+            self._tokenStartColumn,
+            'invalid percent-tilde substitution: ' + self.text,
+            None,
+        )
+      }
     ;
 
 // Live cmd accepts a wide env-name charset inside %name% (spaces and most
 // punctuation). Exclude '%' (terminator), '=' (SET forbids in names), and
 // newlines. Substring/replace forms also exclude ':' in the name portion.
+// Names must not start with '~': %~... is percent-tilde (rules above).
 fragment ENV_NAME_CHAR : ~[%=\r\n] ;
 fragment ENV_NAME_CHAR_NO_COLON : ~[%:=\r\n] ;
+fragment ENV_NAME_START : ~[%=\r\n~] ;
+fragment ENV_NAME_START_NO_COLON : ~[%:=\r\n~] ;
 
 PERCENT_VAR_SUBSTRING
-    : '%' ENV_NAME_CHAR_NO_COLON+ ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '%'
+    : '%' ENV_NAME_START_NO_COLON ENV_NAME_CHAR_NO_COLON* ':' '~' '-'? DIGIT+ (',' '-'? DIGIT*)? '%'
     ;
 
 PERCENT_VAR_REPLACE
-    : '%' ENV_NAME_CHAR_NO_COLON+ ':' (~'%' | '%%')+ '=' (~'%' | '%%')* '%'
+    : '%' ENV_NAME_START_NO_COLON ENV_NAME_CHAR_NO_COLON* ':' (~'%' | '%%')+ '=' (~'%' | '%%')* '%'
     ;
 
 PERCENT_VAR
-    : '%' ENV_NAME_CHAR+ '%'
+    : '%' ENV_NAME_START ENV_NAME_CHAR* '%'
     ;
 
 PERCENT_ARG

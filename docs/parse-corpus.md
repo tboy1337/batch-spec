@@ -25,31 +25,35 @@ for new fixtures.
 | should_parse | When true (or omitted with no error flags), require a clean parse tree and no syntax errors |
 | should_parse: false | Pass only when the parse is not clean (errors and/or no usable tree) |
 | expect_syntax_errors | Pass only when the implementation reports syntax errors |
-| top_level_statement | Optional rule name of the **last script-level** statement (`ifStmt`, `forStmt`, `setStmt`, `genericCmd`, ...). Nested statements inside IF/FOR/group blocks are ignored |
+| top_level_statement | Optional rule name of the **last script-level** statement (`ifStmt`, `forStmt`, `setStmt`, `genericCmd`, `detachedElseStmt`, ...). Nested statements inside IF/FOR/group blocks are ignored |
 
 `should_parse: true` must not be combined with `expect_syntax_errors: true`.
 `should_parse: false` must not be combined with `expect_syntax_errors: true`.
-Current negative fixtures use `expect_syntax_errors: true` (none use `should_parse: false`). Prefer `expect_syntax_errors` for live syntax-error cases; keep `should_parse: false` available for implementations that fail without a clean tree.
+Prefer `expect_syntax_errors` for constructs that live `cmd.exe` rejects with a
+syntax / "was unexpected at this time" style failure. Keep `should_parse: false`
+available for implementations that fail without a clean tree.
 
 
 ## Scope
 
-This corpus is **parse-structure** conformance. A case may still
-`should_parse: true` for semantically dubious input (for example invalid `%~`
-modifiers - see `e017-invalid-modifier` - or `%~*` which CALL /? forbids - see
-`percent-tilde-star-invalid`, or the missing/empty substring batveat
-`percent-missing-substring-batveat-valid`) when the goal is to document
-tokenizer/parser acceptance rather than runtime validity.
+This corpus is **parse-structure** conformance aligned with live cmd syntax
+rejection: when cmd reports a syntax error for the source as written, fixtures
+should use `expect_syntax_errors: true` (for example empty unquoted IF operands
+in `if-empty-unquoted-valid`, invalid `%~` letters in `e017-invalid-modifier`,
+`%~*` in `percent-tilde-star-invalid`, or `IF EXISTS` misspelling).
 
 Directory names containing `invalid` are not the same as
-`expect_syntax_errors: true`. Many `*-invalid` fixtures still
-`should_parse: true` and only document semantic/runtime invalidity (or an
-unattached ELSE that becomes a separate `genericCmd`). Conversely,
-`if-empty-unquoted-valid` is tagged `negative` for a live syntax error that
-the permissive grammar still accepts.
+`expect_syntax_errors: true`. Some `*-invalid` fixtures still
+`should_parse: true` and document semantic/runtime invalidity only (for example
+sticky ERRORLEVEL, unknown external names, or a newline-detached ELSE that cmd
+treats as an unknown command rather than an IF syntax abort — see
+`else-newline-bare-invalid` / `else-unescaped-newline-invalid` and
+`detachedElseStmt`). Runtime batveats that still parse cleanly (for example the
+missing/empty substring batveat) stay `should_parse: true` with guidance in
+[`data/expansion.yaml`](../data/expansion.yaml).
 
 Semantic rejection guidance (valid `%~` letters, SET /A rules, remarks, and
 related facts) lives in [`data/expansion.yaml`](../data/expansion.yaml). Parser
-acceptance does not imply catalog validity.
+acceptance does not imply catalog validity for purely semantic batveats.
 
 Authoritative command syntax snippets for authors live under `audit/cmd-help/`.
