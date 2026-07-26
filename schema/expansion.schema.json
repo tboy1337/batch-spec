@@ -237,6 +237,12 @@
         "useback_synonym": {
           "type": "string"
         },
+        "option_keyword_last_wins": {
+          "type": "string"
+        },
+        "eol_empty": {
+          "type": "string"
+        },
         "consecutive_delims": {
           "type": "string"
         },

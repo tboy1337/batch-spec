@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F eol= multi-character value is not a multi-char comment prefix (runtime options parse failure; grammar still accepts)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "negative"
+  ]
+}

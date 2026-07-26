@@ -1,0 +1,10 @@
+{
+  "description": "FOR/DIR file masks that may match short 8.3 names as well as long names",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "for"
+  ]
+}

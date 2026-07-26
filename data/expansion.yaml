@@ -1,4 +1,4 @@
-version: 26
+version: 27
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -244,8 +244,11 @@ for_forms:
     In FOR file-set masks, a trailing ? (or ? immediately before a dot) can match
     fewer characters than the number of question marks, including matching a
     shorter basename (for example ???.txt may match a.txt as well as ab.txt).
-    Short 8.3 names can also satisfy masks that the long name alone would not;
-    treat mask matching as filesystem-dependent.
+    The same trailing-? behavior appears in other cmd file masks (DIR, COPY,
+    DEL, and peers). Short 8.3 names can also satisfy masks that the long name
+    alone would not (for example *.tar matching a file whose long extension is
+    .targa when a short .tar alias exists); treat mask matching as
+    filesystem-dependent and inspect DIR /X when hits look unexpected.
 
 for_f:
   description: "FOR /F parsing options and input forms (FOR /?)"
@@ -260,7 +263,10 @@ for_f:
       eol=c sets a single end-of-line comment character (default semicolon).
       A line is skipped when its first parsed token begins with that character;
       the same character later on the line is ordinary data (not a C-style
-      mid-line comment).
+      mid-line comment). Only one character is accepted after eol=; additional
+      characters in the same eol= value are not a multi-character comment
+      prefix and commonly break option-string parsing on live cmd (for example
+      eol=#x yields a message such as x" was unexpected at this time).
     skip: "skip=n skips the first n lines of each input"
     delims: >-
       delims=xxx replaces the default delimiter set (space and tab). An empty
@@ -282,6 +288,17 @@ for_f:
   useback_synonym: >-
     Live cmd.exe also accepts useback as a synonym for usebackq (trailing q
     optional). Prefer the documented usebackq spelling in new scripts.
+  option_keyword_last_wins: >-
+    If the same FOR /F option keyword appears more than once in the options
+    string, live cmd applies the last occurrence (for example
+    tokens=1 tokens=2 keeps tokens=2; skip=1 skip=2 skips two lines;
+    eol=# eol=; uses semicolon). Prefer listing each keyword once.
+  eol_empty: >-
+    An empty eol= value (for example "eol=" alone, or "eol= delims=," with a
+    space after =) does not install a reliable multi-character disable and does
+    not treat # as a comment character. Prefer setting eol= to an unused
+    character that will not appear as a line prefix rather than relying on an
+    empty eol= to turn comments off.
   unquoted_options_caret: >-
     When an options string cannot use surrounding double quotes (for example
     because delims must include a quote character), the options may be written

@@ -1,0 +1,10 @@
+{
+  "description": "FOR /F empty eol= does not install a reliable comment character (parse acceptance)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for"
+  ]
+}
