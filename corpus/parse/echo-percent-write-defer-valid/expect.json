@@ -1,0 +1,8 @@
+{
+  "description": "ECHO with %% when writing a child script defers percent expansion (%% becomes % in the file)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": ["echo", "expansion", "quoting"]
+}

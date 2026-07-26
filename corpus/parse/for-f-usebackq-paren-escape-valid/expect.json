@@ -1,0 +1,8 @@
+{
+  "description": "FOR /F usebackq single-quoted string with caret-escaped parentheses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": ["for", "for-f", "usebackq"]
+}

@@ -1,0 +1,8 @@
+{
+  "description": "CALL other.cmd/.bat returns to caller; child final ERRORLEVEL is returned (ECHO/REM often do not clear)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "callStmt"
+  },
+  "tags": ["call", "errorlevel"]
+}

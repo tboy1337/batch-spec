@@ -1,0 +1,8 @@
+{
+  "description": "START /WAIT propagates the started process exit code into ERRORLEVEL (parse form)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": ["start", "errorlevel"]
+}

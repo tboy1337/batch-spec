@@ -1,4 +1,4 @@
-version: 27
+version: 28
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -249,6 +249,11 @@ for_forms:
     alone would not (for example *.tar matching a file whose long extension is
     .targa when a short .tar alias exists); treat mask matching as
     filesystem-dependent and inspect DIR /X when hits look unexpected.
+  goto_exits_body: >-
+    A GOTO from a FOR DO body (classic FOR or FOR /F) exits the loop early and
+    continues at the target label. BREAK does not terminate FOR iteration
+    (see break_command.not_loop_break). Confirmed on live Windows 10/11 cmd for
+    both FOR %%i IN (...) DO ... & GOTO :label and parenthesized DO bodies.
 
 for_f:
   description: "FOR /F parsing options and input forms (FOR /?)"
@@ -285,6 +290,11 @@ for_f:
       usebackq switches quoting: backtick `command` for command output, single
       quotes for literal strings, and double quotes for filenames. Without
       usebackq, single quotes wrap a command and double quotes wrap a string.
+      With usebackq, a single-quoted string that contains unescaped parentheses
+      commonly fails to parse (for example ') was unexpected at this time');
+      caret-escape them as ^(...^) inside the quotes when those characters are
+      data. Prefer the non-usebackq "string" form when the text holds parentheses
+      and no embedded double quotes are required.
   useback_synonym: >-
     Live cmd.exe also accepts useback as a synonym for usebackq (trailing q
     optional). Prefer the documented usebackq spelling in new scripts.
@@ -393,6 +403,14 @@ double_percent:
     CALL performs an extra parse of its argument tail that reduces each %% pair
     to a single % (in addition to caret doubling). Example: call echo %%%%
     prints a single %.
+  writing_batch_files: >-
+    When a parent script writes another .cmd/.bat via ECHO redirection, each %%
+    pair in the parent becomes a single % in the child file (so echo %%~nx0>>child
+    stores %~nx0 for the child to expand later). A single %name% or %~ in the
+    parent expands while writing, baking the current value into the child.
+    Multilevel generators need additional %% layers per hop. This is ordinary
+    percent reduction when emitting text, distinct from CALL's argument-tail
+    reparse (call_percent_reduction) though both halve %% pairs.
 
 string_operations:
   substring_pattern: "%var:~start,length%"
@@ -660,8 +678,8 @@ set_p:
     A blank input line (the user presses Enter with no text, or a redirected
     file whose next line is empty) leaves the prior value of var unchanged --
     the same keep-prior behavior as EOF/NUL. It does not assign an empty
-    string. A line that contains only spaces assigns those spaces (the
-    variable remains defined).
+    string and therefore cannot clear a variable via SET /P alone. A line that
+    contains only spaces assigns those spaces (the variable remains defined).
   pipe_child_isolation: >-
     The right-hand side of a pipe runs in a child cmd.exe context, so
     echo text| set /p var= updates var only in that child; the parent
@@ -1004,7 +1022,10 @@ dynamic_environment_variables:
     %CMDCMDLINE% expands to the original command line that started this cmd.exe
     process (SET /?). When a script is launched via cmd /C "script.cmd args",
     the expanded value typically includes the /C switch and the quoted script
-    invocation text rather than only the script's own arguments.
+    invocation text rather than only the script's own arguments. In-process CALL
+    of another .bat/.cmd does not rewrite %CMDCMDLINE%; the called script still
+    sees the process-original line while %0 reflects the called script's
+    invocation spelling (confirmed on live Windows 10/11 cmd).
   cd_shadow_vs_cwd: >-
     SET CD=value overrides %CD% expansion with that string but does not change
     the process current directory. Bare CD (and filesystem operations) still
@@ -1077,6 +1098,13 @@ if_forms:
     completed IF command are parsed as separate commands (often yielding
     "'and' is not recognized..."). Compose conditions with nested IF, chained
     && / || on ERRORLEVEL, or other documented patterns -- not IF ... and ....
+  expanded_predicate: >-
+    Percent (or delayed) expansion runs before IF parses its predicate, so the
+    entire comparison text may come from a variable. Example confirmed on live
+    Windows 10/11 cmd: set "b=a==a" then if %b% is a true string equality, and
+    set "b=a==b" then if %b% is false. The expanded text must still form a valid
+    IF operand sequence after expansion (spaces and metacharacters can break
+    tokenization the same way as literal operands).
 
 if_block_parentheses:
   description: >-
@@ -1222,18 +1250,28 @@ call_goto:
     Prefer an explicit EXIT /B 0 at the end of routines when a clean success
     code is required.
   call_command_clears_errorlevel: >-
-    CALL of a non-label target that succeeds clears ERRORLEVEL to 0 when the
-    called command does not itself set a non-zero code. Examples confirmed on
-    live Windows 10/11 cmd: call echo ok, call rem remark, call ver, and
-    call set "name=value". This differs from CALL :label, which preserves the
-    prior ERRORLEVEL when the routine returns without EXIT /B (see
-    call_preserves_prior_errorlevel). Bare CALL with no target uses the empty /
+    CALL of a non-label, non-batch-script target that succeeds clears ERRORLEVEL
+    to 0 when the called command does not itself set a non-zero code. Examples
+    confirmed on live Windows 10/11 cmd: call echo ok, call rem remark, call ver,
+    and call set "name=value". This differs from CALL :label and from CALL of
+    another .bat/.cmd (see call_preserves_prior_errorlevel and
+    call_script_errorlevel). Bare CALL with no target uses the empty /
     space rules under errorlevel.call_empty_sets_errorlevel and
     errorlevel.call_space_clears_errorlevel.
   call_script_returns: >-
     CALL other.cmd (or other.bat) runs the script and returns to the caller.
     Invoking other.cmd as a bare command transfers control permanently and does
     not return to the caller when the child ends.
+  call_script_errorlevel: >-
+    A CALLed .bat/.cmd inherits the caller's ERRORLEVEL and returns whatever
+    ERRORLEVEL the child leaves when it ends. Commands that do not clear
+    ERRORLEVEL on success (notably ECHO and REM) leave the inherited value in
+    place, so a child that only echoes can return the pre-CALL code. Commands
+    that do clear or set ERRORLEVEL (for example VER, successful SET in a .cmd,
+    or EXIT /B n) determine the value seen by the caller. A missing script or
+    other failed external CALL sets ERRORLEVEL 1. This is distinct from CALL of
+    a non-script command such as call echo ok, which clears ERRORLEVEL to 0
+    (call_command_clears_errorlevel).
   call_stack_limit: >-
     Deep recursive CALL :label (or nested CALL of scripts) is limited by the
     interpreter's call stack. When usage approaches the allocation (commonly
@@ -1603,6 +1641,12 @@ start_command:
   wait_and_b: >-
     /WAIT waits for the started process to terminate. /B starts without a new
     window and with default ^C handling ignored for that application.
+  errorlevel: >-
+    With /WAIT, START sets ERRORLEVEL to the started process's exit code
+    (confirmed on live Windows 10/11 cmd: start "" /wait cmd /c exit 7 leaves
+    ERRORLEVEL 7). Without /WAIT, START returns promptly and typically leaves
+    ERRORLEVEL 0 while the child continues asynchronously; do not use bare
+    START ... && to mean "child succeeded".
   window_and_priority: >-
     /MIN and /MAX control the initial window state. Priority class switches
     include /LOW /NORMAL /HIGH /REALTIME /ABOVENORMAL /BELOWNORMAL. /SEPARATE
@@ -1666,9 +1710,12 @@ choice_command:
   switches: >-
     CHOICE [/C choices] [/N] [/CS] [/T timeout /D choice] [/M text]. /C lists
     keys (default YN); both /C ABC and /C:ABC forms are accepted on live cmd.
-    /N hides the choice list; /CS makes choices case-sensitive; /T with /D
-    selects a default after timeout seconds (0-9999; 0 means immediate
-    default); /M sets message text.
+    /N hides the choice list in the prompt (the message still displays; choices
+    remain enabled); /CS makes choices case-sensitive; /T with /D selects a
+    default after timeout seconds (0-9999; 0 means immediate default); /M sets
+    message text. Keys outside the /C list sound a warning beep and do not
+    complete the prompt until a listed key (or cancel/timeout) is used
+    (CHOICE /?).
   errorlevel_ordinal: >-
     First choice -> ERRORLEVEL 1, second -> 2, and so on. Tool errors return
     255. CTRL+C or CTRL+BREAK returns 0. When testing with IF ERRORLEVEL, list
@@ -1758,6 +1805,18 @@ type_command:
     TYPE displays the contents of a text file or files
     (TYPE /?; audit/cmd-help/type-help.txt).
   forms: "TYPE [drive:][path]filename (multiple files may be listed)."
+  errorlevel: >-
+    Successfully displaying a file leaves ERRORLEVEL 0. A missing named file or
+    invalid parameters leave ERRORLEVEL 1 (confirmed on live Windows 10/11 cmd;
+    stderr still shows the cannot-find-file message unless redirected). Prefer
+    IF EXIST before TYPE when absence must be handled without relying on
+    ERRORLEVEL alone.
+  append_after_type_crlf: >-
+    TYPE copies file bytes as-is. If the source's last line has no trailing
+    CRLF, a later >> append (for example echo ...) continues on that same
+    physical line in the destination. Insert echo.>>file (or otherwise write a
+    CRLF) after TYPE when the next append must start a new line. Confirmed on
+    live Windows 10/11 cmd.
   source: "TYPE /? (audit/cmd-help/type-help.txt)"
 
 title_command:

@@ -1,0 +1,12 @@
+{
+  "description": "IF with a fully variable-borne predicate (set b=a==a then if %b%) parses as genericCmd at structure time because == is inside the expansion; after percent expansion live cmd treats it as IF equality (if_forms.expanded_predicate)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "if",
+    "expansion",
+    "negative"
+  ]
+}

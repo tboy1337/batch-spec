@@ -1,0 +1,8 @@
+{
+  "description": "GOTO from a FOR DO body exits the loop early (BREAK does not); parse structure accepts the form",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": ["for", "goto"]
+}

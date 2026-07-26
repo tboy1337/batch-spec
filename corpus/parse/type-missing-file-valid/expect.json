@@ -1,0 +1,8 @@
+{
+  "description": "TYPE of a missing file parses; live cmd leaves ERRORLEVEL 1 (semantic companion)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": ["type", "errorlevel", "negative"]
+}

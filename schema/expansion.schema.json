@@ -204,6 +204,9 @@
         "classic_literal_set": {
           "type": "string",
           "minLength": 1
+        },
+        "goto_exits_body": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -303,6 +306,9 @@
           "type": "string"
         },
         "call_percent_reduction": {
+          "type": "string"
+        },
+        "writing_batch_files": {
           "type": "string"
         }
       },
@@ -997,6 +1003,9 @@
         },
         "no_and_or_keywords": {
           "type": "string"
+        },
+        "expanded_predicate": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1135,6 +1144,9 @@
           "type": "string"
         },
         "call_script_returns": {
+          "type": "string"
+        },
+        "call_script_errorlevel": {
           "type": "string"
         },
         "call_stack_limit": {
@@ -1559,6 +1571,9 @@
         "wait_and_b": {
           "type": "string"
         },
+        "errorlevel": {
+          "type": "string"
+        },
         "window_and_priority": {
           "type": "string"
         },
@@ -1763,6 +1778,12 @@
           "minLength": 1
         },
         "forms": {
+          "type": "string"
+        },
+        "errorlevel": {
+          "type": "string"
+        },
+        "append_after_type_crlf": {
           "type": "string"
         },
         "source": {
