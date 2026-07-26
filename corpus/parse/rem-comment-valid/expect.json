@@ -1,5 +1,5 @@
 {
-  "description": "REM line comment at start of line",
+  "description": "REM line comment at start of line (remStmt); following echo is genericCmd",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"

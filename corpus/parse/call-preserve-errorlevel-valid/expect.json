@@ -1,11 +1,12 @@
 {
-  "description": "Parse CALL :label that returns by falling through without EXIT /B (ERRORLEVEL preserve semantics in expansion.yaml call_goto)",
+  "description": "Parse CALL :label that returns by falling through without EXIT /B (last line is remStmt; ERRORLEVEL preserve semantics in expansion.yaml call_goto)",
   "parse": {
-    "top_level_statement": "gotoStmt",
+    "top_level_statement": "remStmt",
     "should_parse": true
   },
   "tags": [
     "call",
-    "errorlevel"
+    "errorlevel",
+    "remarks"
   ]
 }

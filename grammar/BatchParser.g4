@@ -19,10 +19,15 @@ def _laElse(self) -> bool:
     from BatchLexer import BatchLexer  # isort: skip
     return self._input.LA(1) == BatchLexer.ELSE
 
+def _laRem(self) -> bool:
+    from BatchLexer import BatchLexer  # isort: skip
+    return self._input.LA(1) == BatchLexer.REM
+
 def _genericCmdStartOk(self) -> bool:
-    # Do not let genericCmd absorb IF/FOR/ELSE; those have dedicated rules
-    # so invalid IF predicates surface as syntax errors (live cmd).
-    return not (self._laIf() or self._laFor() or self._laElse())
+    # Do not let genericCmd absorb IF/FOR/ELSE/REM; those have dedicated rules
+    # so invalid IF predicates surface as syntax errors (live cmd) and REM
+    # remarks through EOL (including after & / && / ||).
+    return not (self._laIf() or self._laFor() or self._laElse() or self._laRem())
 
 def _notLonelyParen(self) -> bool:
     from BatchLexer import BatchLexer  # isort: skip
@@ -120,6 +125,9 @@ statement
         // of silently falling through to genericCmd (live cmd syntax rejects).
         {self._laIf()}? ifStmt
       | {self._laFor()}? forStmt
+      // REM remarks out the rest of the physical line (live cmd), including
+      // after & / && / ||; remTail consumes separators so they are not chained.
+      | {self._laRem()}? remStmt
       | callStmt
       | gotoStmt
       | setStmt
@@ -133,6 +141,11 @@ statement
       | groupStmt
       | genericCmd
       )
+    ;
+
+// REM as command verb: remainder of the physical line is remark text (REM /?).
+remStmt
+    : REM (~NEWLINE)*
     ;
 
 // Detached ELSE (not same-line elseClause). Matches `else echo`, `else if ...`,
@@ -445,6 +458,7 @@ argWord
     | GOTO
     | ENDLOCAL
     | SETLOCAL
+    | REM
     | {self._elseAsArgAllowed()}? ELSE
     | EQU
     | NEQ

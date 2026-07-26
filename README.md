@@ -22,7 +22,7 @@ define linter rules (E/W/S/SEC/P codes) -- those live in Blinter's `spec/` tree.
 
 ## Versioning
 
-The package version is the contents of [`VERSION`](VERSION) (currently **0.40.0**). Releases are intended to be tagged `vMAJOR.MINOR.PATCH` matching that file. Pin a
+The package version is the contents of [`VERSION`](VERSION) (currently **0.41.0**). Releases are intended to be tagged `vMAJOR.MINOR.PATCH` matching that file. Pin a
 published tag via git submodule or lock file once it exists; do not depend on `main`
 directly in production CI.
 
@@ -41,7 +41,7 @@ Parser generation uses ANTLR **4.13.2** (`antlr4-tools`).
 
 Supported Python versions: **3.12**, **3.13**, and **3.14**.
 
-For linting, type checking, tests (>=90% coverage), pip-audit, and conformance:
+For linting, type checking, tests (>=95% coverage), pip-audit, and conformance:
 
 ```bash
 pip install -r requirements-dev.txt

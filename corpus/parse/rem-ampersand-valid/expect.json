@@ -1,5 +1,5 @@
 {
-  "description": "REM line including trailing & is skipped by the lexer; parse continues",
+  "description": "Line-start REM remarks through EOL including trailing &; following echo parses as remStmt then genericCmd",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd"

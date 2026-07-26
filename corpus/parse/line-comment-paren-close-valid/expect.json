@@ -1,5 +1,5 @@
 {
-  "description": ":: line containing ) inside paren block can close the block early",
+  "description": ":: with ) inside paren block historically could early-close; modern Win10 often does not — prefer REM in blocks (parse accepts)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "ifStmt"

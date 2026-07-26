@@ -1,4 +1,4 @@
-version: 31
+version: 32
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -1312,6 +1312,12 @@ batch_parameters:
     ("") and %2=hop. Percent-tilde stripping clears the quotes: %~1 is empty.
     Prefer %~1 or "%~1" when testing for empty content; raw %1=="" compares
     against the two-character quote form.
+  shell_launch_arguments: >-
+    How arguments arrive depends on the launcher, not only on batch parsing.
+    Drag-and-drop or shell "Open with" of one or more files onto a .bat/.cmd
+    typically supplies each path as its own quoted argument (%1, %2, ...).
+    Explorer association launches also commonly quote %0 as a full path (see
+    percent_zero). After delivery, ordinary delimiter and %~ rules apply.
   command_line_limit: >-
     The maximum length of a command line that cmd.exe accepts is 8191
     characters (Microsoft documentation for cmd.exe). Longer input is rejected
@@ -1404,10 +1410,12 @@ call_goto:
     punctuation characters after the leading colon (for example :ok.label and
     :has space). A label line consumes the rest of the physical line after the
     leading colon (GOTO /?). A second colon immediately after the first (::) is
-    the label-style remark form, not a normal jump target. Prefer simple
-    alphanumeric labels for portable scripts; avoid ')' inside labels used
-    within parenthesized blocks (see remarks.double_colon). The ANTLR LABEL
-    token matches ':' plus the remainder of the line (excluding the newline).
+    the label-style remark form, not a normal jump target. Additional colons
+    after the second character are allowed on real jump labels (for example
+    :ok:extra matches goto :ok:extra). Prefer simple alphanumeric labels for
+    portable scripts; avoid ')' inside labels used within parenthesized blocks
+    (see remarks.double_colon). The ANTLR LABEL token matches ':' plus the
+    remainder of the line (excluding the newline).
   label_call_vs_goto_spaces: >-
     CALL :label arguments treats the first token after the colon as the label
     name and subsequent tokens as routine arguments (CALL /?). GOTO label uses
@@ -1447,20 +1455,28 @@ exit_semantics:
 
 remarks:
   rem: >-
-    REM remarks out the remainder of the physical line when used as a command.
-    Because the lexer consumes from REM through end-of-line, a trailing
-    `& command` on the same REM line is not a separate statement (it does not
-    run). Midline REM after other tokens is not special -- only line-start REM
-    is recognized as a remark command.
+    REM remarks out the remainder of the physical line when used as the
+    command verb -- at line start or after statement separators (&, &&, ||).
+    Trailing `& command`, pipes, and redirection on that same REM line do not
+    execute (for example echo before&rem note & echo after prints only
+    "before"). Glued forms such as REMCASE are not the REM command (longest
+    token match treats them as ordinary names). Mid-token letters "rem" inside
+    other commands remain ordinary text. Prefer a separate command line for
+    real redirects and chained commands after a remark.
+  rem_keyword_boundary: >-
+    REM is recognized only as a complete command token. Longer spellings such
+    as REMCASE or remark are not REM; live cmd may treat them as external
+    program names ("not recognized") while later &-chained commands still run.
   double_colon: >-
     A line starting with :: is a label whose second character is :, commonly
-    used as a remark. Labels must not place : in the second character position
-    for real jump targets. Inside parenthesized blocks, prefer REM: a :: line
-    that contains ')' has historically been able to close the block early
-    because ')' remains significant on label lines on some hosts/versions
-    (modern Windows 10 hosts often do not reproduce the early close, but REM
-    remains the portable choice). Prefer REM inside ( ) blocks for portable
-    scripts.
+    used as a remark. Real jump targets must not place : in the second
+    character position (that form is the label-style remark). Additional colons
+    later in the label text are allowed (for example :ok:extra is a valid jump
+    target). Inside parenthesized blocks, prefer REM: a :: line that contains
+    ')' has historically been able to close the block early because ')' remains
+    significant on label lines on some hosts/versions (modern Windows 10 hosts
+    often do not reproduce the early close, but REM remains the portable
+    choice). Prefer REM inside ( ) blocks for portable scripts.
   rem_vs_label: >-
     Prefer REM for portable remarks. :: is a label form and can break or
     misparse inside parenthesized IF/FOR blocks.

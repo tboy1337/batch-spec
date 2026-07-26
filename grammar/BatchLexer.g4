@@ -44,7 +44,6 @@ fragment DIGIT : [0-9] ;
 fragment FOR_VAR_LETTER : [a-zA-Z0-9?#$@_`[\]{}+.\-\\!*():/] ;
 
 LINE_COMMENT   : {self._atLineStart()}? '::' ~[\r\n]* -> skip ;
-REM            : {self._atLineStart()}? [rR][eE][mM] ~[\r\n]* -> skip ;
 
 // Live cmd: a label is a line beginning with ':' and the rest of the physical
 // line is the label text (spaces and most punctuation allowed). LINE_COMMENT
@@ -57,6 +56,9 @@ AT             : '@' ;
 HASH           : '#' ;
 DOLLAR         : '$' ;
 
+// REM is a statement verb (not line-start-only). remStmt consumes through EOL.
+// Longer WORD forms such as REMCASE / remark win via longest match.
+REM            : [rR][eE][mM] {self._keywordTrailerOk()}? ;
 FOR            : [fF][oO][rR] {self._keywordTrailerOk()}? ;
 IF             : [iI][fF] {self._keywordTrailerOk()}? ;
 CALL           : [cC][aA][lL][lL] {self._keywordTrailerOk()}? ;

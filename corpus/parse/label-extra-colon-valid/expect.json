@@ -1,0 +1,11 @@
+{
+  "description": "Jump label may contain colons after the second character (:ok:extra)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "goto",
+    "label"
+  ]
+}

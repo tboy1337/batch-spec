@@ -1139,6 +1139,9 @@
         "empty_quoted_argument": {
           "type": "string"
         },
+        "shell_launch_arguments": {
+          "type": "string"
+        },
         "shift_vacates_high_slots": {
           "type": "string"
         }
@@ -1238,6 +1241,9 @@
       "type": "object",
       "properties": {
         "rem": {
+          "type": "string"
+        },
+        "rem_keyword_boundary": {
           "type": "string"
         },
         "double_colon": {

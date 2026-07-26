@@ -1,0 +1,11 @@
+{
+  "description": "REMCASE is not the REM keyword; chained echo after & still parses as a separate statement",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "remarks",
+    "negative"
+  ]
+}
