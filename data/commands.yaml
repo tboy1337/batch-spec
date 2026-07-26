@@ -31,6 +31,7 @@ builtin_commands:
   - dir
   - diskpart
   - doskey
+  - dpath
   - driverquery
   - echo
   - endlocal
@@ -54,6 +55,7 @@ builtin_commands:
   - icacls
   - if
   - ipconfig
+  - keys
   - label
   - logoff
   - md
@@ -242,3 +244,15 @@ builtin_overlap_deprecated_notes:
   wmic: >-
     Listed in both builtin_commands and deprecated_commands: still present for
     detection on modern Windows, but deprecated in favor of CIM/PowerShell.
+  dpath: >-
+    Listed in both builtin_commands and deprecated_commands: still a recognized
+    cmd internal (legacy APPEND equivalent) but deprecated/undocumented for new
+    scripts.
+  keys: >-
+    Listed in both builtin_commands and deprecated_commands: still recognized as
+    a DOS-compatibility internal but has no effect under modern Windows command-
+    line editing.
+  telnet: >-
+    Listed in builtin_commands for detection, but the Telnet client is an
+    optional Windows Feature / FoD component and is often absent (where telnet
+    fails). Treat like other optional stock tools; do not assume it is installed.

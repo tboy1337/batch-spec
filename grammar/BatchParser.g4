@@ -584,6 +584,7 @@ token
     | EQUALS
     | EQ
     | SLASH
+    | COLON
     | PERCENT
     | argWord
     | NUMBER

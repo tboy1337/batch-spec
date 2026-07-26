@@ -1,0 +1,11 @@
+{
+  "description": "SHIFT /1 preserves %0 while shifting %1 upward",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "shiftStmt"
+  },
+  "tags": [
+    "shift",
+    "parameters"
+  ]
+}

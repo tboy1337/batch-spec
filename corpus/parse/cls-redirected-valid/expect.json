@@ -1,0 +1,11 @@
+{
+  "description": "CLS with redirected stdout still parses and runs (console clear is noop for a log)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cls",
+    "redirection"
+  ]
+}

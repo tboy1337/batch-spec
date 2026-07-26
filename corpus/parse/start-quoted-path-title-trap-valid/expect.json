@@ -1,0 +1,10 @@
+{
+  "description": "START first quoted arg is window title (quoted path without empty title is a trap)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "start"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "IF ERRORLEVEL leading zeros are decimal; compare-ops octal differs",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "errorlevel"
+  ]
+}

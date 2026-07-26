@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F sparse tokens=1,3 assigns token1 then token3 to successive metavars",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "description": "CALL without colon searches external PATH, not :label",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "callStmt",
+      "genericCmd",
+      "gotoStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "call"
+  ]
+}

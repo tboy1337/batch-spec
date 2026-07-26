@@ -1,0 +1,10 @@
+{
+  "description": "Text after SET quoted close-quote is discarded from value",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "set"
+  ]
+}

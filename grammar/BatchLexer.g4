@@ -38,6 +38,13 @@ def _invalidPercentTildeAccept(self) -> bool:
         if valid.match(text[:end]):
             return False
     return True
+
+def _wordOk(self) -> bool:
+    # Longest-match would otherwise glue goto:eof / call:label into one WORD.
+    # Reject those so GOTO/CALL keywords win, then COLON + target (live cmd).
+    import re  # isort: skip
+
+    return re.match(r"(?i)(?:goto|call):", self.text) is None
 }
 
 fragment DIGIT : [0-9] ;
@@ -229,7 +236,9 @@ PERCENT
 
 // Include [] (\u005B/\u005D) so blank-line forms like echo[ / echo] stay a
 // single WORD token (live cmd accepts those ECHO blank-line spellings).
-WORD           : [a-zA-Z_][a-zA-Z0-9_./\\:+\-\u005B\u005D]* ;
+// Colon stays in WORD for drive paths (C:\...) and /X:value switches. A
+// predicate rejects goto:/call: glue so those tokenize as KEYWORD COLON target.
+WORD           : [a-zA-Z_][a-zA-Z0-9_./\\:+\-\u005B\u005D]* {self._wordOk()}? ;
 HEX_NUMBER     : '0' [xX] [0-9a-fA-F]+ ;
 NUMBER         : DIGIT+ ;
 

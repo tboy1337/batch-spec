@@ -1,4 +1,4 @@
-version: 41
+version: 42
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -158,6 +158,12 @@ percent_expansion:
     following echo %x% prints 2. The same pre-command binding applies across
     && on a successful left-hand side. Prefer delayed expansion or CALL
     reparse when a later chained command must see an earlier same-line SET.
+  injects_command_metacharacters: >-
+    After percent expansion, & | < > in the expanded text re-enter command
+    parsing. Storing set "a=val&ue" then unquoted echo [%a%] splits on &
+    (often "'ue]' is not recognized..."). Quoted forms such as echo ["%a%"]
+    and delayed echo [!a!] keep the ampersand intact. Confirmed on live
+    Windows 10/11 cmd.
 
 delayed_expansion:
   pattern: "!VAR!"
@@ -433,17 +439,21 @@ for_f:
       delimiter).
     tokens: >-
       tokens=x,y,m-n selects token indexes; a trailing * assigns the remainder
-      of the line to one variable. Additional FOR variables are implied by
-      ASCII succession from the declared letter (not only a-z / A-Z): for
-      example tokens=1-27 starting at %%a assigns the 27th token to %%{ on live
-      Windows 10/11 cmd. FOR /? and some references claim a 26-token / past-z
-      ceiling; live cmd continues past z/Z, though some successor characters
-      are unusable in DO text (notably | as a pipe). Prefer staying within
-      a-z / A-Z for portable scripts. tokens=* still applies leading-delimiter
-      stripping first (default space/tab), so leading spaces are removed before
-      the remainder is assigned; use empty delims= when leading whitespace must
-      be preserved (confirmed: tokens=* on "   spaced" yields spaced, while
-      delims= yields the spaced string including leading spaces).
+      of the line to one variable. Sparse lists skip indexes: tokens=1,3 with
+      %%a assigns token 1 to %%a and token 3 to %%b (the next letter); there is
+      no empty metavariable for the skipped token 2 (confirmed:
+      "one,two,three" with delims=, yields %%a=one and %%b=three). Additional
+      FOR variables are implied by ASCII succession from the declared letter
+      (not only a-z / A-Z): for example tokens=1-27 starting at %%a assigns the
+      27th token to %%{ on live Windows 10/11 cmd. FOR /? and some references
+      claim a 26-token / past-z ceiling; live cmd continues past z/Z, though
+      some successor characters are unusable in DO text (notably | as a pipe).
+      Prefer staying within a-z / A-Z for portable scripts. tokens=* still
+      applies leading-delimiter stripping first (default space/tab), so leading
+      spaces are removed before the remainder is assigned; use empty delims=
+      when leading whitespace must be preserved (confirmed: tokens=* on
+      "   spaced" yields spaced, while delims= yields the spaced string
+      including leading spaces).
     usebackq: >-
       usebackq switches quoting: backtick `command` for command output, single
       quotes for literal strings, and double quotes for filenames. Without
@@ -461,6 +471,17 @@ for_f:
     string, live cmd applies the last occurrence (for example
     tokens=1 tokens=2 keeps tokens=2; skip=1 skip=2 skips two lines;
     eol=# eol=; uses semicolon). Prefer listing each keyword once.
+  options_from_expansion: >-
+    The FOR /F options string may be produced by percent (or delayed) expansion
+    (for /f "%opts%" %%a in (...) when opts holds tokens=... delims=...). Mixed
+    forms such as "%tok% delims=," also work. Confirmed on live Windows 10/11
+    cmd.
+  whitespace_only_lines: >-
+    Truly empty/blank lines in FOR /F file or command-output input are skipped.
+    A whitespace-only line is also skipped with default delimiters; with empty
+    delims= it is kept as a spaces-only token; with tokens=* it still iterates
+    but often yields empty after leading-delimiter stripping. Confirmed on live
+    Windows 10/11 cmd.
   eol_empty: >-
     An empty eol= value (for example "eol=" alone, or "eol= delims=," with a
     space after =) does not install a reliable multi-character disable and does
@@ -537,7 +558,11 @@ caret_escape:
   line_continuation: >-
     A caret as the last character of a physical line continues onto the next
     line (the CRLF is escaped). A trailing space after ^ escapes the space
-    instead, so the next line is not a continuation.
+    instead, so the next line is not a continuation. Percent expansion runs
+    on each physical line before continuation joins the next line, so a name
+    cannot span the break: echo %NA^ / ME% does not form %NAME% (live cmd
+    typically leaves incomplete-% stripping such as NAME). Keep %name% on one
+    physical line. Confirmed on live Windows 10/11 cmd.
   percent_not_escaped: >-
     Caret does not escape percent. Percent expansion runs before caret-escape
     processing, so ^%name% still expands %name% (use %% in scripts for a
@@ -867,6 +892,10 @@ set_assignment:
     of the value (for example set name=value   & rem keeps the trailing
     spaces). Use this to terminate a value that would otherwise include the
     rest of a chained line.
+  quoted_close_discards_trailer: >-
+    After a quoted assignment set "name=value", any non-separator text glued
+    immediately after the closing quote is discarded and is not part of the
+    value (set "g=ok"zzz stores ok). Confirmed on live Windows 10/11 cmd.
 
 set_p:
   description: >-
@@ -1016,8 +1045,11 @@ cmd_processor_switches:
     Processor). Exact control characters are host/configuration dependent;
     scripts should not rely on interactive completion.
   color_t: >-
-    /T:fg sets the foreground/background colors for the session (see COLOR /?;
-    CMD /?).
+    /T:ab sets the session console colors using the same two-hex-digit order as
+    COLOR: first digit background, second digit foreground (COLOR /?). CMD /?
+    labels the switch /T:fg and says "foreground/background", but the digit
+    order still matches COLOR (for example /T:17 is background 1, foreground 7,
+    same as COLOR 17). Prefer COLOR /? for attr order; see color_command.attr_hex.
   autorun_registry: >-
     Unless /D is specified, CMD looks for AutoRun REG_SZ/REG_EXPAND_SZ values
     under HKLM and HKCU Software\Microsoft\Command Processor\AutoRun and
@@ -1194,6 +1226,13 @@ errorlevel:
     percent/bang/FOR expansion in the number position after the percent pass
     (IF ERRORLEVEL %n% behaves like IF ERRORLEVEL <expanded digits>). Confirmed
     on live Windows 10/11 cmd; the grammar accepts these forms as ifStmt.
+  leading_zeros_decimal: >-
+    Leading zeros on classic IF ERRORLEVEL / IF CMDEXTVERSION literals are
+    decimal, not octal: IF ERRORLEVEL 010 means >= 10, and IF ERRORLEVEL 08
+    means >= 8. That diverges from compare-ops, where 010 EQU 8 is true (octal)
+    and 08 falls back to a string compare. Confirmed on live Windows 10/11 cmd
+    (exit code 8: IF ERRORLEVEL 08 true, IF ERRORLEVEL 010 false, 010 EQU 8
+    true).
   variable_form: "%ERRORLEVEL% / !ERRORLEVEL! hold the numeric exit code as text"
   env_var_shadowing: >-
     A user-defined environment variable named ERRORLEVEL (also CMDCMDLINE,
@@ -1243,6 +1282,12 @@ cmdextversion:
     and IF CMDEXTVERSION 2 are true while IF CMDEXTVERSION 3 is false. Treat the
     numeric value as host/OS-specific; scripts that require a minimum should
     use IF CMDEXTVERSION n rather than hard-coding equality to 2.
+  if_ignores_env_shadow: >-
+    Classic IF CMDEXTVERSION n reads the internal extensions version, not a
+    user-defined %CMDEXTVERSION% environment string. Shadowing with
+    set CMDEXTVERSION=0 changes percent expansion but leaves IF CMDEXTVERSION 2
+    true on hosts where the internal version is 2 (same pattern as IF ERRORLEVEL
+    vs shadowed %ERRORLEVEL%). Confirmed on live Windows 10/11 cmd.
 
 dynamic_environment_variables:
   description: >-
@@ -1367,6 +1412,14 @@ if_forms:
     (2147483648 EQU 2147483647 and 9999999999 EQU 2147483647 are true; likewise
     -2147483649 EQU -2147483648).
   defined_notes: "DEFINED takes a variable name without % percent signs"
+  defined_semantics: >-
+    IF DEFINED tests whether the named environment variable exists (IF /?).
+    The source text uses a bare name (no % / !), but percent or delayed
+    expansion may supply that name first (if defined %nm% / if defined !nm!
+    after set nm=VAR). A variable set to spaces (set "S= ") is defined; a
+    cleared name (set "E=" / set E=) is undefined. Composition such as
+    if defined %prefix%BAR works when the expanded name exists. Confirmed on
+    live Windows 10/11 cmd.
   else_same_line: >-
     ELSE must appear on the same physical line as the end of the IF command
     (after the THEN command or the closing ')' of a parenthesized block). A
@@ -1386,6 +1439,11 @@ if_forms:
     forms commonly target directories). Wildcard masks in the EXIST operand
     are accepted and succeed when at least one matching filesystem entry
     exists (for example IF EXIST *.txt).
+  exist_trailing_backslash: >-
+    A trailing backslash on the EXIST operand is true for an existing directory
+    and false for a normal file of the same path without the slash (both forms
+    without trailing \\ are true when the entry exists). Confirmed on live
+    Windows 10/11 cmd.
   empty_unquoted_operands: >-
     Unquoted empty IF operands cause a syntax error (for example IF == text or
     IF %EMPTY%==x when EMPTY is undefined and expands to nothing). Prefer
@@ -1409,8 +1467,10 @@ if_forms:
     IF EXIST treats some reserved device names as present: if exist nul is
     true on live Windows 10/11 cmd, while if exist nul\ (trailing backslash) is
     false. Do not probe if exist con in unattended scripts -- opening CON as a
-    path can block waiting on console I/O. Prefer IF EXIST for ordinary files
-    and directories; see also redirection.special_devices.
+    path can block waiting on console I/O. That EXIST hang risk is distinct from
+    redirecting to CON (for example echo text>CON / <CON), which is a normal
+    console I/O redirect and does not use the EXIST path probe. Prefer IF EXIST
+    for ordinary files and directories; see also redirection.special_devices.
   no_and_or_keywords: >-
     IF has no native boolean AND/OR keywords. Tokens such as and / or after a
     completed IF command are parsed as separate commands (often yielding
@@ -1492,6 +1552,12 @@ command_chaining:
     Do not assume a successful early || alternative still runs a later && that
     was grouped into a skipped alternative; parenthesize when the && must always
     observe the whole || chain.
+  pipe_binds_tighter_than_amp: >-
+    The pipe operator | binds tighter than & / && / ||. Live cmd parses
+    echo a & echo b | findstr b as a & (b|findstr), and
+    cmd /c exit 1 && echo L| echo R>file as exit1 && (L|R) (so the redirect
+    never runs when the left && fails). Parenthesize when a pipe must span a
+    whole chain. Confirmed on live Windows 10/11 cmd.
   pipe_child_process: >-
     Each side of a pipe runs in a child cmd.exe context. Environment mutations
     (SET, SET /P, SETLOCAL) on a pipe side do not update the parent environment.
@@ -1562,14 +1628,19 @@ batch_parameters:
     the original full argument list).
   shift_n: >-
     With extensions, SHIFT /n starts shifting at argument n where n is 0..8
-    (SHIFT /?). SHIFT /9 is invalid.
+    (SHIFT /?). SHIFT /9 is invalid. SHIFT /1 leaves %0 unchanged and shifts
+    %1<-%2<-%3... (useful when the script path in %0 must survive); bare SHIFT
+    and SHIFT /0 both move starting at %0. Confirmed on live Windows 10/11 cmd.
   shift_invalid_parameter: >-
     Invalid SHIFT /n forms (/9, /99, /-1, /abc, and similar) print
     "Invalid parameter to SHIFT command", set ERRORLEVEL 1, and continue the
     script (non-fatal). Confirmed on live Windows 10/11 cmd.
   shift_default: >-
     Bare SHIFT (no /n) shifts starting at %0: the former %1 becomes the new %0,
-    former %2 becomes %1, and so on.
+    former %2 becomes %1, and so on. Inside CALL :label, that means bare SHIFT
+    overwrites the label identity in %0 with the former %1 (while %* text is
+    still unchanged). Prefer SHIFT /1 when %0 must remain the script path or
+    :label identity. Confirmed on live Windows 10/11 cmd.
   shift_vacates_high_slots: >-
     After SHIFT, the highest previously occupied %n slot becomes empty when there
     is no further argument to shift into it (for example with args a b, after one
@@ -1637,7 +1708,13 @@ call_goto:
   call_requires_colon_for_label: >-
     CALL :label requires the colon for an internal label. CALL name without a
     colon searches PATH/PATHEXT for an external program or script instead of
-    jumping to :name.
+    jumping to :name (confirmed: with :foo present, call foo reports not
+    recognized / misses the label). Prefer call :foo for routines.
+  glued_colon_target: >-
+    GOTO and CALL accept a glued colon with no space after the keyword
+    (goto:eof / call:label). The lexer rejects WORD matches that begin with
+    goto: or call: so those forms tokenize as KEYWORD + COLON + target (same
+    as the spaced forms). Confirmed on live Windows 10/11 cmd for goto:eof.
   call_missing_label: >-
     CALL :missinglabel sets ERRORLEVEL to 1 and continues with the next
     statement (it does not abort the script).
@@ -1711,7 +1788,11 @@ call_goto:
   goto_label_matching: >-
     Ordinary GOTO targets are matched case-insensitively. A leading colon on
     the GOTO operand is optional for user labels (goto foo and goto :foo both
-    match :Foo). A missing label aborts with an error and does not continue.
+    match :Foo). A missing label prints an error and does not continue later
+    lines in the current batch context. The prior ERRORLEVEL is preserved
+    (not forced to 1), but goto missing || echo OR still runs the || side.
+    Inside CALL :label or a CALLed script, a missing GOTO ends that CALLed
+    context and returns to the caller with ERRORLEVEL 1 (the caller continues).
     goto lab does not match a distinct longer label such as :label (that
     folklore is false on live Windows 10/11 cmd); see label_call_vs_goto_spaces
     for the real prefix rule on spaced label lines.
@@ -1759,8 +1840,10 @@ exit_semantics:
     Bare EXIT (without /B) terminates the cmd.exe process (closes the console
     session when it is the top-level interpreter). An optional exitCode after
     bare EXIT (EXIT n, still without /B) sets the process exit code and still
-    terminates cmd.exe (EXIT /?). Prefer EXIT /B inside batch scripts when only
-    the script/routine should end; use EXIT /B n to set ERRORLEVEL on return.
+    terminates cmd.exe (EXIT /?). Inside CALL :label or a CALLed script, bare
+    EXIT still kills the whole interpreter -- lines after the CALL never run.
+    Prefer EXIT /B inside batch scripts when only the script/routine should
+    end; use EXIT /B n to set ERRORLEVEL on return.
   exit_b: >-
     EXIT /B exits the current batch script context (returns from a CALL :label
     routine, or ends the script) without necessarily closing the parent cmd.exe
@@ -1862,13 +1945,32 @@ redirection:
     the command runs. A failing or missing command can still leave a zero-byte
     file (confirmed: nosuchcmd >r.txt creates r.txt of size 0). Prefer IF
     EXIST / error checks when an empty redirect artifact would be misleading.
+  per_statement_amp_redirect: >-
+    On an &-chained line, each statement carries its own redirects.
+    echo A>a.txt & echo B>b.txt writes both files; echo ONLY>c.txt & echo ALSO
+    redirects only the first statement (the second still hits the console).
+    Confirmed on live Windows 10/11 cmd.
+  call_redirect_captures_context: >-
+    Redirecting a CALL (call :label >file.txt) captures stdout from the entire
+    CALLed context, including nested CALL :inner output, until that context
+    returns. Statements after the CALL in the caller are not captured by that
+    redirect. Confirmed on live Windows 10/11 cmd.
   special_devices: >-
     NUL and CON are reliable redirect targets/sources on modern Windows (for
-    example >nul, >CON). Other reserved device names such as PRN, AUX, COM1,
-    and LPT1 may fail as redirect targets with "The system cannot find the file
-    specified" depending on the host (live Windows 10 cmd often leaves
-    ERRORLEVEL 0 after that failure message); treat them as OS device names, not
-    ordinary files.
+    example >nul, >CON, <CON). CON as a redirect target/source is not the same
+    as IF EXIST con, which can block on console I/O (see
+    if_forms.exist_special_devices). Other reserved device names such as PRN,
+    AUX, COM1, and LPT1 may fail as redirect targets with "The system cannot
+    find the file specified" depending on the host (live Windows 10 cmd often
+    leaves ERRORLEVEL 0 after that failure message); treat them as OS device
+    names, not ordinary files.
+  con_for_interactive_prompts: >-
+    When stdout is redirected to a file, interactive prompts (SET /P, CHOICE,
+    PAUSE, COPY/XCOPY overwrite prompts) may hang or write prompts into the
+    redirect target. Leading redirects such as >CON echo ... or >CON choice
+    can keep prompts on the console while the rest of the script still redirects
+    elsewhere. Confirmed pattern on live Windows 10/11 cmd; pair with
+    cls_command.redirected_stdout_noop.
 
 paren_block_expansion:
   description: >-
@@ -1895,11 +1997,13 @@ paren_block_expansion:
     inside one block).
 expansion_phases: >-
   Approximate cmd parsing phases for a physical line: (1) percent (%var%, %n,
-  %*, %~) expansion across the whole line (including all & / && / || segments)
-  before any chained command runs; (2) special-character / caret processing and
-  tokenization (including line-continuation caret); (3) command recognition and
-  execution of each chain segment; (4) when delayed expansion is enabled,
-  !var! expansion at execution time (including inside already-parsed
+  %*, %~) expansion across the whole physical line (including all & / && / ||
+  segments) before any chained command runs; (2) special-character / caret
+  processing and tokenization (including line-continuation caret that joins the
+  next physical line only after this line's percent pass -- %name% cannot span
+  a caret-continued break; see caret_escape.line_continuation); (3) command
+  recognition and execution of each chain segment; (4) when delayed expansion
+  is enabled, !var! expansion at execution time (including inside already-parsed
   parenthesized blocks). CALL re-parses its argument tail (notably doubling
   carets and reducing %% pairs): each CALL halves %% sequences on the tail, so
   call echo %%NAME%% expands NAME after one CALL reparse while a bare echo
@@ -2124,7 +2228,11 @@ start_command:
   quoted_title: >-
     The first quoted argument is the window title (START "title" command ...).
     Always include an explicit title when the command path is quoted so START
-    does not treat the command string as the title.
+    does not treat the command string as the title. Example: start
+    "C:\Program Files\app.exe" opens a window titled with that path (and may
+    start a bare cmd) rather than launching the exe; use
+    start "" "C:\Program Files\app.exe" instead. Confirmed on live Windows
+    10/11 cmd.
   wait_and_b: >-
     /WAIT waits for the started process to terminate. /B starts without a new
     window and with default ^C handling ignored for that application.
@@ -2215,8 +2323,13 @@ choice_command:
     Windows 10/11 cmd).
   errorlevel_ordinal: >-
     First choice -> ERRORLEVEL 1, second -> 2, and so on. Tool errors return
-    255. CTRL+C or CTRL+BREAK returns 0. When testing with IF ERRORLEVEL, list
-    codes in decreasing order (CHOICE /?).
+    255. CTRL+C or CTRL+BREAK returns 0. Classic IF ERRORLEVEL n is true when
+    ERRORLEVEL is greater than or equal to n, so after CHOICE a descending
+    cascade is required: if errorlevel 3 ... else if errorlevel 2 ... else if
+    errorlevel 1 .... A lone if errorlevel 1 after choice C of ABC is also true
+    for keys B and C (ERRORLEVEL 2 and 3). Prefer decreasing-order tests or
+    IF %ERRORLEVEL% EQU n for an exact match (CHOICE /?; confirmed on live
+    Windows 10/11 cmd with exit-code stand-ins).
   source: "CHOICE /? (audit/cmd-help/choice-help.txt)"
 
 date_command:
@@ -2355,6 +2468,15 @@ cls_command:
   description: >-
     CLS clears the console screen (CLS /?; audit/cmd-help/cls-help.txt).
   forms: "CLS takes no operands."
+  redirected_stdout_noop: >-
+    CLS affects the console display. When stdout is redirected (for example
+    cls>nul or a script invoked with >logfile), CLS still runs as a successful
+    command but does not clear a redirected log file; the visible console may
+    be unchanged depending on how the process was launched. COLOR similarly
+    updates console attributes and is ineffective for a pure redirected log.
+    Prefer >CON for console-only side effects when the script stdout is a file
+    (see redirection.con_for_interactive_prompts). Confirmed on live Windows
+    10/11 cmd for cls>nul completing without error.
   source: "CLS /? (audit/cmd-help/cls-help.txt)"
 
 ver_command:

@@ -1,0 +1,12 @@
+{
+  "description": "Classic IF ERRORLEVEL cascade (>=) after a non-zero exit (CHOICE-style ordinals)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "choice",
+    "errorlevel",
+    "if"
+  ]
+}

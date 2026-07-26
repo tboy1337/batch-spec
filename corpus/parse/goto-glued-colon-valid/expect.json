@@ -1,0 +1,10 @@
+{
+  "description": "GOTO accepts glued colon target (goto:eof)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "goto"
+  ]
+}

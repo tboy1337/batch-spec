@@ -1,0 +1,14 @@
+{
+  "description": "CALL accepts glued colon target (call:eof)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "callStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "call"
+  ]
+}

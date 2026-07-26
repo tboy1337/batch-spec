@@ -307,6 +307,12 @@
         },
         "unquoted_options_caret": {
           "type": "string"
+        },
+        "options_from_expansion": {
+          "type": "string"
+        },
+        "whitespace_only_lines": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -647,6 +653,9 @@
         },
         "ampersand_terminator": {
           "type": "string"
+        },
+        "quoted_close_discards_trailer": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -692,6 +701,9 @@
           "type": "string"
         },
         "compound_line_expansion": {
+          "type": "string"
+        },
+        "injects_command_metacharacters": {
           "type": "string"
         }
       },
@@ -970,6 +982,9 @@
         },
         "classic_number_forms": {
           "type": "string"
+        },
+        "leading_zeros_decimal": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -981,6 +996,9 @@
           "type": "string"
         },
         "host_value_windows_10_11": {
+          "type": "string"
+        },
+        "if_ignores_env_shadow": {
           "type": "string"
         }
       },
@@ -1140,6 +1158,12 @@
         },
         "slash_i_before_non_compare": {
           "type": "string"
+        },
+        "defined_semantics": {
+          "type": "string"
+        },
+        "exist_trailing_backslash": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1207,6 +1231,9 @@
           "type": "string"
         },
         "call_script_or_stale_errorlevel": {
+          "type": "string"
+        },
+        "pipe_binds_tighter_than_amp": {
           "type": "string"
         }
       },
@@ -1278,6 +1305,9 @@
           "type": "string"
         },
         "call_requires_colon_for_label": {
+          "type": "string"
+        },
+        "glued_colon_target": {
           "type": "string"
         },
         "call_missing_label": {
@@ -1434,6 +1464,15 @@
           "type": "string"
         },
         "special_devices": {
+          "type": "string"
+        },
+        "con_for_interactive_prompts": {
+          "type": "string"
+        },
+        "per_statement_amp_redirect": {
+          "type": "string"
+        },
+        "call_redirect_captures_context": {
           "type": "string"
         }
       },
@@ -2038,6 +2077,9 @@
           "minLength": 1
         },
         "forms": {
+          "type": "string"
+        },
+        "redirected_stdout_noop": {
           "type": "string"
         },
         "source": {
