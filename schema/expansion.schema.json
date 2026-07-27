@@ -1319,6 +1319,9 @@
         "and_or_chain_trap": {
           "type": "string"
         },
+        "no_space_adjacency": {
+          "type": "string"
+        },
         "trailing_ampersand_in_block": {
           "type": "string"
         },

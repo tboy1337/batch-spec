@@ -1,0 +1,12 @@
+{
+  "description": "Parse SET /A after DisableExtensions; OFF treats /A as part of the plain assignment name (runtime, not arithmetic)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "set-a",
+    "extensions"
+  ]
+}

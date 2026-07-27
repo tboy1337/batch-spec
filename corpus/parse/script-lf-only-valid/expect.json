@@ -1,0 +1,11 @@
+{
+  "description": "Parse LF-only line endings (no CR); modern cmd accepts LF scripts",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "encoding",
+    "script"
+  ]
+}

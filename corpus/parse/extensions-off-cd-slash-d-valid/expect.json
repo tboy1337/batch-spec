@@ -1,0 +1,11 @@
+{
+  "description": "Parse CD /D after DisableExtensions; other-drive /D requires extensions",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cd",
+    "extensions"
+  ]
+}

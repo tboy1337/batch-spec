@@ -1,4 +1,4 @@
-version: 52
+version: 53
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -1350,7 +1350,11 @@ command_extensions_off:
     classic FOR %%i IN (set) DO form remains without them. Slash forms yield
     errors such as '/F was unexpected at this time'.
   shift_n: >-
-    SHIFT /n requires extensions; bare SHIFT remains available.
+    SHIFT /n requires extensions; bare SHIFT remains available. With extensions
+    off, a form such as shift /1 does not preserve %0 the way SHIFT /1 does when
+    extensions are on: live cmd performs an ordinary bare SHIFT (including
+    shifting %0) rather than the /n start-at-n behavior (confirmed on live
+    Windows 10/11 cmd). Prefer omitting /n when extensions may be disabled.
   dynamic_environment: >-
     Dynamic environment names (CD, DATE, TIME, RANDOM, ERRORLEVEL,
     CMDEXTVERSION, CMDCMDLINE, HIGHESTNUMANODENUMBER) are not provided without
@@ -1894,6 +1898,12 @@ command_chaining:
     non-zero ERRORLEVEL. A successful A followed by a failing B still executes
     C -- this is not a boolean if/else. Group carefully or test ERRORLEVEL
     explicitly when only one of B/C should run.
+  no_space_adjacency: >-
+    Spaces around & / && / || / | are optional. Compact forms such as
+    ver>nul&&echo ok||echo fail parse and run the same chaining rules as the
+    spaced spellings (confirmed on live Windows 10/11 cmd). Prefer spaces for
+    readability; do not assume whitespace is required between a redirect target
+    and a following && / ||.
   trailing_ampersand_in_block: >-
     Inside a parenthesized block, a line that ends with a bare & (no following
     command on that physical line) is a syntax error. Terminate with & rem, or
@@ -2171,9 +2181,17 @@ exit_semantics:
     exit code 0 even when ERRORLEVEL was non-zero; fall off EOF or use
     EXIT /B n to propagate a non-zero process exit code.
   exit_b_non_numeric: >-
-    EXIT /B with a non-numeric exitCode (for example EXIT /B abc) returns from
-    the current CALL/script context and sets ERRORLEVEL to 1. Confirmed on live
-    Windows 10/11 cmd.
+    EXIT /B parses an optional leading signed decimal integer from exitCode and
+    ignores any trailing non-digit junk (EXIT /B 12x returns 12; EXIT /B +3
+    returns 3; EXIT /B 0abc returns 0). Unlike SET /A and IF compare-ops, EXIT
+    does not accept 0x hex or 0-prefixed octal forms as numeric bases: a token
+    such as 0x10 is read as leading decimal 0 with trailing junk x10, so it
+    returns 0. When exitCode has no leading integer digits (for example EXIT /B
+    abc or EXIT /B x12), live cmd treats the form like EXIT /B with no code: it
+    returns from the CALL/script context and preserves the prior ERRORLEVEL
+    rather than forcing 1 (confirmed on live Windows 10/11 cmd; matches
+    independent EXIT parsing write-ups). Do not assume every non-numeric token
+    sets ERRORLEVEL 1.
 
 remarks:
   rem: >-
@@ -2392,7 +2410,10 @@ script_encoding:
     BOM cannot be avoided.
   crlf_vs_lf: >-
     CRLF and LF line endings both work on modern Windows cmd for ordinary
-    scripts; prefer CRLF for maximum tool compatibility.
+    scripts; prefer CRLF for maximum tool compatibility. The parse corpus may
+    include an LF-only smoke fixture; UTF-16-encoded input.cmd files are not
+    stored in the corpus because validators require UTF-8 decode (UTF-16 BOM
+    behavior remains catalog-only under bom_prefixes_first_token).
 
 command_resolution:
   description: >-

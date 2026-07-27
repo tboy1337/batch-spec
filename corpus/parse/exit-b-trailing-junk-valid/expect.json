@@ -1,5 +1,5 @@
 {
-  "description": "EXIT /B with non-numeric code (live preserves prior ERRORLEVEL; leading digits still count)",
+  "description": "EXIT /B with trailing non-digit junk after a leading integer (live uses the leading integer)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "exitStmt"

@@ -1,0 +1,13 @@
+{
+  "description": "Nested FOR /F with delayed accumulate and CALL reparse in DO body",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "for",
+    "for-f",
+    "delayed-expansion",
+    "call"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "description": "SHIFT inside parentheses freezes %1 for the block; after ')' the shifted slot is visible",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "callStmt",
+      "gotoStmt",
+      "groupStmt",
+      "genericCmd",
+      "gotoStmt"
+    ]
+  },
+  "tags": [
+    "shift",
+    "parameters",
+    "expansion"
+  ]
+}

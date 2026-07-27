@@ -1,0 +1,11 @@
+{
+  "description": "Parse FINDSTR /E; final data-file line without CRLF can fail /E or /X matches (catalog batveat; parse is ordinary genericCmd)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "findstr",
+    "external"
+  ]
+}

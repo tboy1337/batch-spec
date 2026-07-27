@@ -1,0 +1,12 @@
+{
+  "description": "Parse single-caret ^! under delayed expansion; live emits empty for that form (use ^^! for a literal bang)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "delayed-expansion",
+    "escaping",
+    "expansion"
+  ]
+}

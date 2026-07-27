@@ -1,0 +1,11 @@
+{
+  "description": "Parse SHIFT /n after DisableExtensions; /n requires extensions (bare SHIFT remains)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "shiftStmt"
+  },
+  "tags": [
+    "shift",
+    "extensions"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "description": "Parse IF CMDEXTVERSION after DisableExtensions; CMDEXTVERSION requires extensions (live syntax error)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "cmdextversion",
+    "extensions"
+  ]
+}

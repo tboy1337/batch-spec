@@ -1,0 +1,11 @@
+{
+  "description": "Parse prefix-query SET after DisableExtensions; live cmd rejects prefix query without extensions as a syntax error",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "setStmt"
+  },
+  "tags": [
+    "set",
+    "extensions"
+  ]
+}

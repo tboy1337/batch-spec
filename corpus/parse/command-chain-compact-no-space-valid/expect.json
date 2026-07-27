@@ -1,0 +1,11 @@
+{
+  "description": "Parse compact && / || chaining with no spaces around operators",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "command-chaining",
+    "redirection"
+  ]
+}

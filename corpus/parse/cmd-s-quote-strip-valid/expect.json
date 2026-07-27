@@ -1,0 +1,11 @@
+{
+  "description": "Parse cmd /S /C quote-handling switch form (CMD /? /S rules)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cmd",
+    "quoting"
+  ]
+}

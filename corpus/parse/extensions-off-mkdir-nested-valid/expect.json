@@ -1,0 +1,11 @@
+{
+  "description": "Parse nested MKDIR path after DisableExtensions; intermediate directory creation requires extensions",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "mkdir",
+    "extensions"
+  ]
+}

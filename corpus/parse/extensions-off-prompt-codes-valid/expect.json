@@ -1,0 +1,11 @@
+{
+  "description": "Parse PROMPT with $+ after DisableExtensions; $+ / $M require extensions",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "prompt",
+    "extensions"
+  ]
+}

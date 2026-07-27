@@ -1,0 +1,10 @@
+{
+  "description": "Parse stdout-then-stderr handle merge order (>file 2>&1)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "redirection"
+  ]
+}

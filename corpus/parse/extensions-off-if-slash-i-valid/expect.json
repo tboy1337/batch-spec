@@ -1,0 +1,11 @@
+{
+  "description": "Parse IF /I after DisableExtensions; /I compare forms require extensions (live syntax error)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if",
+    "extensions"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Parse ASSOC after DisableExtensions; ASSOC is unavailable without extensions (not recognized)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "assoc",
+    "extensions"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Parse dynamic %CD% after DisableExtensions; dynamic names are not provided without extensions",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "dynamic-env",
+    "extensions"
+  ]
+}
