@@ -1,0 +1,12 @@
+{
+  "description": "Delayed !1! expands env var 1, not batch parameter %1",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "expansion",
+    "delayed",
+    "parameters"
+  ]
+}

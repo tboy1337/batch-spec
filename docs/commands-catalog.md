@@ -17,7 +17,7 @@ Machine-readable catalog: [`data/commands.yaml`](../data/commands.yaml)
 
 ## Guidance
 
-- `builtin_commands` includes both cmd.exe internals (for example `set`, `call`, `break`) and stock Windows utilities resolved via PATH/`System32` (for example `curl`, `robocopy`, `choice`, `hostname`, `label`, `where`). For the machine name in scripts prefer `%COMPUTERNAME%`; `hostname` is the external `hostname.exe` printer, not a cmd internal. True internals are never overridden by a same-named file in the current directory, but external catalog entries can be shadowed by a CWD `.bat`/`.cmd`/`.exe` according to PATHEXT (see `command_resolution.cwd_shadows_externals` in [`data/expansion.yaml`](../data/expansion.yaml)).
+- `builtin_commands` includes both cmd.exe internals (for example `set`, `call`, `break`) and stock Windows utilities resolved via PATH/`System32` (for example `curl`, `robocopy`, `choice`, `hostname`, `explorer`, `label`, `where`). For the machine name in scripts prefer `%COMPUTERNAME%`; `hostname` is the external `hostname.exe` printer, not a cmd internal. True internals are never overridden by a same-named file in the current directory, but external catalog entries can be shadowed by a CWD `.bat`/`.cmd`/`.exe` according to PATHEXT (see `command_resolution.cwd_shadows_externals` in [`data/expansion.yaml`](../data/expansion.yaml)).
 - Prefer `builtin_commands` for "is this a Windows/cmd command?" checks
 - Use `common_external_tools` for optional recognition of developer tooling without implying cmd builtins
 - Stock utilities such as `curl`, `tar`, and `telnet` remain in `builtin_commands` for detection, but may be absent on older or Feature-on-Demand-stripped hosts (`builtin_overlap_deprecated_notes`)

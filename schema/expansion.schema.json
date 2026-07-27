@@ -142,6 +142,9 @@
         },
         "midline_enable_immediate": {
           "type": "string"
+        },
+        "not_batch_parameters": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -416,6 +419,9 @@
           "type": "string"
         },
         "star_prefix_replace": {
+          "type": "string"
+        },
+        "not_on_batch_parameters": {
           "type": "string"
         }
       },
@@ -720,6 +726,9 @@
         },
         "injects_command_metacharacters": {
           "type": "string"
+        },
+        "adjacent_percent_pair_eating": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -760,6 +769,12 @@
           "type": "string"
         },
         "array_hash_idioms": {
+          "type": "string"
+        },
+        "percent_sign_not_in_name": {
+          "type": "string"
+        },
+        "quoted_metachar_names": {
           "type": "string"
         }
       },
@@ -1308,6 +1323,9 @@
         },
         "shift_invalid_parameter": {
           "type": "string"
+        },
+        "no_substring_or_replace": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1607,6 +1625,9 @@
           "type": "string"
         },
         "embedded_doubled_quotes": {
+          "type": "string"
+        },
+        "ascii_double_quotes_only": {
           "type": "string"
         }
       },

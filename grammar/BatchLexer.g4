@@ -241,7 +241,18 @@ PERCENT
 // single WORD token (live cmd accepts those ECHO blank-line spellings).
 // Colon stays in WORD for drive paths (C:\...) and /X:value switches. A
 // predicate rejects goto:/call: glue so those tokenize as KEYWORD COLON target.
-WORD           : [a-zA-Z_][a-zA-Z0-9_./\\:+\-\u005B\u005D]* {self._wordOk()}? ;
+// Non-ASCII (for example typographic quotes U+201C/U+201D) is ordinary text in
+// live cmd and must not raise token recognition errors.
+WORD           : (
+                   [a-zA-Z_]
+                 | ~[\u0000-\u007F]
+                 )
+                 (
+                   [a-zA-Z0-9_./\\:+\-\u005B\u005D]
+                 | ~[\u0000-\u007F]
+                 )*
+                 {self._wordOk()}?
+               ;
 HEX_NUMBER     : '0' [xX] [0-9a-fA-F]+ ;
 NUMBER         : DIGIT+ ;
 

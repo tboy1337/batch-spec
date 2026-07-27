@@ -30,7 +30,7 @@ LOGGER = logging.getLogger(__name__)
 # Allow tab/LF/CR only among C0 controls in consumer docs and corpus inputs.
 _ALLOWED_C0 = {9, 10, 13}
 
-# Corpus fixtures that intentionally begin with a UTF-8 BOM for syntax probes.
+# Corpus fixtures that intentionally begin with a UTF-8 BOM for encoding probes.
 _BOM_ALLOWED_INPUTS = frozenset(
     {
         "utf8-bom-first-token-invalid",

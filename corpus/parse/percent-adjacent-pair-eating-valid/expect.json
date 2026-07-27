@@ -1,0 +1,16 @@
+{
+  "description": "Adjacent percent pairs can eat intervening text as an undefined name",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "expansion",
+    "percent"
+  ]
+}

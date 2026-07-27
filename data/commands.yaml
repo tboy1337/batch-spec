@@ -38,6 +38,7 @@ builtin_commands:
   - erase
   - exit
   - expand
+  - explorer
   - fc
   - find
   - findstr

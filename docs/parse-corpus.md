@@ -50,7 +50,8 @@ sticky ERRORLEVEL, unknown external names, or a newline-detached ELSE that cmd
 treats as an unknown command rather than an IF syntax abort — see
 `else-newline-bare-invalid` / `else-unescaped-newline-invalid` and
 `detachedElseStmt`). Runtime batveats that still parse cleanly (for example the
-missing/empty substring batveat) stay `should_parse: true` with guidance in
+missing/empty substring batveat, or a UTF-8 BOM that prefixes the first token)
+stay `should_parse: true` with guidance in
 [`data/expansion.yaml`](../data/expansion.yaml).
 
 Semantic rejection guidance (valid `%~` letters, SET /A rules, remarks, and

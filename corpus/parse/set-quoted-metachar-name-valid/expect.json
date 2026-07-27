@@ -1,0 +1,18 @@
+{
+  "description": "Quoted SET can define names containing amp lt gt metacharacters",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "setStmt",
+      "setStmt",
+      "setStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "set",
+    "expansion"
+  ]
+}

@@ -1,4 +1,4 @@
-version: 46
+version: 47
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -164,6 +164,15 @@ percent_expansion:
     (often "'ue]' is not recognized..."). Quoted forms such as echo ["%a%"]
     and delayed echo [!a!] keep the ampersand intact. Confirmed on live
     Windows 10/11 cmd.
+  adjacent_percent_pair_eating: >-
+    Percent expansion pairs the nearest closing % after an opening %, so
+    intervening text (including spaces and ordinary words) becomes a candidate
+    variable name. In a script, an undefined name expands to empty. Confirmed
+    on live Windows 10/11 cmd: echo Between 60% and 80% of X prints
+    Between 60 of X because % and 80% is treated as an undefined name.
+    Prefer %% for literal percents in scripts (echo Between 60%% and 80%% of X)
+    or break the pair (60%% and 80%%). Distinct from incomplete_unclosed (no
+    closing %).
 
 delayed_expansion:
   pattern: "!VAR!"
@@ -204,6 +213,13 @@ delayed_expansion:
     (see percent_expansion.compound_line_expansion).
   substring_pattern: "!var:~start,length!"
   replacement_pattern: "!var:old=new!"
+  not_batch_parameters: >-
+    Delayed !n! / !name! forms expand ordinary environment variables, not
+    batch argument slots. !1! is the env var named 1 (if defined), never %1.
+    There is no delayed peer of %1-%9 / %* / %~. Assign parameters to env vars
+    first (set "arg=%~1") then use !arg! / %arg:~...% / %arg:old=new% as needed.
+    Confirmed on live Windows 10/11 cmd: with %1=hello and set 1=ENV, !1!
+    expands to ENV while %1 remains hello.
   digit_leading_names: >-
     Environment names that start with a digit expand with delayed !name! forms;
     percent %1name% is parsed as argument %1 plus literal text (not %1name%).
@@ -632,6 +648,16 @@ quoting:
     to a single quotation mark by %~1. Example: call :t "a""b" then %~1 expands
     to a""b (outer quotes stripped; embedded "" retained). %1 keeps the outer
     quotes as ["a""b"].
+  ascii_double_quotes_only: >-
+    Only ASCII double quote (code point U+0022) opens and closes cmd argument
+    quoting. Typographic / curly quotes (U+201C left and U+201D right double
+    quotation marks, and similar) are ordinary characters: they do not group
+    arguments or suppress metacharacters. Confirmed on live Windows 10/11 cmd:
+    a CALL whose first token is curly-quoted hello followed by world yields %1
+    containing those curly quote characters around hello and %2=world, whereas
+    ASCII-quoted "hello" world yields one quoted argument slot for hello.
+    Prefer ASCII quotes in scripts; editors that insert smart quotes break
+    argument parsing.
 
 double_percent:
   for_body_rule: "FOR loop variables use %% in batch files"
@@ -709,6 +735,15 @@ string_operations:
   star_prefix_replace: >-
     In %var:*old=new%, a leading asterisk on the search text replaces from the
     beginning of the value through the first match of old.
+  not_on_batch_parameters: >-
+    Substring and replace forms apply to environment variable names, not to
+    batch parameter spellings. %1:~0,2% and %~1:~0,2% do not take a substring of
+    the argument: after %1 / %~1 expand, the :~... text remains literal (for
+    example with %1=hello, %1:~0,2% yields hello:~0,2). The same applies to
+    replace (%1:_=-% yields foo_bar:_=- when %1=foo_bar). Assign first
+    (set "s=%~1" then %s:~0,2% / %s:_=-%). Confirmed on live Windows 10/11 cmd.
+    Cross-ref batch_parameters.no_substring_or_replace and
+    delayed_expansion.not_batch_parameters.
 
 set_a:
   description: "SET /A arithmetic expression operators (SET /?)"
@@ -1041,6 +1076,19 @@ environment_variable_names:
     description / accepted_examples); this is naming convention, not new
     syntax. Prefer delayed expansion inside FOR/IF blocks when the index
     changes each iteration.
+  percent_sign_not_in_name: >-
+    A literal % cannot be part of an environment variable name in practice:
+    percent expansion runs while parsing the SET line, so a % inside the name
+    side is consumed as an expansion delimiter rather than stored. Confirmed on
+    live Windows 10/11 cmd: set "a%=try" defines name a with value try (not a
+    name containing %). The lexer likewise excludes % from PERCENT_VAR name
+    bodies (see tokenizer_note).
+  quoted_metachar_names: >-
+    Quoted SET can define names that include shell metacharacters such as &, <,
+    and > (for example set "a&=1", set "a<=1", set "a>=1"). Those names appear
+    in SET listings and expand via matching %a&% / %a<% / %a>% forms, but they
+    are hazardous in unquoted use because & | < > re-enter command parsing.
+    Prefer underscore-alnum names. Distinct from forbidden_in_name (= only).
 
 echo_forms:
   description: >-
@@ -1789,6 +1837,13 @@ batch_parameters:
     The maximum length of a command line that cmd.exe accepts is 8191
     characters (Microsoft documentation for cmd.exe). Longer input is rejected
     or truncated by the console host before normal parsing completes.
+  no_substring_or_replace: >-
+    Batch parameter forms (%0-%9, %*, %~...) do not accept substring or replace
+    suffixes. %1:~0,2% / %~1:~0,2% / %1:old=new% leave the :~ / :old=new text as
+    literals after the parameter expands. Assign to an environment variable
+    first (set "s=%~1") then apply string_operations. Confirmed on live
+    Windows 10/11 cmd. Cross-ref string_operations.not_on_batch_parameters and
+    delayed_expansion.not_batch_parameters.
 
 call_goto:
   description: "CALL :label and GOTO :EOF (CALL /?, GOTO /?)"
@@ -2878,7 +2933,12 @@ external_tool_notes:
     for the same single missing name (see robocopy_missing_named_file). An empty
     source directory with a wildcard (xcopy src\*.* dst\) left ERRORLEVEL 0 on
     this host even when no files were copied -- do not assume every "no files"
-    condition is non-zero without probing the host.
+    condition is non-zero without probing the host. When the destination does
+    not exist, XCOPY may prompt whether the target is a file or directory
+    (F/D). With stdout redirected away from the console that prompt can hang
+    or land in the redirect file; answer via a pipe such as echo F| xcopy ...
+    or keep prompts on the console with >CON (see
+    redirection.con_for_interactive_prompts).
   timeout_command: >-
     TIMEOUT [/T] seconds [/NOBREAK] waits for a key or a timeout
     (TIMEOUT /?; audit/cmd-help/timeout-help.txt). Valid range includes -1

@@ -1,0 +1,12 @@
+{
+  "description": "Replace forms do not apply to %1; assign to an env var first",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "expansion",
+    "parameters",
+    "string"
+  ]
+}

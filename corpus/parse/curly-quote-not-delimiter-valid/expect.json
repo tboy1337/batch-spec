@@ -1,0 +1,12 @@
+{
+  "description": "Typographic curly quotes are ordinary characters, not argument delimiters",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "quoting",
+    "parameters",
+    "call"
+  ]
+}
