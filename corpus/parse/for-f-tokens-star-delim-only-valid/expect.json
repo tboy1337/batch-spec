@@ -1,0 +1,9 @@
+{
+  "description": "FOR /F bare tokens=* on delimiter-only input still iterates empty; tokens=1,* skips (runtime batveat)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": ["genericCmd", "forStmt", "forStmt"]
+  },
+  "tags": ["for", "for-f", "expansion"]
+}

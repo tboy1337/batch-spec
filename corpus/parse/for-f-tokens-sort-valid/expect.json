@@ -1,0 +1,9 @@
+{
+  "description": "FOR /F tokens= indexes are sorted ascending before metavar assignment (5,7,1-3 equals 1-3,5,7)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": ["genericCmd", "forStmt", "forStmt"]
+  },
+  "tags": ["for", "for-f", "expansion"]
+}

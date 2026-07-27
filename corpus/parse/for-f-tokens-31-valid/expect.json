@@ -1,0 +1,9 @@
+{
+  "description": "FOR /F tokens=1-31 is within the live 31-token hard cap (parses; iterates at runtime)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": ["genericCmd", "forStmt"]
+  },
+  "tags": ["for", "for-f", "expansion"]
+}

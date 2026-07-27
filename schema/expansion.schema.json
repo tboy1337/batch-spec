@@ -326,6 +326,17 @@
         "tokens_syntax_rejects": {
           "type": "string"
         },
+        "tokens_comma_before_star": {
+          "type": "string"
+        },
+        "tokens_hard_max": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "tokens_star_delimiter_only": {
+          "type": "string"
+        },
         "skip_requires_integer": {
           "type": "string"
         }
@@ -813,6 +824,9 @@
           "type": "string"
         },
         "echo_on_off": {
+          "type": "string"
+        },
+        "ghost_trace_unexecuted_blocks": {
           "type": "string"
         },
         "bare_or_whitespace_status": {

@@ -1,4 +1,4 @@
-version: 48
+version: 49
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -477,20 +477,26 @@ for_f:
       delimiter).
     tokens: >-
       tokens=x,y,m-n selects token indexes; a trailing * assigns the remainder
-      of the line to one variable. Sparse lists skip indexes: tokens=1,3 with
-      %%a assigns token 1 to %%a and token 3 to %%b (the next letter); there is
-      no empty metavariable for the skipped token 2 (confirmed:
-      "one,two,three" with delims=, yields %%a=one and %%b=three). Additional
-      FOR variables are implied by ASCII succession from the declared letter
-      (not only a-z / A-Z): for example tokens=1-27 starting at %%a assigns the
-      27th token to %%{ on live Windows 10/11 cmd. FOR /? and some references
-      claim a 26-token / past-z ceiling; live cmd continues past z/Z, though
-      some successor characters are unusable in DO text (notably | as a pipe).
-      Prefer staying within a-z / A-Z for portable scripts. tokens=* still
-      applies leading-delimiter stripping first (default space/tab), so leading
-      spaces are removed before the remainder is assigned; use empty delims=
-      when leading whitespace must be preserved (confirmed: tokens=* on
-      "   spaced" yields spaced, while delims= yields the spaced string
+      of the line to one variable. Selected indexes are sorted ascending before
+      metavar assignment, so tokens=5,7,1-3 and tokens=1-3,5,7 bind the same
+      successive letters (confirmed: "A B C D E F G H" yields %%a=A %%b=B
+      %%c=C %%d=E %%e=G for both spellings). Sparse lists skip indexes:
+      tokens=1,3 with %%a assigns token 1 to %%a and token 3 to %%b (the next
+      letter); there is no empty metavariable for the skipped token 2
+      (confirmed: "one,two,three" with delims=, yields %%a=one and %%b=three).
+      Additional FOR variables are implied by ASCII succession from the
+      declared letter (not only a-z / A-Z): for example tokens=1-27 starting at
+      %%a assigns the 27th token to %%{ on live Windows 10/11 cmd. FOR /? and
+      some references claim a 26-token / past-z ceiling; live cmd continues
+      past z/Z, though some successor characters are unusable in DO text
+      (notably | as a pipe). Prefer staying within a-z / A-Z for portable
+      scripts. Independently of letter succession, a single FOR /F selects at
+      most 31 token indexes: tokens=1-31 iterates, while tokens=1-32 or
+      tokens=32 silently produce zero iterations (no syntax error). tokens=*
+      still applies leading-delimiter stripping first (default space/tab), so
+      leading spaces are removed before the remainder is assigned; use empty
+      delims= when leading whitespace must be preserved (confirmed: tokens=*
+      on "   spaced" yields spaced, while delims= yields the spaced string
       including leading spaces).
     usebackq: >-
       usebackq switches quoting: backtick `command` for command output, single
@@ -510,7 +516,13 @@ for_f:
     include non-numeric tokens=abc, empty slots such as tokens=1,,2, and
     multi-hyphen forms such as tokens=1-2-3. Valid forms are a single *, a
     comma-separated list of positive integers, and single hyphen ranges m-n
-    (optionally mixed), with an optional trailing * on the last item.
+    (optionally mixed), with an optional trailing * on the last item (with or
+    without a comma before the *: tokens=1* and tokens=1,* are both accepted).
+  tokens_comma_before_star: >-
+    A trailing remainder star may be written as tokens=1* or tokens=1,* (and
+    likewise after ranges/lists). Both forms assign the first selected token to
+    the declared metavar and the unparsed remainder of the line to the next
+    letter. Confirmed on live Windows 10/11 cmd.
   skip_requires_integer: >-
     skip= requires a numeric line count. A non-numeric value such as skip=xyz
     is a live syntax error (for example xyz tokens=1" was unexpected at this
@@ -531,6 +543,14 @@ for_f:
     delims= it is kept as a spaces-only token; with tokens=* it still iterates
     but often yields empty after leading-delimiter stripping. Confirmed on live
     Windows 10/11 cmd.
+  tokens_hard_max: 31
+  tokens_star_delimiter_only: >-
+    When tokens=* appears alone (no numeric indexes), a non-empty input that
+    consists only of delimiter characters still causes one DO iteration with an
+    empty metavar (for example tokens=* delims=x on "xxx" sets %%A to empty and
+    runs the body). Forms that include any numeric token index such as
+    tokens=1,* or tokens=1 skip delimiter-only lines and do not iterate.
+    Confirmed on live Windows 10/11 cmd.
   eol_empty: >-
     An empty eol= value (for example "eol=" alone, or "eol= delims=," with a
     space after =) does not install a reliable multi-character disable and does
@@ -1146,6 +1166,15 @@ echo_forms:
     ECHO ON and ECHO OFF toggle command echoing on stdout. A leading @ suppresses
     echoing for that single statement (@echo off). ECHO OFF / @echo off does not
     suppress stderr; redirect with 2>nul or >nul 2>&1 when stderr must be quiet.
+  ghost_trace_unexecuted_blocks: >-
+    With ECHO ON, parenthesized IF and FOR bodies are still written to stdout as
+    the parser traces the command text even when the predicate is false or the
+    body does not execute (a debugging "ghost" of the unrun block). Percent
+    expansion has already run for that physical line, so %var% appears resolved
+    in the echoed text, while delayed !var! commonly remains literal in the
+    echo because delayed expansion happens at execution of statements that
+    actually run. Prefer @echo off (or @ on individual lines) when traces must
+    stay quiet. Confirmed on live Windows 10/11 cmd.
   bare_or_whitespace_status: >-
     ECHO with no arguments, or with only whitespace arguments, prints the
     current ECHO is on/off status rather than a blank line.
@@ -2237,8 +2266,8 @@ expansion_phases: >-
   %%NAME%% in a script prints %NAME%. Nested CALL continues reducing. Pipe
   sides run in child cmd.exe contexts with their own defaults. See
   percent_expansion.compound_line_expansion, percent_expansion,
-  delayed_expansion, caret_escape, double_percent, paren_block_expansion, and
-  command_chaining for details.
+  delayed_expansion, caret_escape, double_percent, paren_block_expansion,
+  command_chaining, and echo_forms.ghost_trace_unexecuted_blocks for details.
 
 script_encoding:
   description: >-

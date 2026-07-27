@@ -1,0 +1,9 @@
+{
+  "description": "FOR /F tokens=1,* (comma before trailing *) is live-valid and parses like tokens=1*",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": ["genericCmd", "forStmt"]
+  },
+  "tags": ["for", "for-f"]
+}

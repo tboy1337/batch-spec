@@ -1,0 +1,9 @@
+{
+  "description": "FOR /F tokens=1-32 and tokens=32 parse cleanly but live selects at most 31 tokens (runtime zero iterations)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": ["genericCmd", "forStmt", "forStmt"]
+  },
+  "tags": ["for", "for-f", "expansion"]
+}

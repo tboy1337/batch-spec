@@ -1,0 +1,9 @@
+{
+  "description": "ECHO ON still traces parenthesized IF bodies that do not execute (ghost-trace observability batveat)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": ["genericCmd", "genericCmd", "ifStmt", "genericCmd"]
+  },
+  "tags": ["echo", "if", "expansion"]
+}

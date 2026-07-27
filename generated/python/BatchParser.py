@@ -880,8 +880,12 @@ class BatchParser ( Parser ):
             return True
         if not value:
             return False
-        # tokens=1,2,4-6*  or  tokens=1-3  or  tokens=2*
-        if not re.fullmatch(r"[0-9]+(?:-[0-9]+)?(?:,[0-9]+(?:-[0-9]+)?)*(?:\*)?", value):
+        # tokens=1,2,4-6*  or  tokens=1-3  or  tokens=2*  or  tokens=1,*
+        # (live accepts an optional comma immediately before a trailing *).
+        if not re.fullmatch(
+            r"[0-9]+(?:-[0-9]+)?(?:,[0-9]+(?:-[0-9]+)?)*(?:,?\*)?",
+            value,
+        ):
             return False
         # Reject empty slots and multi-hyphen already via the pattern; double-check
         # no consecutive commas / trailing comma (pattern forbids).
