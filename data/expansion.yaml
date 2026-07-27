@@ -1,4 +1,4 @@
-version: 53
+version: 54
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -465,7 +465,7 @@ for_f:
       string / command-output unit), including blank lines and lines that would
       later be treated as eol= comments. Omitting skip is the legal way to
       process from the first line; it is not equivalent to writing skip=0
-      (skip=0 is a syntax error â€” see skip_requires_integer). In a multi-file
+      (skip=0 is a syntax error — see skip_requires_integer). In a multi-file
       fileset such as IN (a.txt b.txt), skip applies independently to each file
       in listed order, not once across the whole fileset (FOR /?; confirmed on
       live Windows 10/11 cmd).
@@ -524,8 +524,9 @@ for_f:
     single *, a comma-separated list of positive integers, and single hyphen
     ranges m-n (optionally mixed), with an optional trailing * on the last
     item (with or without a comma before the *: tokens=1* and tokens=1,* are
-    both accepted). The grammar applies the same checks to quoted and
-    unquoted (caret-escaped) option text.
+    both accepted). These option-string syntax errors are non-fatal (later
+    statements still run), matching skip= / eol= option rejects. The grammar
+    applies the same checks to quoted and unquoted (caret-escaped) option text.
   tokens_comma_before_star: >-
     A trailing remainder star may be written as tokens=1* or tokens=1,* (and
     likewise after ranges/lists). Both forms assign the first selected token to
@@ -537,8 +538,11 @@ for_f:
     skip=00 are live syntax errors (for example xyz tokens=1" or " was
     unexpected at this time). Leading zeros on a non-zero count are accepted
     (skip=01 skips one line). Omitting the skip keyword entirely skips nothing
-    and is the correct spelling when no lines should be skipped â€” do not write
-    skip=0. Confirmed on live Windows 10/11 cmd.
+    and is the correct spelling when no lines should be skipped — do not write
+    skip=0. These option-string syntax errors are non-fatal: the FOR statement
+    fails to iterate, but the batch continues with later statements (process
+    exit 0), unlike invalid percent-tilde forms such as %~q1 that abort.
+    Confirmed on live Windows 10/11 cmd.
   skip_counts_physical_lines: >-
     The skip=n budget counts physical lines before blank-line and eol= comment
     filtering. Empty lines and lines whose first parsed token begins with the
@@ -895,7 +899,7 @@ set_a:
   quoting_rule: >-
     Logical operators and modulus that would be misparsed as command syntax
     need the expression quoted (SET /?). Operators that are also cmd shell
-    metacharacters â€” & | ^ << >> â€” must be quoted or caret-escaped; otherwise
+    metacharacters — & | ^ << >> — must be quoted or caret-escaped; otherwise
     cmd applies shell parsing before SET /A arithmetic (SET /?; confirmed on
     live Windows 10/11 cmd).
   shell_metachar_quoting: >-
@@ -1088,7 +1092,7 @@ set_assignment:
     rest of a chained line.
   quoted_close_discards_trailer: >-
     After a quoted assignment set "name=value", any non-separator text after the
-    closing quote â€” glued or spaced â€” is discarded and is not executed as a
+    closing quote — glued or spaced — is discarded and is not executed as a
     second command (set "g=ok"zzz and set "g=ok" echo HI both store ok and do
     not run the trailer). Trailer absorption stops at & / && / || / | so
     set "g=ok"& echo HI still runs the chained echo. Confirmed on live
@@ -1385,6 +1389,8 @@ setlocal_options:
   nesting_limit: >-
     Up to 32 active SETLOCAL instantiations are allowed per CALL level.
     Exceeding that limit prints "Maximum setlocal recursion level reached."
+    The overflowing SETLOCAL does not change ERRORLEVEL (it remains 0 when
+    previously 0) and execution continues; later statements still run.
     Each CALL :label (or CALLed script) receives its own independent allocation
     of up to 32 levels. SETLOCAL /? documents implied ENDLOCAL at script end
     but does not state the numeric limit.
@@ -1706,7 +1712,7 @@ if_forms:
     (after the THEN command or the closing ')' of a parenthesized block). A
     newline-detached ELSE is not the IF elseClause: live cmd reports
     "'ELSE'/'else' is not recognized as an internal or external command" and
-    continues. When the detached line is `else (` â€¦ `)`, the parenthesized
+    continues. When the detached line is `else (` … `)`, the parenthesized
     block still runs as an independent command group, so both the IF THEN body
     and the orphan block can execute (confirmed on live Windows 10/11 cmd).
   else_if_chaining: >-
@@ -1761,11 +1767,11 @@ if_forms:
     IF has no native boolean AND/OR keywords. Tokens such as and / or after a
     completed IF command are parsed as separate commands (often yielding
     "'and' is not recognized..."). When the failed AND/OR line is followed by a
-    parenthesized group â€” including the common form if 1==1 and 2==2 ( ... ) â€”
+    parenthesized group — including the common form if 1==1 and 2==2 ( ... ) —
     live cmd still executes that orphan (block) after reporting the unrecognized
     and/or token (ERRORLEVEL is commonly 9009 from the missing command). Compose
     conditions with nested IF, chained && / || on ERRORLEVEL, or other
-    documented patterns â€” not IF ... and .... Confirmed on live Windows 10/11
+    documented patterns — not IF ... and .... Confirmed on live Windows 10/11
     cmd.
   joined_operand_and: >-
     Without AND keywords, multi-value equality can be composed by joining
@@ -2208,14 +2214,17 @@ remarks:
     as REMCASE or remark are not REM; live cmd may treat them as external
     program names ("not recognized") while later &-chained commands still run.
   rem_punctuation_glue: >-
-    Gluing punctuation to REM without whitespace (for example rem. rem/ rem:
-    rem[ rem] rem)) yields a non-REM token on live Windows 10/11 cmd, so a
-    trailing & command on the same physical line still runs (rem) is reported
-    as an unrecognized command name). By contrast, rem( with no space after
-    REM is still the REM command and remarks out the remainder of the line.
-    True REM (REM followed by whitespace, end of line, or a statement separator
-    such as &) also remarks out the remainder of the line. Prefer spaced
-    REM note over rem. / rem) hacks.
+    Like ECHO blank-line spellings (echo. / echo:), several punctuation-glued
+    REM forms still invoke the REM builtin on live Windows 10/11 cmd and remark
+    out the remainder of the physical line: rem. rem/ rem: rem[ rem] rem+ rem\
+    rem= rem, rem; and rem( (confirmed: rem. note hides note; rem. & echo still
+    runs the trailing & command because the delimiter leaves an empty remark
+    before &). The grammar tokenizes many of those glued spellings as a single
+    WORD (same longest-match path as echo.), so parse fixtures may report
+    genericCmd even though runtime is REM. By contrast, rem) rem{ rem} rem@
+    rem# rem~ rem! rem? and rem* are not REM: live cmd reports them as
+    unrecognized command names while a trailing & command on the same line may
+    still run. Prefer spaced REM note over delimiter/glue hacks.
   double_colon: >-
     A line starting with :: is a label whose second character is :, commonly
     used as a remark. Real jump targets must not place : in the second

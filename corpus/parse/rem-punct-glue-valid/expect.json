@@ -1,5 +1,5 @@
 {
-  "description": "Punctuation-glued rem. is not REM (WORD); trailing & echo remains a chained genericCmd (live execution)",
+  "description": "Delimiter-glued rem. tokenizes as WORD/genericCmd (like echo.); runtime still REM; trailing & echo remains chained",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",

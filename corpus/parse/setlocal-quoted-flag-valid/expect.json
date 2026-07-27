@@ -1,0 +1,14 @@
+{
+  "description": "Quoted SETLOCAL flag tokenizes/parses as setlocalStmt; live cmd rejects with Invalid parameter and ERRORLEVEL 1",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "setlocalStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "setlocal"
+  ]
+}

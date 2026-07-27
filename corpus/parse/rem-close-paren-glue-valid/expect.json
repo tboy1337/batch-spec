@@ -1,5 +1,5 @@
 {
-  "description": "rem) without space is not REM (keyword trailer ')'); trailing & echo remains chained genericCmd",
+  "description": "rem) without space is not REM (keyword trailer ')'); live unrecognized; trailing & echo remains chained genericCmd",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",

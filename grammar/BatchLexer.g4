@@ -13,6 +13,8 @@ def _keywordTrailerOk(self) -> bool:
     # After matching the keyword text, reject glue to percent/bang/quotes
     # and ')'. Live cmd: IF%1, SET%x%, FOR%%i, rem), if) become non-keywords
     # (WORD + trailing punctuation). Bare rem( remains REM (trailer '(' ok).
+    # Note: rem. / rem/ / rem: and peers often tokenize as WORD via longest
+    # match (like echo.) but still invoke the REM builtin at runtime.
     la = self._input.LA(1)
     return la not in (
         ord('%'),

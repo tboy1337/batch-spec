@@ -1,0 +1,15 @@
+{
+  "description": "rem. delimiter form tokenizes as WORD/genericCmd like echo.; live cmd still remarks the line",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "remarks"
+  ]
+}
