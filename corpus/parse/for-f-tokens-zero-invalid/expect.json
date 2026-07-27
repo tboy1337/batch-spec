@@ -1,0 +1,7 @@
+{
+  "description": "FOR /F tokens=0 is a live syntax error (zero token indexes rejected)",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": ["for", "for-f", "negative"]
+}

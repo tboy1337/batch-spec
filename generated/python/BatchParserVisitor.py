@@ -149,6 +149,11 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by BatchParser#forFUnquotedOptions.
+    def visitForFUnquotedOptions(self, ctx:BatchParser.ForFUnquotedOptionsContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by BatchParser#forFOptionAnchor.
     def visitForFOptionAnchor(self, ctx:BatchParser.ForFOptionAnchorContext):
         return self.visitChildren(ctx)

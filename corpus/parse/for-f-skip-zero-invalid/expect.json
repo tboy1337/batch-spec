@@ -1,0 +1,7 @@
+{
+  "description": "FOR /F skip=0 is a live syntax error (skip must be a positive integer)",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": ["for", "for-f", "negative"]
+}

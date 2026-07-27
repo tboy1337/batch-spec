@@ -1,5 +1,5 @@
 {
-  "description": "REN destination must not include a path (REN /? rejects path destinations at runtime; parses as genericCmd)",
+  "description": "CLS parses cleanly (redirected stdout may receive a form-feed byte at runtime without clearing a log)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
@@ -10,6 +10,7 @@
     ]
   },
   "tags": [
-    "ren"
+    "cls",
+    "redirection"
   ]
 }

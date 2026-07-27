@@ -159,10 +159,36 @@ def _expandedPredicateOk(self) -> bool:
 
 def _forFOptionsOk(self, text: str) -> bool:
     # Structured FOR /F option-string validation aligned with live cmd syntax
-    # rejects (eol= multi-char, skip= non-numeric, malformed tokens=).
+    # rejects (eol= multi-char, skip= non-numeric/zero, malformed tokens=).
     # Pure predicate: do not call notifyErrorListeners (ANTLR may evaluate
     # during prediction).
     body = text[1:-1] if len(text) >= 2 and text[0] == '"' else text
+    return self._forFOptionsBodyOk(body)
+
+def _forFUnquotedOptionsOk(self, ctx) -> bool:
+    # Unquoted caret-escaped options (tokens^=...^ delims^=...) must pass the
+    # same structural checks as a quoted options string. Reconstruct source
+    # text (including skipped spaces), strip ^ escapes, then validate.
+    # Pure predicate: do not call notifyErrorListeners.
+    # During adaptive prediction ctx.stop may still be unset; use LT(-1) as
+    # the end of the already-matched option token span.
+    import re  # isort: skip
+
+    start_tok = ctx.start
+    if start_tok is None:
+        return True
+    stop_tok = ctx.stop
+    if stop_tok is None:
+        stop_tok = self._input.LT(-1)
+    if (
+        stop_tok is None
+        or getattr(stop_tok, "tokenIndex", -1) < start_tok.tokenIndex
+    ):
+        return True
+    text = self._input.tokenSource.inputStream.getText(
+        start_tok.start, stop_tok.stop
+    )
+    body = re.sub(r"\^(.)", r"\1", text, flags=re.DOTALL)
     return self._forFOptionsBodyOk(body)
 
 def _forFOptionsBodyOk(self, body: str) -> bool:
@@ -190,7 +216,10 @@ def _forFOptionsBodyOk(self, body: str) -> bool:
             if len(value) > 1:
                 return False
         elif key == "skip":
+            # Live rejects non-numeric and zero (skip=0 / skip=00); skip=01 is 1.
             if not re.fullmatch(r"[0-9]+", raw_val or ""):
+                return False
+            if int(raw_val) == 0:
                 return False
         elif key == "tokens":
             if not self._forFTokensValueOk(raw_val):
@@ -211,8 +240,11 @@ def _forFTokensValueOk(self, value: str) -> bool:
         value,
     ):
         return False
-    # Reject empty slots and multi-hyphen already via the pattern; double-check
-    # no consecutive commas / trailing comma (pattern forbids).
+    # Live rejects any index whose integer value is 0 (tokens=0, tokens=00,
+    # tokens=1-0, tokens=0*); tokens=01 is accepted as index 1.
+    for num in re.findall(r"[0-9]+", value):
+        if int(num) == 0:
+            return False
     return True
 
 def _laSetA(self) -> bool:
@@ -553,7 +585,11 @@ forSlashMod
 
 forFOptions
     : DQ_STRING {self._forFOptionsOk($DQ_STRING.text)}?
-    | forFOptionAnchor forFOptionExtra*
+    | forFUnquotedOptions
+    ;
+
+forFUnquotedOptions
+    : forFOptionAnchor forFOptionExtra* {self._forFUnquotedOptionsOk($ctx)}?
     ;
 
 forFOptionAnchor

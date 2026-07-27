@@ -2130,6 +2130,9 @@
         "quotes_literal": {
           "type": "string"
         },
+        "works_under_redirect": {
+          "type": "string"
+        },
         "source": {
           "type": "string"
         }

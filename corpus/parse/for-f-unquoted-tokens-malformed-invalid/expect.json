@@ -1,0 +1,7 @@
+{
+  "description": "Unquoted caret-escaped FOR /F tokens=1-2-3 is a live syntax error (same structural reject as quoted)",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": ["for", "for-f", "negative"]
+}

@@ -22,7 +22,7 @@ define linter rules (E/W/S/SEC/P codes) -- those live in Blinter's `spec/` tree.
 
 ## Versioning
 
-The package version is the contents of [`VERSION`](VERSION) (currently **0.57.0**). Releases are intended to be tagged `vMAJOR.MINOR.PATCH` matching that file. Pin a
+The package version is the contents of [`VERSION`](VERSION) (currently **0.58.0**). Releases are intended to be tagged `vMAJOR.MINOR.PATCH` matching that file. Pin a
 published tag via git submodule or lock file once it exists; do not depend on `main`
 directly in production CI.
 
@@ -69,3 +69,4 @@ python scripts/verify.py --skip-format --skip-conformance --skip-audit
 ## License
 
 AGPL-3.0-or-later -- see [COPYING](COPYING).
+

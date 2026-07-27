@@ -1,5 +1,5 @@
 {
-  "description": "REN destination must not include a path (REN /? rejects path destinations at runtime; parses as genericCmd)",
+  "description": "TITLE parses as a generic command (window title still updates when stdout is redirected at runtime)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
@@ -10,6 +10,7 @@
     ]
   },
   "tags": [
-    "ren"
+    "title",
+    "redirection"
   ]
 }

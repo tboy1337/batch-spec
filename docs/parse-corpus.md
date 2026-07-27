@@ -60,10 +60,16 @@ acceptance does not imply catalog validity for purely semantic batveats.
 
 **Structured SET /A and FOR /F options:** The ANTLR grammar parses `SET /A`
 expressions as a typed expression tree (`setAExpr` and related rules) and
-validates `FOR /F` option strings structurally (`eol=` / `skip=` / `tokens=` /
-`delims=` / `usebackq`). Evaluation semantics (operator results, ERRORLEVEL
-codes, empty-field collapse, bare-name truncation, and similar batveats) remain
-in [`data/expansion.yaml`](../data/expansion.yaml). Unquoted `<<` and malformed
+validates `FOR /F` option strings structurally for `eol=` (at most one
+character), `skip=` (positive integer; zero rejected), `tokens=` (well-formed
+positive indexes / ranges / `*`; zero indexes rejected), and `usebackq` /
+`useback` (flag form). Both quoted `"options"` and unquoted caret-escaped
+option text are validated. `delims=` is accepted as an option keyword but its
+delimiter-character semantics are not structurally constrained by the grammar
+(see [`data/expansion.yaml`](../data/expansion.yaml) `for_f.option_details.delims`).
+Evaluation semantics (operator results, ERRORLEVEL codes, empty-field collapse,
+bare-name truncation, and similar batveats) remain in
+[`data/expansion.yaml`](../data/expansion.yaml). Unquoted `<<` and malformed
 `FOR /F` option values that live cmd rejects are marked with
 `expect_syntax_errors: true`. Other tool tails such as `START` remain largely
 opaque token sequences unless live cmd reports a syntax error.

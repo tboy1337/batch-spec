@@ -1,4 +1,4 @@
-version: 49
+version: 50
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -513,20 +513,26 @@ for_f:
   tokens_syntax_rejects: >-
     Live cmd rejects malformed tokens= values as option-string syntax errors
     (messages such as abc" was unexpected at this time). Confirmed rejects
-    include non-numeric tokens=abc, empty slots such as tokens=1,,2, and
-    multi-hyphen forms such as tokens=1-2-3. Valid forms are a single *, a
-    comma-separated list of positive integers, and single hyphen ranges m-n
-    (optionally mixed), with an optional trailing * on the last item (with or
-    without a comma before the *: tokens=1* and tokens=1,* are both accepted).
+    include non-numeric tokens=abc, empty slots such as tokens=1,,2,
+    multi-hyphen forms such as tokens=1-2-3, and any index whose integer value
+    is 0 (tokens=0, tokens=00, tokens=1-0, tokens=0*). Leading zeros on a
+    non-zero index are accepted (tokens=01 is index 1). Valid forms are a
+    single *, a comma-separated list of positive integers, and single hyphen
+    ranges m-n (optionally mixed), with an optional trailing * on the last
+    item (with or without a comma before the *: tokens=1* and tokens=1,* are
+    both accepted). The grammar applies the same checks to quoted and
+    unquoted (caret-escaped) option text.
   tokens_comma_before_star: >-
     A trailing remainder star may be written as tokens=1* or tokens=1,* (and
     likewise after ranges/lists). Both forms assign the first selected token to
     the declared metavar and the unparsed remainder of the line to the next
     letter. Confirmed on live Windows 10/11 cmd.
   skip_requires_integer: >-
-    skip= requires a numeric line count. A non-numeric value such as skip=xyz
-    is a live syntax error (for example xyz tokens=1" was unexpected at this
-    time). Confirmed on live Windows 10/11 cmd.
+    skip= requires a numeric line count whose integer value is at least 1.
+    Non-numeric values such as skip=xyz and zero counts such as skip=0 /
+    skip=00 are live syntax errors (for example xyz tokens=1" or " was
+    unexpected at this time). Leading zeros on a non-zero count are accepted
+    (skip=01 skips one line). Confirmed on live Windows 10/11 cmd.
   option_keyword_last_wins: >-
     If the same FOR /F option keyword appears more than once in the options
     string, live cmd applies the last occurrence (for example
@@ -2709,6 +2715,11 @@ title_command:
     characters in the window title (they are not stripped). Prefer unquoted
     text when quotes must not appear in the title bar; escape metacharacters
     with ^ instead of relying on quotes. Confirmed on live Windows 10/11 cmd.
+  works_under_redirect: >-
+    TITLE updates the console window title even when the script's stdout is
+    redirected to a file (unlike CLS/COLOR, which are display/attribute side
+    effects that do not rewrite a redirected log). Confirmed on live Windows
+    10/11 cmd.
   source: "TITLE /? (audit/cmd-help/title-help.txt)"
 
 pause_command:
@@ -2726,12 +2737,15 @@ cls_command:
   forms: "CLS takes no operands."
   redirected_stdout_noop: >-
     CLS affects the console display. When stdout is redirected (for example
-    cls>nul or a script invoked with >logfile), CLS still runs as a successful
-    command but does not clear a redirected log file; the visible console may
-    be unchanged depending on how the process was launched. COLOR similarly
-    updates console attributes and is ineffective for a pure redirected log.
-    Prefer >CON for console-only side effects when the script stdout is a file
-    (see redirection.con_for_interactive_prompts). Confirmed on live Windows
+    cls>nul or a script invoked with >logfile), CLS does not clear a redirected
+    log file and often leaves the visible console unchanged depending on how
+    the process was launched. Redirected stdout may still receive a form-feed
+    byte (0x0C) from CLS even though the log is not "cleared" as a console
+    would be. COLOR similarly updates console attributes and is ineffective
+    for rewriting a pure redirected log (and still leaves ERRORLEVEL 1 on live
+    Windows 10/11; see color_command.same_color_errorlevel). Prefer >CON for
+    console-only side effects when the script stdout is a file (see
+    redirection.con_for_interactive_prompts). Confirmed on live Windows
     10/11 cmd for cls>nul completing without error.
   source: "CLS /? (audit/cmd-help/cls-help.txt)"
 
