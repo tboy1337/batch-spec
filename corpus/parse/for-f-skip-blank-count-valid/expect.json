@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F skip= counts physical blank lines before blank/eol filtering (parse acceptance)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

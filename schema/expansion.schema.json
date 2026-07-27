@@ -339,6 +339,27 @@
         },
         "skip_requires_integer": {
           "type": "string"
+        },
+        "skip_counts_physical_lines": {
+          "type": "string"
+        },
+        "option_keyword_order_independent": {
+          "type": "string"
+        },
+        "fileset_member_delimiters": {
+          "type": "string"
+        },
+        "fileset_no_wildcards": {
+          "type": "string"
+        },
+        "tokens_duplicate_indexes": {
+          "type": "string"
+        },
+        "does_not_set_errorlevel": {
+          "type": "string"
+        },
+        "input_encoding": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -1534,6 +1555,9 @@
         "leading_redirect": {
           "type": "string"
         },
+        "digit_glued_handle": {
+          "type": "string"
+        },
         "handle_order": {
           "type": "string"
         },
@@ -1575,6 +1599,9 @@
           "minLength": 1
         },
         "percent_at_parse": {
+          "type": "string"
+        },
+        "percent_parameters_frozen": {
           "type": "string"
         },
         "delayed_at_execution": {
@@ -1903,6 +1930,9 @@
           "type": "string"
         },
         "env_and_associations": {
+          "type": "string"
+        },
+        "setlocal_state_not_inherited": {
           "type": "string"
         },
         "source": {

@@ -1,5 +1,5 @@
 {
-  "description": "FOR /F empty eol= does not install a reliable comment character (parse acceptance)",
+  "description": "FOR /F empty eol= removes default semicolon comments on live cmd (parse acceptance)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "forStmt"

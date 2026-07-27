@@ -1,0 +1,15 @@
+{
+  "description": "FOR /F distinct option keywords are order-independent (parse acceptance)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

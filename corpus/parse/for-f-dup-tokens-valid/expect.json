@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F duplicate tokens= indexes allocate metavars; later duplicates empty (parse acceptance)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

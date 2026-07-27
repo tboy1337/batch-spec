@@ -1,4 +1,4 @@
-version: 50
+version: 51
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -461,10 +461,14 @@ for_f:
       prefix and commonly break option-string parsing on live cmd (for example
       eol=#x yields a message such as x" was unexpected at this time).
     skip: >-
-      skip=n skips the first n lines of each input file (or each string /
-      command-output unit). In a multi-file fileset such as IN (a.txt b.txt),
-      skip applies independently to each file in listed order, not once across
-      the whole fileset (FOR /?; confirmed on live Windows 10/11 cmd).
+      skip=n skips the first n physical lines of each input file (or each
+      string / command-output unit), including blank lines and lines that would
+      later be treated as eol= comments. Omitting skip is the legal way to
+      process from the first line; it is not equivalent to writing skip=0
+      (skip=0 is a syntax error — see skip_requires_integer). In a multi-file
+      fileset such as IN (a.txt b.txt), skip applies independently to each file
+      in listed order, not once across the whole fileset (FOR /?; confirmed on
+      live Windows 10/11 cmd).
     delims: >-
       delims=xxx replaces the default delimiter set (space and tab). An empty
       delims= means no delimiters (whole line is one token); confirmed for forms
@@ -532,12 +536,29 @@ for_f:
     Non-numeric values such as skip=xyz and zero counts such as skip=0 /
     skip=00 are live syntax errors (for example xyz tokens=1" or " was
     unexpected at this time). Leading zeros on a non-zero count are accepted
-    (skip=01 skips one line). Confirmed on live Windows 10/11 cmd.
+    (skip=01 skips one line). Omitting the skip keyword entirely skips nothing
+    and is the correct spelling when no lines should be skipped — do not write
+    skip=0. Confirmed on live Windows 10/11 cmd.
+  skip_counts_physical_lines: >-
+    The skip=n budget counts physical lines before blank-line and eol= comment
+    filtering. Empty lines and lines whose first parsed token begins with the
+    eol character still consume skip counts. After the skip budget is exhausted,
+    blank lines are ignored as usual and remaining eol-comment lines are
+    skipped. Confirmed on live Windows 10/11 cmd: a file of two blank lines then
+    DATA with skip=2 tokens=* iterates DATA; two semicolon comment lines then
+    KEEP with default eol and skip=2 iterates KEEP.
   option_keyword_last_wins: >-
     If the same FOR /F option keyword appears more than once in the options
     string, live cmd applies the last occurrence (for example
     tokens=1 tokens=2 keeps tokens=2; skip=1 skip=2 skips two lines;
     eol=# eol=; uses semicolon). Prefer listing each keyword once.
+  option_keyword_order_independent: >-
+    Distinct option keywords may appear in any order; live cmd does not apply a
+    fixed cross-keyword precedence such as usebackq > skip > delims > eol >
+    tokens. Confirmed on live Windows 10/11 cmd: tokens=1 delims=, and
+    delims=, tokens=1 bind the same first token; eol=# delims=, and
+    delims=, eol=# agree on which lines are comments. Prefer a readable order
+    with delims= last when a trailing space delimiter is required.
   options_from_expansion: >-
     The FOR /F options string may be produced by percent (or delayed) expansion
     (for /f "%opts%" %%a in (...) when opts holds tokens=... delims=...). Mixed
@@ -558,11 +579,14 @@ for_f:
     tokens=1,* or tokens=1 skip delimiter-only lines and do not iterate.
     Confirmed on live Windows 10/11 cmd.
   eol_empty: >-
-    An empty eol= value (for example "eol=" alone, or "eol= delims=," with a
-    space after =) does not install a reliable multi-character disable and does
-    not treat # as a comment character. Prefer setting eol= to an unused
-    character that will not appear as a line prefix rather than relying on an
-    empty eol= to turn comments off.
+    An empty eol= value (for example "eol=" alone) removes the default
+    semicolon comment character on live Windows 10/11 cmd, so lines beginning
+    with ; are kept as data. A space after eol= before the next keyword (as in
+    "eol= delims=,") installs space as the eol character rather than leaving
+    comments fully disabled. Prefer setting eol= to an unused character that
+    will not appear as a line prefix when a defined comment character is still
+    required; do not treat empty eol= as a portable multi-character "off"
+    switch across hosts or documentation.
   unquoted_options_caret: >-
     When an options string cannot use surrounding double quotes (for example
     because delims must include a quote character), the options may be written
@@ -605,6 +629,37 @@ for_f:
     does not produce a loop iteration. A quoted multi-string file-set form such
     as ("a" "" "b") is not a blank-line probe; cmd treats that as a single
     string argument rather than three lines.
+  fileset_member_delimiters: >-
+    Unquoted FOR /F file-set members split on the same delimiters as classic
+    FOR sets: space, tab, comma, semicolon, and equals. IN (a.txt,b.txt),
+    IN (a.txt;b.txt), and IN (a.txt=b.txt) each open two files in order
+    (confirmed on live Windows 10/11 cmd). Quoted members stay one name.
+  fileset_no_wildcards: >-
+    A FOR /F file-set does not expand * or ? wildcards into multiple files.
+    for /f %%a in (x*.txt) reports that the file cannot be found and yields no
+    iterations when no literal name x*.txt exists. Enumerate matches via a
+    command-output form such as for /f %%a in ('dir /b x*.txt') do ... instead.
+    Confirmed on live Windows 10/11 cmd.
+  tokens_duplicate_indexes: >-
+    Repeating the same tokens= index still allocates successive metavars, but
+    later duplicates receive empty values rather than re-binding the token.
+    Confirmed on live Windows 10/11 cmd: tokens=1,2,1 delims=, on A,B,C with
+    %%a yields %%a=A, %%b=B, %%c empty; tokens=1,1 on A B yields %%a=A and
+    %%b empty. Prefer unique indexes.
+  does_not_set_errorlevel: >-
+    FOR /F itself does not clear or set ERRORLEVEL. A missing fileset file
+    prints a cannot-find message and leaves the prior ERRORLEVEL unchanged; a
+    command-output child's exit code likewise does not overwrite the parent
+    ERRORLEVEL merely because FOR /F iterated. Confirmed on live Windows 10/11
+    cmd (prior cmd /c exit 7 remains 7 after a missing fileset and after a
+    successful for /f %%a in ('echo OUT') loop).
+  input_encoding: >-
+    FOR /F file and command-output tokenization expects text in the active
+    console/OEM code page (or compatible ANSI). UTF-16LE files with a BOM are
+    typically not tokenized usefully by a bare fileset; piping through TYPE
+    (for /f %%a in ('type u16.txt') do ...) often recovers readable lines on
+    live Windows 10/11 cmd. Prefer ASCII/OEM inputs or an explicit conversion
+    step when encoding matters.
   string_embedded_quotes: >-
     Without usebackq, a double-quoted string input may contain an even number of
     embedded " characters as paired quotes (for example
@@ -2177,6 +2232,13 @@ redirection:
   leading_redirect: >-
     A redirect may appear before the command name (for example
     >out.txt echo hi); cmd applies it to that statement.
+  digit_glued_handle: >-
+    A digit immediately before > / >> / < is parsed as a handle number, not as
+    trailing command text. echo 2>nul runs bare ECHO (prints on/off status) with
+    stderr redirected to NUL; echo hello1>f.txt writes hello (without the 1) to
+    f.txt via handle 1. Prefer a space before the redirect (echo 2 >nul /
+    echo hello 1>f.txt) when the digit is data. Confirmed on live Windows
+    10/11 cmd.
   handle_order: >-
     Redirects apply left to right. command >file 2>&1 sends both stdout and
     stderr to file. command 2>&1 >file first duplicates stderr to the current
@@ -2244,6 +2306,15 @@ paren_block_expansion:
     the updated value after SETLOCAL EnableDelayedExpansion.
   percent_at_parse: >-
     %var% inside ( ) expands with the value known when the block is read.
+  percent_parameters_frozen: >-
+    Batch parameter forms %0-%9 / %* / %~ inside a parenthesized block are also
+    expanded when the block is parsed. SHIFT (or CALL argument changes) inside
+    that same block does not change those percent expansions on later lines of
+    the block; the updated slots are visible only after the closing ')'.
+    Confirmed on live Windows 10/11 cmd: with CALL :t one two, a block that
+    runs shift then echo %1 still prints one inside the block and two after it.
+    Assign to an env var and use delayed expansion when in-block argument
+    walking is required.
   delayed_at_execution: >-
     !var! inside ( ) expands when that line runs, seeing SET updates from
     earlier lines in the same block.
@@ -2536,6 +2607,17 @@ start_command:
     /I starts with the original environment passed to cmd.exe rather than the
     current environment. With extensions, starting a non-executable file uses
     file associations (ASSOC/FTYPE).
+  setlocal_state_not_inherited: >-
+    START-launched batch scripts and cmd.exe children inherit ordinary
+    environment variables from the parent (unless /I), but they do not inherit
+    the parent's SETLOCAL Enable/Disable DelayedExpansion or Extensions state.
+    A child begins with the usual defaults (extensions on, delayed expansion
+    off unless cmd /V, registry, or the child itself enables them). Confirmed on
+    live Windows 10/11 cmd: after setlocal EnableDelayedExpansion and set
+    x=PARENTVAL, a started child.cmd prints literal !x! until it enables delayed
+    expansion, while %x% still expands to PARENTVAL. Percent and bang forms on
+    the START command line itself are still expanded by the parent before launch
+    when those phases apply.
   source: "START /? (audit/cmd-help/start-help.txt)"
 
 prompt_codes:

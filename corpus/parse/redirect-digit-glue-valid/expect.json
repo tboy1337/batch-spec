@@ -1,0 +1,15 @@
+{
+  "description": "Digit glued to > is a handle redirect (echo 2>nul / hello1>file); parses as genericCmd",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "redirection",
+    "echo"
+  ]
+}

@@ -67,11 +67,13 @@ positive indexes / ranges / `*`; zero indexes rejected), and `usebackq` /
 option text are validated. `delims=` is accepted as an option keyword but its
 delimiter-character semantics are not structurally constrained by the grammar
 (see [`data/expansion.yaml`](../data/expansion.yaml) `for_f.option_details.delims`).
-Evaluation semantics (operator results, ERRORLEVEL codes, empty-field collapse,
-bare-name truncation, and similar batveats) remain in
-[`data/expansion.yaml`](../data/expansion.yaml). Unquoted `<<` and malformed
-`FOR /F` option values that live cmd rejects are marked with
-`expect_syntax_errors: true`. Other tool tails such as `START` remain largely
-opaque token sequences unless live cmd reports a syntax error.
+Catalog notes also cover fileset member delimiters, non-expanding fileset
+wildcards, `skip=` physical-line counting, duplicate `tokens=` indexes, FOR /F
+ERRORLEVEL non-mutation, and input encoding. Evaluation semantics (operator
+results, ERRORLEVEL codes, empty-field collapse, bare-name truncation, and
+similar batveats) remain in [`data/expansion.yaml`](../data/expansion.yaml).
+Unquoted `<<` and malformed `FOR /F` option values that live cmd rejects are
+marked with `expect_syntax_errors: true`. Other tool tails such as `START`
+remain largely opaque token sequences unless live cmd reports a syntax error.
 
 Authoritative command syntax snippets for authors live under `audit/cmd-help/`.

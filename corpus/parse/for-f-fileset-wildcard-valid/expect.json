@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F fileset wildcards do not expand (runtime cannot-find; still parses as forStmt)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

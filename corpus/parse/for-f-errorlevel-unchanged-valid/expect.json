@@ -1,0 +1,16 @@
+{
+  "description": "FOR /F missing fileset leaves prior ERRORLEVEL unchanged (runtime; parses as forStmt)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for",
+    "for-f",
+    "errorlevel"
+  ]
+}

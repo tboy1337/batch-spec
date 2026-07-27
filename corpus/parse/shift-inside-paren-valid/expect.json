@@ -1,0 +1,18 @@
+{
+  "description": "SHIFT inside parentheses: percent %1 is frozen at block parse (runtime batveat; parses cleanly)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "callStmt",
+      "gotoStmt",
+      "groupStmt",
+      "gotoStmt"
+    ]
+  },
+  "tags": [
+    "shift",
+    "parameters",
+    "expansion"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "description": "START child does not inherit parent SETLOCAL delayed/extensions state (parse as setlocal/set/start)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "setlocalStmt",
+      "setStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "start",
+    "setlocal",
+    "delayed-expansion"
+  ]
+}
