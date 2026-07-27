@@ -1,4 +1,4 @@
-version: 45
+version: 46
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -471,6 +471,17 @@ for_f:
   useback_synonym: >-
     Live cmd.exe also accepts useback as a synonym for usebackq (trailing q
     optional). Prefer the documented usebackq spelling in new scripts.
+  tokens_syntax_rejects: >-
+    Live cmd rejects malformed tokens= values as option-string syntax errors
+    (messages such as abc" was unexpected at this time). Confirmed rejects
+    include non-numeric tokens=abc, empty slots such as tokens=1,,2, and
+    multi-hyphen forms such as tokens=1-2-3. Valid forms are a single *, a
+    comma-separated list of positive integers, and single hyphen ranges m-n
+    (optionally mixed), with an optional trailing * on the last item.
+  skip_requires_integer: >-
+    skip= requires a numeric line count. A non-numeric value such as skip=xyz
+    is a live syntax error (for example xyz tokens=1" was unexpected at this
+    time). Confirmed on live Windows 10/11 cmd.
   option_keyword_last_wins: >-
     If the same FOR /F option keyword appears more than once in the options
     string, live cmd applies the last occurrence (for example
@@ -750,7 +761,19 @@ set_a:
   modulo_in_batch: "Modulo uses %% in batch files (single % on the interactive command line)"
   quoting_rule: >-
     Logical operators and modulus that would be misparsed as command syntax
-    need the expression quoted (SET /?).
+    need the expression quoted (SET /?). Operators that are also cmd shell
+    metacharacters — & | ^ << >> — must be quoted or caret-escaped; otherwise
+    cmd applies shell parsing before SET /A arithmetic (SET /?; confirmed on
+    live Windows 10/11 cmd).
+  shell_metachar_quoting: >-
+    Unquoted << is a live syntax error (for example set /A x=1<<2 yields a
+    message such as 1<< was unexpected at this time). Prefer set /A "x=1<<2".
+    Unquoted >> is not a SET /A right-shift: cmd treats >> as append redirection
+    (set /A x=8>>1 appends the command's stdout to a file named 1 and does not
+    shift). Unquoted & and | split or pipe the command line; use quotes or
+    caret escapes (set /A x=5^&3, set /A "x=5&3"). Unquoted ^ escapes the next
+    character (set /A x=2^3 stores 23); XOR needs quotes (set /A "x=2^3") or a
+    doubled caret (set /A x=5^^1). Confirmed on live Windows 10/11 cmd.
   undefined_as_zero: >-
     An environment name that is not defined is treated as numeric 0. Names may
     appear without % percent signs inside the expression.

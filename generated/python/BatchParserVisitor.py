@@ -199,6 +199,131 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by BatchParser#setAMode.
+    def visitSetAMode(self, ctx:BatchParser.SetAModeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setABody.
+    def visitSetABody(self, ctx:BatchParser.SetABodyContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setARedirect.
+    def visitSetARedirect(self, ctx:BatchParser.SetARedirectContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAExpr.
+    def visitSetAExpr(self, ctx:BatchParser.SetAExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAAssign.
+    def visitSetAAssign(self, ctx:BatchParser.SetAAssignContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAAssignOp.
+    def visitSetAAssignOp(self, ctx:BatchParser.SetAAssignOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAPipe.
+    def visitSetAPipe(self, ctx:BatchParser.SetAPipeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAPipeOp.
+    def visitSetAPipeOp(self, ctx:BatchParser.SetAPipeOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAXor.
+    def visitSetAXor(self, ctx:BatchParser.SetAXorContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAXorOp.
+    def visitSetAXorOp(self, ctx:BatchParser.SetAXorOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAAnd.
+    def visitSetAAnd(self, ctx:BatchParser.SetAAndContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAAndOp.
+    def visitSetAAndOp(self, ctx:BatchParser.SetAAndOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAShift.
+    def visitSetAShift(self, ctx:BatchParser.SetAShiftContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAShiftOp.
+    def visitSetAShiftOp(self, ctx:BatchParser.SetAShiftOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAAdd.
+    def visitSetAAdd(self, ctx:BatchParser.SetAAddContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAAddOp.
+    def visitSetAAddOp(self, ctx:BatchParser.SetAAddOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAMul.
+    def visitSetAMul(self, ctx:BatchParser.SetAMulContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAMulTail.
+    def visitSetAMulTail(self, ctx:BatchParser.SetAMulTailContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAMulOp.
+    def visitSetAMulOp(self, ctx:BatchParser.SetAMulOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAUnary.
+    def visitSetAUnary(self, ctx:BatchParser.SetAUnaryContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAUnaryOp.
+    def visitSetAUnaryOp(self, ctx:BatchParser.SetAUnaryOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAPrimary.
+    def visitSetAPrimary(self, ctx:BatchParser.SetAPrimaryContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setALiteral.
+    def visitSetALiteral(self, ctx:BatchParser.SetALiteralContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setAName.
+    def visitSetAName(self, ctx:BatchParser.SetANameContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setANamePart.
+    def visitSetANamePart(self, ctx:BatchParser.SetANamePartContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by BatchParser#setMode.
     def visitSetMode(self, ctx:BatchParser.SetModeContext):
         return self.visitChildren(ctx)

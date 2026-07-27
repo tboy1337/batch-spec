@@ -131,23 +131,129 @@ def _expandedPredicateOk(self) -> bool:
     )
 
 def _forFOptionsOk(self, text: str) -> bool:
-    # Live cmd accepts only one eol= comment character; eol=#x and similar
-    # multi-character values are syntax errors ("x" was unexpected...).
+    # Structured FOR /F option-string validation aligned with live cmd syntax
+    # rejects (eol= multi-char, skip= non-numeric, malformed tokens=).
+    # Pure predicate: do not call notifyErrorListeners (ANTLR may evaluate
+    # during prediction).
+    body = text[1:-1] if len(text) >= 2 and text[0] == '"' else text
+    return self._forFOptionsBodyOk(body)
+
+def _forFOptionsBodyOk(self, body: str) -> bool:
     import re  # isort: skip
 
-    body = text[1:-1] if len(text) >= 2 and text[0] == '"' else text
-    for match in re.finditer(r"(?i)\beol=(\S*)", body):
-        value = match.group(1)
-        # Stop at next option-like token boundary inside the value.
-        value = re.split(r"(?i)\b(?:skip|delims|tokens|usebackq|useback)=", value, maxsplit=1)[
-            0
-        ]
-        if len(value) > 1:
-            self.notifyErrorListeners(
-                f"FOR /F eol= accepts one character; got {value!r}"
-            )
+    pattern = re.compile(
+        r"(?i)\b(eol|skip|delims|tokens|usebackq|useback)(=)?([^\s]*)"
+    )
+    for match in pattern.finditer(body):
+        key = match.group(1).lower()
+        has_eq = match.group(2) == "="
+        raw_val = match.group(3)
+        if key in ("usebackq", "useback"):
+            if has_eq and raw_val:
+                return False
+            continue
+        if not has_eq:
             return False
+        if key == "eol":
+            value = re.split(
+                r"(?i)\b(?:skip|delims|tokens|usebackq|useback)=",
+                raw_val,
+                maxsplit=1,
+            )[0]
+            if len(value) > 1:
+                return False
+        elif key == "skip":
+            if not re.fullmatch(r"[0-9]+", raw_val or ""):
+                return False
+        elif key == "tokens":
+            if not self._forFTokensValueOk(raw_val):
+                return False
     return True
+
+def _forFTokensValueOk(self, value: str) -> bool:
+    import re  # isort: skip
+
+    if value == "*":
+        return True
+    if not value:
+        return False
+    # tokens=1,2,4-6*  or  tokens=1-3  or  tokens=2*
+    if not re.fullmatch(r"[0-9]+(?:-[0-9]+)?(?:,[0-9]+(?:-[0-9]+)?)*(?:\*)?", value):
+        return False
+    # Reject empty slots and multi-hyphen already via the pattern; double-check
+    # no consecutive commas / trailing comma (pattern forbids).
+    return True
+
+def _laSetA(self) -> bool:
+    # Lookahead gate so SET /P and other modes do not enter setAMode
+    # (failed predicates on setAMode were reported as syntax errors).
+    from BatchLexer import BatchLexer  # isort: skip
+
+    if self._input.LA(1) != BatchLexer.SET:
+        return False
+    if self._input.LA(2) != BatchLexer.SLASH:
+        return False
+    if self._input.LA(3) != BatchLexer.WORD:
+        return False
+    tok = self._input.LT(3)
+    return bool(tok is not None and tok.text and tok.text.lower() == "a")
+
+def _setACaretEscapeIs(self, text: str, expected: str) -> bool:
+    # CARET_ESCAPE matches '^' + one char; the second char is the escaped value.
+    return len(text) == 2 and text[0] == "^" and text[1] == expected
+
+def _setACaretShiftOk(self, first: str, second: str) -> bool:
+    # Unquoted << / >> via ^<^< or ^>^>.
+    return self._setACaretEscapeIs(first, "<") and self._setACaretEscapeIs(
+        second, "<"
+    ) or self._setACaretEscapeIs(first, ">") and self._setACaretEscapeIs(
+        second, ">"
+    )
+
+def _setAQuotedOk(self, text: str) -> bool:
+    # Island-parse the interior of set /A "..." with the full expression
+    # grammar (shell metacharacters are ordinary operators inside quotes).
+    # Pure predicate: no notifyErrorListeners (ANTLR may evaluate during
+    # prediction).
+    if len(text) < 2 or not (text[0] == '"' and text[-1] == '"'):
+        return False
+    inner = text[1:-1].replace('""', '"')
+    if not inner.strip():
+        return True
+    try:
+        from antlr4 import CommonTokenStream, InputStream  # isort: skip
+        from BatchLexer import BatchLexer  # isort: skip
+    except ImportError:
+        # During grammar generation / offline checks, skip island parse.
+        return True
+    stream = InputStream(inner)
+    lexer = BatchLexer(stream)
+    tokens = CommonTokenStream(lexer)
+    nested = type(self)(tokens)
+    nested._setAQuotedIsland = True  # type: ignore[attr-defined]
+    nested.removeErrorListeners()
+    nested.setAExpr()
+    if tokens.LA(1) != -1:
+        return False
+    return nested.getNumberOfSyntaxErrors() == 0
+
+def _setAAllowShellOps(self) -> bool:
+    return bool(getattr(self, "_setAQuotedIsland", False))
+
+def _setANoUnquotedShl(self) -> bool:
+    # Pure predicate (no notify): unquoted << is a live syntax error.
+    from BatchLexer import BatchLexer  # isort: skip
+
+    return not (
+        self._input.LA(1) == BatchLexer.LT and self._input.LA(2) == BatchLexer.LT
+    )
+
+def _setAForVarModulo(self, text: str) -> bool:
+    # In .cmd files, %% is a literal percent for SET /A modulo. The lexer may
+    # emit FOR_VAR for %%3 or %%- (letter charset includes digits and '-').
+    import re  # isort: skip
+
+    return text == "%%-" or re.fullmatch(r"%%[0-9]+", text) is not None
 
 def _gapHasSpaceOrTab(self, after_token, before_token) -> bool:
     # Lexer skips WS, so inspect the underlying char stream between tokens.
@@ -503,7 +609,168 @@ gotoStmt
     ;
 
 setStmt
-    : SET setMode? setAssign?
+    // Prefer SET /A structured expression parse (extensions-on corpus assumption).
+    // Gate with lookahead so SET /P does not trip setAMode predicate errors.
+    : {self._laSetA()}? SET setAMode setABody
+    | SET setMode? setAssign?
+    ;
+
+setAMode
+    : SLASH WORD
+    ;
+
+setABody
+    : DQ_STRING {self._setAQuotedOk($DQ_STRING.text)}?
+    | setAExpr {self._setANoUnquotedShl()}? setARedirect*
+    ;
+
+// Trailing redirects after an unquoted SET /A expression (live cmd treats
+ // unquoted >> / > / < as shell redirection, not arithmetic).
+setARedirect
+    : NUMBER? (APPEND | GT | LT | DUP_OUT | DUP_IN) token?
+    ;
+
+// SET /A expression (precedence matches expansion.yaml set_a.operator_precedence).
+// Shell metachar operators (& | << >> and bare ^) are enabled only inside the
+// quoted island parse (_setAQuotedIsland); unquoted forms use caret escapes.
+setAExpr
+    : setAAssign (COMMA setAAssign)*
+    ;
+
+setAAssign
+    : setAPipe (setAAssignOp setAAssign)?
+    ;
+
+setAAssignOp
+    : ASTERISK EQUALS
+    | SLASH EQUALS
+    | PERCENT EQUALS
+    | PLUS EQUALS
+    | MINUS EQUALS
+    | {self._setAAllowShellOps()}? AMP EQUALS
+    | {self._setAAllowShellOps()}? CARET EQUALS
+    | {self._setAAllowShellOps()}? PIPE EQUALS
+    | {self._setAAllowShellOps()}? LT LT EQUALS
+    | {self._setAAllowShellOps()}? APPEND EQUALS
+    | CARET_ESCAPE EQUALS {self._setACaretEscapeIs($CARET_ESCAPE.text, '&')}?
+    | CARET_ESCAPE EQUALS {self._setACaretEscapeIs($CARET_ESCAPE.text, '^')}?
+    | CARET_ESCAPE EQUALS {self._setACaretEscapeIs($CARET_ESCAPE.text, '|')}?
+    | EQUALS
+    ;
+
+setAPipe
+    : setAXor (setAPipeOp setAXor)*
+    ;
+
+setAPipeOp
+    : {self._setAAllowShellOps()}? PIPE
+    | CARET_ESCAPE {self._setACaretEscapeIs($CARET_ESCAPE.text, '|')}?
+    ;
+
+setAXor
+    : setAAnd (setAXorOp setAAnd)*
+    ;
+
+setAXorOp
+    // Bare ^ is accepted in unquoted SET /A source (parse structure); live cmd
+    // may still caret-escape before arithmetic (see shell_metachar_quoting).
+    : CARET
+    | CARET_ESCAPE {self._setACaretEscapeIs($CARET_ESCAPE.text, '^')}?
+    ;
+
+setAAnd
+    : setAShift (setAAndOp setAShift)*
+    ;
+
+setAAndOp
+    : {self._setAAllowShellOps()}? AMP
+    | CARET_ESCAPE {self._setACaretEscapeIs($CARET_ESCAPE.text, '&')}?
+    ;
+
+setAShift
+    : setAAdd (setAShiftOp setAAdd)*
+    ;
+
+setAShiftOp
+    : {self._setAAllowShellOps()}? LT LT
+    | {self._setAAllowShellOps()}? APPEND
+    | {self._setAAllowShellOps()}? GT GT
+    | a=CARET_ESCAPE b=CARET_ESCAPE {self._setACaretShiftOk($a.text, $b.text)}?
+    ;
+
+setAAdd
+    : setAMul (setAAddOp setAMul)*
+    ;
+
+setAAddOp
+    : PLUS
+    | MINUS
+    ;
+
+setAMul
+    : setAUnary setAMulTail*
+    ;
+
+setAMulTail
+    : setAMulOp setAUnary
+    // Batch-file %% modulo is often lexed as FOR_VAR (%%3 / %%-).
+    | FOR_VAR {self._setAForVarModulo($FOR_VAR.text)}? setAUnary?
+    ;
+
+setAMulOp
+    : ASTERISK
+    | SLASH
+    | PERCENT
+    | PERCENT PERCENT
+    ;
+
+setAUnary
+    : setAUnaryOp setAUnary
+    | setAPrimary
+    ;
+
+setAUnaryOp
+    : BANG
+    | TILDE
+    | MINUS
+    | PLUS
+    | CARET_ESCAPE {self._setACaretEscapeIs($CARET_ESCAPE.text, '!')}?
+    ;
+
+setAPrimary
+    : LPAREN setAExpr RPAREN
+    | setALiteral
+    | setAName
+    ;
+
+setALiteral
+    // NUMBER WORD covers invalid forms such as 0b10 (no binary literals) that
+    // still parse as a single SET /A expression on live cmd.
+    : MINUS? NUMBER (DOT NUMBER)? WORD?
+    | MINUS? HEX_NUMBER
+    ;
+
+setAName
+    : setANamePart+
+    | PERCENT_VAR
+    | PERCENT_TILDE
+    | PERCENT_ARG
+    | PERCENT_VAR_SUBSTRING
+    | PERCENT_VAR_REPLACE
+    | BANG_VAR
+    | BANG_VAR_SUBSTRING
+    | BANG_VAR_REPLACE
+    ;
+
+setANamePart
+    : argWord
+    | NUMBER
+    | HEX_NUMBER
+    | TILDE
+    | AT
+    | HASH
+    | DOLLAR
+    | DOT
     ;
 
 setMode

@@ -1,5 +1,5 @@
 {
-  "description": "SET /A caret is bitwise XOR not a power operator",
+  "description": "SET /A caret is bitwise XOR not a power operator (quoted so ^ is not a shell escape)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "setStmt"

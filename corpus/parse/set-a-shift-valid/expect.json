@@ -1,11 +1,12 @@
 {
-  "description": "SET /A left shift operator tokens",
+  "description": "SET /A left shift requires a quoted expression (unquoted << is a live syntax error)",
   "parse": {
     "top_level_statement": "setStmt",
     "should_parse": true
   },
   "tags": [
     "set",
+    "set-a",
     "arithmetic"
   ]
 }

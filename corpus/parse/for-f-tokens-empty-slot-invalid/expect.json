@@ -1,0 +1,11 @@
+{
+  "description": "FOR /F tokens=1,,2 (empty slot) is a live option-string syntax error",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "for",
+    "for-f",
+    "negative"
+  ]
+}

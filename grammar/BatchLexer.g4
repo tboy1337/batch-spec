@@ -126,7 +126,10 @@ LINE_CONTINUATION
     ;
 
 CARET_ESCAPE
-    : '^' ~[\r\n]
+    // Shell metacharacters and whitespace (e.g. FOR /F tokens^=1^ delims^=).
+    // Digits/letters after ^ stay as CARET + WORD/NUMBER so SET /A XOR
+    // (e.g. "x=5^1") tokenizes correctly; ^^ remains CARET_ESCAPE.
+    : '^' ([&|<>()^!"%@,;=] | [ \t])
     ;
 
 DQ_STRING

@@ -1,2 +1,2 @@
 @echo off
-set /a x=2^3
+set /a "x=2^3"

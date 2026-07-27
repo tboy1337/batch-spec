@@ -1,2 +1,2 @@
 @echo off
-set /a x=1<<2
+set /a "x=1<<2"

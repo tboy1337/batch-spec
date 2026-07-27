@@ -316,6 +316,12 @@
         },
         "whitespace_only_lines": {
           "type": "string"
+        },
+        "tokens_syntax_rejects": {
+          "type": "string"
+        },
+        "skip_requires_integer": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -533,6 +539,9 @@
           "type": "string"
         },
         "quoting_rule": {
+          "type": "string"
+        },
+        "shell_metachar_quoting": {
           "type": "string"
         },
         "undefined_as_zero": {
