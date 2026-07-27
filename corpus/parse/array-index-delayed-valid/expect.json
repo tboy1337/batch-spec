@@ -1,0 +1,12 @@
+{
+  "description": "Bracketed env names emulate arrays; delayed index assignment parses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "set",
+    "delayed-expansion",
+    "expansion"
+  ]
+}

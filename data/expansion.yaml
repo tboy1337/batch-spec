@@ -1,4 +1,4 @@
-version: 44
+version: 45
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -507,6 +507,15 @@ for_f:
     field is skipped). A leading delimiter such as ,a,b likewise shifts so
     token1=a and token2=b. There is no built-in FOR /F mode that preserves
     empty fields between collapsed delimiters.
+  empty_fields_workarounds: >-
+    To honor empty fields, transform the line before FOR /F so consecutive
+    delimiters become delimiter-plus-placeholder-plus-delimiter, then parse.
+    Confirmed on live Windows 10/11 cmd with delayed expansion: for line a,,b,
+    set "line=!line:,,=,__EMPTY__,!" then for /f "tokens=1-3 delims=," %%a in
+    ("!line!") yields %%a=a, %%b=__EMPTY__, %%c=b. Replace the placeholder with
+    an empty string after the loop when a true empty field is required. Leading
+    delimiters still need an explicit leading placeholder if an empty first
+    field must be preserved.
   default_first_token: >-
     By default, /F passes the first blank-separated token from each line
     (FOR /?).
@@ -820,6 +829,14 @@ set_a:
     type or decimal fraction result; fractional work requires scaled integers or
     an external tool rather than native float operators (see
     integer_division_truncates and bare_name_numeric_truncation).
+  scaled_integer_pattern: >-
+    A common portable pattern is to keep a fixed scale in the integer domain:
+    strip or avoid a decimal point with string replace, multiply/divide with
+    SET /A, then reinsert a decimal for display. Example confirmed on live
+    Windows 10/11 cmd: with value 1.25 stored as digits 125 at scale 100,
+    set /A out=125*10/100 yields 12 (toward-zero integer math). Do not expect
+    SET /A itself to accept 1.25 as a float literal (see
+    decimal_literal_partial_assign).
   decimal_literal_partial_assign: >-
     A decimal-point token in the expression text (literal 1.5, or %var% / !var!
     that expands to such text) is a failed SET /A expression (Missing operator;
@@ -990,6 +1007,17 @@ environment_variable_names:
     CMDEXTVERSION, CMDCMDLINE, HIGHESTNUMANODENUMBER) expand only with
     Command Extensions and do not appear in SET unless shadowed by a normal
     SET assignment. IF DEFINED works for both ordinary and shadowed names.
+  array_hash_idioms: >-
+    cmd.exe has no array or hash type. Scripts emulate them with ordinary
+    environment names that embed indexes or keys, commonly using brackets:
+    set "arr[1]=alpha" then %arr[1]% / !arr[1]!. With delayed expansion, an
+    index in another variable can be composed as !arr[%i%]! (percent expands
+    the index when the line/block is parsed) or set "arr[!i!]=value" (delayed
+    index at assignment). Confirmed on live Windows 10/11 cmd. Bracket and
+    other punctuation characters are part of the variable name charset (see
+    description / accepted_examples); this is naming convention, not new
+    syntax. Prefer delayed expansion inside FOR/IF blocks when the index
+    changes each iteration.
 
 echo_forms:
   description: >-
@@ -1731,6 +1759,9 @@ batch_parameters:
     typically supplies each path as its own quoted argument (%1, %2, ...).
     Explorer association launches also commonly quote %0 as a full path (see
     percent_zero). After delivery, ordinary delimiter and %~ rules apply.
+    Parse corpus models the delivered shape with CALL :label "C:\path one.ext"
+    "D:\path two.ext" (quoted multi-arg slots); the Explorer/drag-drop host
+    itself is outside parse conformance.
   command_line_limit: >-
     The maximum length of a command line that cmd.exe accepts is 8191
     characters (Microsoft documentation for cmd.exe). Longer input is rejected

@@ -287,6 +287,9 @@
         "empty_fields_token_shift": {
           "type": "string"
         },
+        "empty_fields_workarounds": {
+          "type": "string"
+        },
         "default_first_token": {
           "type": "string"
         },
@@ -592,6 +595,9 @@
         "no_floating_point": {
           "type": "string"
         },
+        "scaled_integer_pattern": {
+          "type": "string"
+        },
         "decimal_literal_partial_assign": {
           "type": "string"
         },
@@ -742,6 +748,9 @@
           "type": "string"
         },
         "ordinary_vs_dynamic": {
+          "type": "string"
+        },
+        "array_hash_idioms": {
           "type": "string"
         }
       },

@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sys
 from pathlib import Path
 from typing import Callable, List
@@ -16,17 +17,28 @@ if str(_SCRIPTS_DIR) not in sys.path:
 
 from _paths import CORPUS_DIR, GENERATED_DIR  # noqa: E402
 
+LOGGER = logging.getLogger(__name__)
+
 
 def _discover_cases() -> list[tuple[str, Path, dict[str, object]]]:
     cases: list[tuple[str, Path, dict[str, object]]] = []
+    orphan_expects: list[str] = []
     for expect_path in sorted(CORPUS_DIR.glob("**/expect.json")):
         case_dir = expect_path.parent
         input_path = case_dir / "input.cmd"
+        case_id = "/".join(case_dir.relative_to(CORPUS_DIR).parts)
         if not input_path.is_file():
+            orphan_expects.append(case_id)
             continue
         expect = json.loads(expect_path.read_text(encoding="utf-8"))
-        case_id = "/".join(case_dir.relative_to(CORPUS_DIR).parts)
         cases.append((case_id, input_path, expect))
+    if orphan_expects:
+        for case_id in orphan_expects:
+            message = f"Missing input.cmd for corpus case {case_id}"
+            print(message, file=sys.stderr)
+            LOGGER.error("%s", message)
+        raise SystemExit(1)
+    LOGGER.info("Discovered %s parse cases", len(cases))
     return cases
 
 
@@ -203,6 +215,7 @@ def _check_case(
 
 
 def main() -> int:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description="batch-spec parser conformance")
     parser.add_argument("--impl", default="antlr", choices=sorted(_IMPLEMENTATIONS))
     args = parser.parse_args()
@@ -216,8 +229,10 @@ def main() -> int:
     if failures:
         for message in failures:
             print(message, file=sys.stderr)
+            LOGGER.error("%s", message)
         return 1
     print(f"All {len(cases)} parse cases passed ({args.impl})")
+    LOGGER.info("All %s parse cases passed (%s)", len(cases), args.impl)
     return 0
 
 

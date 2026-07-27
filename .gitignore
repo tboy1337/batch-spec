@@ -12,3 +12,11 @@ _tmp_audit/
 .tmp-audit/
 _audit_tmp/
 .audit-tmp/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+.tox/
+.hypothesis/
+.ruff_cache/

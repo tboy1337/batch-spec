@@ -40,6 +40,10 @@
         }
       },
       "additionalProperties": false,
+      "anyOf": [
+        { "required": ["should_parse"] },
+        { "required": ["expect_syntax_errors"] }
+      ],
       "allOf": [
         {
           "if": {

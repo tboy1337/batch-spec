@@ -1,0 +1,12 @@
+{
+  "description": "Placeholder substitution before FOR /F preserves empty CSV fields",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "for-f",
+    "delayed-expansion"
+  ]
+}

@@ -57,4 +57,13 @@ Semantic rejection guidance (valid `%~` letters, SET /A rules, remarks, and
 related facts) lives in [`data/expansion.yaml`](../data/expansion.yaml). Parser
 acceptance does not imply catalog validity for purely semantic batveats.
 
+**Semantics-in-YAML (not full AST):** Detailed operator precedence and validation
+for `SET /A` expressions and most `FOR /F` option-string rules live in
+[`data/expansion.yaml`](../data/expansion.yaml). The ANTLR grammar accepts those
+tails largely as opaque token sequences (same pattern as `START` and other
+`genericCmd` tool lines), except where live cmd reports a syntax error that the
+corpus marks with `expect_syntax_errors: true` (for example multi-character
+`FOR /F eol=`). Prefer the YAML catalog over inventing a full expression AST
+in the grammar unless parse acceptance diverges from live cmd.
+
 Authoritative command syntax snippets for authors live under `audit/cmd-help/`.

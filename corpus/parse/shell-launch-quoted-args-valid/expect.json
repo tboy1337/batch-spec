@@ -1,0 +1,12 @@
+{
+  "description": "Quoted multi-file path args model drag-drop / Open-with delivery slots",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "call",
+    "parameters",
+    "shell-launch"
+  ]
+}

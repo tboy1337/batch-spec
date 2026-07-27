@@ -9,5 +9,4 @@ mypy
 types-PyYAML
 black
 isort
-autopep8
 pip-audit

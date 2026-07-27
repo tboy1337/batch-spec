@@ -96,6 +96,173 @@ def test_validate_main_prints_success(capsys: pytest.CaptureFixture[str]) -> Non
     validate.main()
     captured = capsys.readouterr()
     assert "batch-spec validation passed" in captured.out
+    assert "OK VERSION sync" in captured.out
+
+
+def test_validate_version_sync_accepts_repo() -> None:
+    validate._validate_version_sync()
+
+
+def test_validate_version_sync_rejects_readme_mismatch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (tmp_path / "VERSION").write_text("0.53.0\n", encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "batch-spec"\nversion = "0.53.0"\n',
+        encoding="utf-8",
+    )
+    (tmp_path / "README.md").write_text(
+        "currently **0.52.0**\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit, match="README.md"):
+        validate._validate_version_sync()
+
+
+def test_validate_version_sync_rejects_pyproject_mismatch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (tmp_path / "VERSION").write_text("0.53.0\n", encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "batch-spec"\nversion = "0.52.0"\n',
+        encoding="utf-8",
+    )
+    (tmp_path / "README.md").write_text("currently **0.53.0**\n", encoding="utf-8")
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit, match="pyproject.toml version"):
+        validate._validate_version_sync()
+
+
+def test_validate_version_sync_rejects_missing_pyproject_version(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (tmp_path / "VERSION").write_text("0.53.0\n", encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "batch-spec"\n', encoding="utf-8"
+    )
+    (tmp_path / "README.md").write_text("currently **0.53.0**\n", encoding="utf-8")
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit, match="missing project version"):
+        validate._validate_version_sync()
+
+
+def test_validate_version_sync_rejects_bad_version_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (tmp_path / "VERSION").write_text("not-a-version\n", encoding="utf-8")
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit, match="MAJOR.MINOR.PATCH"):
+        validate._read_version_file()
+
+
+def test_validate_version_sync_rejects_missing_readme_marker(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (tmp_path / "VERSION").write_text("0.53.0\n", encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "batch-spec"\nversion = "0.53.0"\n',
+        encoding="utf-8",
+    )
+    (tmp_path / "README.md").write_text("no version marker\n", encoding="utf-8")
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit, match="version marker"):
+        validate._validate_version_sync()
+
+
+def test_validate_yaml_rejects_empty_document(tmp_path: Path) -> None:
+    empty = tmp_path / "empty.yaml"
+    empty.write_text("\n", encoding="utf-8")
+    schema_path = _paths.SCHEMA_DIR / "commands.schema.json"
+
+    with pytest.raises(SystemExit, match="Empty YAML"):
+        validate._validate_yaml(empty, schema_path)
+
+
+def test_validate_json_rejects_invalid_json(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json", encoding="utf-8")
+    schema = {"type": "object"}
+
+    with pytest.raises(SystemExit, match="Invalid JSON"):
+        validate._validate_json(bad, schema)
+
+
+def test_validate_corpus_rejects_unexpected_bom(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    corpus = tmp_path / "corpus" / "parse"
+    case = corpus / "bom-input"
+    case.mkdir(parents=True)
+    (case / "input.cmd").write_bytes(b"\xef\xbb\xbf@echo off\n")
+    (case / "expect.json").write_text(
+        '{"description": "bom", "parse": {"should_parse": true}}',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(validate, "CORPUS_DIR", corpus)
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit) as exc_info:
+        validate._validate_corpus()
+
+    assert exc_info.value.code == 1
+
+
+def test_check_utf8_c0_allows_listed_bom(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+    path = tmp_path / "utf8-bom-first-token-invalid" / "input.cmd"
+    path.parent.mkdir(parents=True)
+    path.write_bytes(b"\xef\xbb\xbf@echo off\n")
+    failures = validate._check_utf8_c0(path, allow_bom=True)
+    assert failures == []
+
+
+def test_validate_corpus_rejects_empty_parse_object(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    corpus = tmp_path / "corpus" / "parse"
+    case = corpus / "empty-parse"
+    case.mkdir(parents=True)
+    (case / "input.cmd").write_text("@echo off\n", encoding="utf-8")
+    (case / "expect.json").write_text(
+        '{"description": "empty parse", "parse": {}}',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(validate, "CORPUS_DIR", corpus)
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit, match="Schema validation failed"):
+        validate._validate_corpus()
+
+
+def test_validate_corpus_rejects_c0_in_input(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    corpus = tmp_path / "corpus" / "parse"
+    case = corpus / "c0-input"
+    case.mkdir(parents=True)
+    (case / "input.cmd").write_bytes(b"@echo off\n\x0cecho hi\n")
+    (case / "expect.json").write_text(
+        '{"description": "c0", "parse": {"should_parse": true}}',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(validate, "CORPUS_DIR", corpus)
+    monkeypatch.setattr(validate, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(SystemExit) as exc_info:
+        validate._validate_corpus()
+
+    assert exc_info.value.code == 1
 
 
 def test_validate_docs_encoding_rejects_c0(

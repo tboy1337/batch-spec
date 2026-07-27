@@ -34,20 +34,21 @@ def test_discover_cases_finds_repository_corpus() -> None:
         assert (expect_path.parent / "input.cmd").is_file()
 
 
-def test_discover_cases_skips_missing_input(
+def test_discover_cases_rejects_missing_input(
     tmp_corpus: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     case_dir = tmp_corpus / "missing-input"
     case_dir.mkdir()
     (case_dir / "expect.json").write_text(
-        json.dumps({"description": "missing input"}),
+        json.dumps({"description": "missing input", "parse": {"should_parse": True}}),
         encoding="utf-8",
     )
     monkeypatch.setattr(run_parser, "CORPUS_DIR", tmp_corpus)
 
-    cases = run_parser._discover_cases()
+    with pytest.raises(SystemExit) as exc_info:
+        run_parser._discover_cases()
 
-    assert cases == []
+    assert exc_info.value.code == 1
 
 
 def test_check_case_success(tmp_path: Path) -> None:
