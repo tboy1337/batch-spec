@@ -500,17 +500,17 @@ ifPredicate
     | NOT? DEFINED ifDefinedOperand
     | NOT? EXIST ifExistOperand
     | NOT? comparison
-    // Expanded predicate forms (e.g. if %b% when b=a==a). Reject when another
-    // operand follows without a compare-op (IF %ERRORLEVEL% 1).
-    | PERCENT_VAR {self._expandedPredicateOk()}?
-    | PERCENT_VAR_SUBSTRING {self._expandedPredicateOk()}?
-    | PERCENT_VAR_REPLACE {self._expandedPredicateOk()}?
-    | PERCENT_ARG {self._expandedPredicateOk()}?
-    | PERCENT_TILDE {self._expandedPredicateOk()}?
-    | BANG_VAR {self._expandedPredicateOk()}?
-    | BANG_VAR_SUBSTRING {self._expandedPredicateOk()}?
-    | BANG_VAR_REPLACE {self._expandedPredicateOk()}?
-    | DQ_STRING {self._expandedPredicateOk()}?
+    // Expanded predicate forms (e.g. if %b% / if not %b% when b=a==a). Reject
+    // when another operand follows without a compare-op (IF %ERRORLEVEL% 1).
+    | NOT? PERCENT_VAR {self._expandedPredicateOk()}?
+    | NOT? PERCENT_VAR_SUBSTRING {self._expandedPredicateOk()}?
+    | NOT? PERCENT_VAR_REPLACE {self._expandedPredicateOk()}?
+    | NOT? PERCENT_ARG {self._expandedPredicateOk()}?
+    | NOT? PERCENT_TILDE {self._expandedPredicateOk()}?
+    | NOT? BANG_VAR {self._expandedPredicateOk()}?
+    | NOT? BANG_VAR_SUBSTRING {self._expandedPredicateOk()}?
+    | NOT? BANG_VAR_REPLACE {self._expandedPredicateOk()}?
+    | NOT? DQ_STRING {self._expandedPredicateOk()}?
     ;
 
 // Optional outer parentheses around a comparison are accepted at parse time

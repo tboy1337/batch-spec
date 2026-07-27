@@ -1,0 +1,17 @@
+{
+  "description": "SET RANDOM= shadows/freezes dynamic %RANDOM% until cleared; parses as setStmt/genericCmd",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "setStmt",
+      "genericCmd",
+      "setStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "set",
+    "expansion"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "description": "IF NOT with expanded predicate (true==true / false==x); parses as setStmt/ifStmt",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "setStmt",
+      "ifStmt",
+      "setStmt",
+      "ifStmt"
+    ]
+  },
+  "tags": [
+    "if",
+    "expansion"
+  ]
+}

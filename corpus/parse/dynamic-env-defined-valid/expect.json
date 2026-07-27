@@ -1,0 +1,16 @@
+{
+  "description": "IF DEFINED is true for unshadowed dynamic DATE/RANDOM; parses as ifStmt",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "ifStmt",
+      "ifStmt",
+      "ifStmt"
+    ]
+  },
+  "tags": [
+    "if",
+    "expansion"
+  ]
+}

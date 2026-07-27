@@ -1,4 +1,4 @@
-version: 51
+version: 52
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -465,7 +465,7 @@ for_f:
       string / command-output unit), including blank lines and lines that would
       later be treated as eol= comments. Omitting skip is the legal way to
       process from the first line; it is not equivalent to writing skip=0
-      (skip=0 is a syntax error — see skip_requires_integer). In a multi-file
+      (skip=0 is a syntax error â€” see skip_requires_integer). In a multi-file
       fileset such as IN (a.txt b.txt), skip applies independently to each file
       in listed order, not once across the whole fileset (FOR /?; confirmed on
       live Windows 10/11 cmd).
@@ -537,7 +537,7 @@ for_f:
     skip=00 are live syntax errors (for example xyz tokens=1" or " was
     unexpected at this time). Leading zeros on a non-zero count are accepted
     (skip=01 skips one line). Omitting the skip keyword entirely skips nothing
-    and is the correct spelling when no lines should be skipped — do not write
+    and is the correct spelling when no lines should be skipped â€” do not write
     skip=0. Confirmed on live Windows 10/11 cmd.
   skip_counts_physical_lines: >-
     The skip=n budget counts physical lines before blank-line and eol= comment
@@ -895,7 +895,7 @@ set_a:
   quoting_rule: >-
     Logical operators and modulus that would be misparsed as command syntax
     need the expression quoted (SET /?). Operators that are also cmd shell
-    metacharacters — & | ^ << >> — must be quoted or caret-escaped; otherwise
+    metacharacters â€” & | ^ << >> â€” must be quoted or caret-escaped; otherwise
     cmd applies shell parsing before SET /A arithmetic (SET /?; confirmed on
     live Windows 10/11 cmd).
   shell_metachar_quoting: >-
@@ -1088,7 +1088,7 @@ set_assignment:
     rest of a chained line.
   quoted_close_discards_trailer: >-
     After a quoted assignment set "name=value", any non-separator text after the
-    closing quote — glued or spaced — is discarded and is not executed as a
+    closing quote â€” glued or spaced â€” is discarded and is not executed as a
     second command (set "g=ok"zzz and set "g=ok" echo HI both store ok and do
     not run the trailer). Trailer absorption stops at & / && / || / | so
     set "g=ok"& echo HI still runs the chained echo. Confirmed on live
@@ -1178,7 +1178,9 @@ environment_variable_names:
     dynamic_environment_variables (CD, DATE, TIME, RANDOM, ERRORLEVEL,
     CMDEXTVERSION, CMDCMDLINE, HIGHESTNUMANODENUMBER) expand only with
     Command Extensions and do not appear in SET unless shadowed by a normal
-    SET assignment. IF DEFINED works for both ordinary and shadowed names.
+    SET assignment. IF DEFINED is true for those dynamic names even when
+    unshadowed (see dynamic_environment_variables.defined_without_set_listing)
+    and also for ordinary or shadowed names.
   array_hash_idioms: >-
     cmd.exe has no array or hash type. Scripts emulate them with ordinary
     environment names that embed indexes or keys, commonly using brackets:
@@ -1602,6 +1604,26 @@ dynamic_environment_variables:
     SET CD=value overrides %CD% expansion with that string but does not change
     the process current directory. Bare CD (and filesystem operations) still
     use the real CWD; clear the CD variable to restore dynamic %CD%.
+  set_shadow_freezes: >-
+    SET name=value for a dynamic name freezes %name% to that ordinary string
+    until the variable is cleared. Confirmed on live Windows 10/11 cmd: after
+    set DATE=frozen / set TIME=99:99:99.99 / set RANDOM=42, successive
+    expansions stay frozen (TIME does not tick; RANDOM does not advance) even
+    across TIMEOUT delays; set DATE= / set TIME= / set RANDOM= restores live
+    dynamic expansion. Same pattern as ERRORLEVEL shadowing (see
+    errorlevel.env_var_shadowing).
+  defined_without_set_listing: >-
+    IF DEFINED name is true for the dynamic names (CD, DATE, TIME, RANDOM,
+    ERRORLEVEL, CMDEXTVERSION, CMDCMDLINE, HIGHESTNUMANODENUMBER) even when
+    they are not shadowed and do not appear in SET listings. Clearing a shadow
+    restores dynamic expansion but leaves IF DEFINED true. Ordinary missing
+    names remain undefined (IF DEFINED false). Confirmed on live Windows
+    10/11 cmd.
+  random_seed_correlation: >-
+    Near-simultaneous new cmd.exe processes often share the same time-based
+    %RANDOM% seed and can emit identical or highly correlated sequences.
+    Treat %RANDOM% as a weak per-process PRNG, not an independent entropy
+    source across co-started children.
   extensions_required: true
 
 keyword_boundaries:
@@ -1663,8 +1685,12 @@ if_forms:
     The source text uses a bare name (no % / !), but percent or delayed
     expansion may supply that name first (if defined %nm% / if defined !nm!
     after set nm=VAR). A variable set to spaces (set "S= ") is defined; a
-    cleared name (set "E=" / set E=) is undefined. Composition such as
-    if defined %prefix%BAR works when the expanded name exists. Names that
+    cleared name (set "E=" / set E=) is undefined for ordinary names. Dynamic
+    environment names (CD, DATE, TIME, RANDOM, ERRORLEVEL, CMDEXTVERSION,
+    CMDCMDLINE, HIGHESTNUMANODENUMBER) count as defined even when unshadowed
+    and absent from SET listings (see
+    dynamic_environment_variables.defined_without_set_listing). Composition such
+    as if defined %prefix%BAR works when the expanded name exists. Names that
     contain spaces (set "a b=1") expand via %a b% but cannot be tested with
     IF DEFINED: the predicate takes only the first token as the name
     (if defined a b treats a as the name and b as the THEN command), and
@@ -1676,7 +1702,7 @@ if_forms:
     (after the THEN command or the closing ')' of a parenthesized block). A
     newline-detached ELSE is not the IF elseClause: live cmd reports
     "'ELSE'/'else' is not recognized as an internal or external command" and
-    continues. When the detached line is `else (` … `)`, the parenthesized
+    continues. When the detached line is `else (` â€¦ `)`, the parenthesized
     block still runs as an independent command group, so both the IF THEN body
     and the orphan block can execute (confirmed on live Windows 10/11 cmd).
   else_if_chaining: >-
@@ -1731,11 +1757,11 @@ if_forms:
     IF has no native boolean AND/OR keywords. Tokens such as and / or after a
     completed IF command are parsed as separate commands (often yielding
     "'and' is not recognized..."). When the failed AND/OR line is followed by a
-    parenthesized group — including the common form if 1==1 and 2==2 ( ... ) —
+    parenthesized group â€” including the common form if 1==1 and 2==2 ( ... ) â€”
     live cmd still executes that orphan (block) after reporting the unrecognized
     and/or token (ERRORLEVEL is commonly 9009 from the missing command). Compose
     conditions with nested IF, chained && / || on ERRORLEVEL, or other
-    documented patterns — not IF ... and .... Confirmed on live Windows 10/11
+    documented patterns â€” not IF ... and .... Confirmed on live Windows 10/11
     cmd.
   joined_operand_and: >-
     Without AND keywords, multi-value equality can be composed by joining
@@ -1751,10 +1777,11 @@ if_forms:
     Windows 10/11 cmd: set "b=a==a" then if %b% is a true string equality, and
     set "b=a==b" then if %b% is false. Forms such as set "b=true==true" then
     if %b% likewise succeed; expansion does not inject spaces around == (the
-    interpreter sees if true==true, which is valid). The expanded text must still
-    form a valid IF operand sequence after expansion (spaces and metacharacters
-    already present in the value can break tokenization the same way as literal
-    operands).
+    interpreter sees if true==true, which is valid). IF NOT combines the same
+    way: set "b=true==true" then if not %b% is false, and set "b=false==x"
+    then if not %b% is true. The expanded text must still form a valid IF
+    operand sequence after expansion (spaces and metacharacters already present
+    in the value can break tokenization the same way as literal operands).
   errorlevel_variable_needs_compare: >-
     IF %ERRORLEVEL% n without == or a compare-op (EQU/NEQ/...) is a syntax
     error (for example '1 was unexpected at this time'). Use classic
@@ -2233,12 +2260,17 @@ redirection:
     A redirect may appear before the command name (for example
     >out.txt echo hi); cmd applies it to that statement.
   digit_glued_handle: >-
-    A digit immediately before > / >> / < is parsed as a handle number, not as
-    trailing command text. echo 2>nul runs bare ECHO (prints on/off status) with
-    stderr redirected to NUL; echo hello1>f.txt writes hello (without the 1) to
-    f.txt via handle 1. Prefer a space before the redirect (echo 2 >nul /
-    echo hello 1>f.txt) when the digit is data. Confirmed on live Windows
-    10/11 cmd.
+    A handle digit before > / >> / < must be its own whitespace-separated token.
+    echo 2>nul runs bare ECHO (prints on/off status) with stderr redirected to
+    NUL; echo hello 1>f.txt writes hello (trailing space) via handle 1. A digit
+    glued to preceding non-whitespace text stays part of that argument:
+    echo hello1>f.txt writes hello1 (the 1 is data, not a handle). The same
+    rule applies after percent expansion: with set "msg=Meet at 2",
+    echo %msg%>file.txt becomes echo Meet at 2>file.txt so handle 2 receives
+    the redirect and stdout shows Meet at (leading redirect >file.txt echo %msg%
+    avoids the trap). Prefer an explicit space-separated handle, a leading
+    redirect, or a space before the operator when a trailing digit is data
+    (echo 2 >nul). Confirmed on live Windows 10/11 cmd.
   handle_order: >-
     Redirects apply left to right. command >file 2>&1 sends both stdout and
     stderr to file. command 2>&1 >file first duplicates stderr to the current

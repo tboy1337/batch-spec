@@ -1130,6 +1130,15 @@
         "cd_shadow_vs_cwd": {
           "type": "string"
         },
+        "set_shadow_freezes": {
+          "type": "string"
+        },
+        "defined_without_set_listing": {
+          "type": "string"
+        },
+        "random_seed_correlation": {
+          "type": "string"
+        },
         "undocumented_equals_exitcode": {
           "type": "string"
         }

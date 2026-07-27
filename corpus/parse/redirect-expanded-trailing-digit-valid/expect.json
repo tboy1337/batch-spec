@@ -1,0 +1,16 @@
+{
+  "description": "Expanded trailing whitespace-separated digit before > is a handle; leading redirect avoids it; parses as setStmt/genericCmd",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "setStmt",
+      "genericCmd",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "redirection",
+    "expansion"
+  ]
+}
