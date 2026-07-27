@@ -1,0 +1,15 @@
+{
+  "description": "Unknown FOR %%~ letter (%%~qf) is not a live syntax error unlike parameter %~q1",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "for",
+    "expansion"
+  ]
+}

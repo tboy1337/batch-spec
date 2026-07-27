@@ -96,6 +96,33 @@ def _notLonelyParen(self) -> bool:
         -1,
     )
 
+def _setDiscardedTokenOk(self) -> bool:
+    # Trailer after set "name=value" stops at chain separators, newline/EOF,
+    # and redirect operators (those attach via setRedirects instead).
+    from BatchLexer import BatchLexer  # isort: skip
+
+    redir_ops = {
+        BatchLexer.GT,
+        BatchLexer.LT,
+        BatchLexer.APPEND,
+        BatchLexer.DUP_OUT,
+        BatchLexer.DUP_IN,
+    }
+    stop = {
+        BatchLexer.NEWLINE,
+        BatchLexer.AMP,
+        BatchLexer.PIPE,
+        BatchLexer.AMPAMP,
+        BatchLexer.PIPEPIPE,
+        -1,
+    }
+    la1 = self._input.LA(1)
+    if la1 in stop or la1 in redir_ops:
+        return False
+    if la1 == BatchLexer.NUMBER and self._input.LA(2) in redir_ops:
+        return False
+    return True
+
 def _enterThenStmt(self) -> None:
     self._thenStmtDepth = getattr(self, "_thenStmtDepth", 0) + 1
 
@@ -611,8 +638,11 @@ gotoStmt
 setStmt
     // Prefer SET /A structured expression parse (extensions-on corpus assumption).
     // Gate with lookahead so SET /P does not trip setAMode predicate errors.
-    : {self._laSetA()}? SET setAMode setABody
-    | SET setMode? setAssign?
+    // Optional setRedirects: live cmd attaches >file / 1>nul after SET (including
+    // after a quoted assignment). Trailer text before those redirects is absorbed
+    // into setQuotedDiscardedTrailer, not a second statement.
+    : {self._laSetA()}? SET setAMode setABody setRedirects?
+    | SET setMode? setAssign? setRedirects?
     ;
 
 setAMode
@@ -620,8 +650,15 @@ setAMode
     ;
 
 setABody
-    : DQ_STRING {self._setAQuotedOk($DQ_STRING.text)}?
+    : DQ_STRING {self._setAQuotedOk($DQ_STRING.text)}? setAQuotedTrailer?
     | setAExpr {self._setANoUnquotedShl()}? setARedirect*
+    ;
+
+// After set /A "expr", further non-separator / non-redirect tokens stay on the
+// SET /A statement (live folds them into the arithmetic parse — often
+// "Invalid number" / "Missing operator"), not a second command.
+setAQuotedTrailer
+    : setDiscardedToken+
     ;
 
 // Trailing redirects after an unquoted SET /A expression (live cmd treats
@@ -778,9 +815,28 @@ setMode
     ;
 
 setAssign
-    : DQ_STRING
+    : DQ_STRING setQuotedDiscardedTrailer?
     | setTarget EQUALS setRest?
     | setTarget
+    ;
+
+// After set "name=value", non-separator / non-redirect tokens until &/&&/||/|
+// or newline are discarded by live cmd and must not become a second statement
+// (set "g=ok"zzz / set "g=ok" echo HI). Redirects are handled by setRedirects.
+setQuotedDiscardedTrailer
+    : setDiscardedToken+
+    ;
+
+setDiscardedToken
+    : {self._setDiscardedTokenOk()}? token
+    ;
+
+setRedirects
+    : setRedirect+
+    ;
+
+setRedirect
+    : NUMBER? (APPEND | GT | LT | DUP_OUT | DUP_IN) token?
     ;
 
 setlocalStmt

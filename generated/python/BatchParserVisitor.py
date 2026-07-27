@@ -209,6 +209,11 @@ class BatchParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by BatchParser#setAQuotedTrailer.
+    def visitSetAQuotedTrailer(self, ctx:BatchParser.SetAQuotedTrailerContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by BatchParser#setARedirect.
     def visitSetARedirect(self, ctx:BatchParser.SetARedirectContext):
         return self.visitChildren(ctx)
@@ -331,6 +336,26 @@ class BatchParserVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by BatchParser#setAssign.
     def visitSetAssign(self, ctx:BatchParser.SetAssignContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setQuotedDiscardedTrailer.
+    def visitSetQuotedDiscardedTrailer(self, ctx:BatchParser.SetQuotedDiscardedTrailerContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setDiscardedToken.
+    def visitSetDiscardedToken(self, ctx:BatchParser.SetDiscardedTokenContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setRedirects.
+    def visitSetRedirects(self, ctx:BatchParser.SetRedirectsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by BatchParser#setRedirect.
+    def visitSetRedirect(self, ctx:BatchParser.SetRedirectContext):
         return self.visitChildren(ctx)
 
 

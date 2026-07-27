@@ -1,4 +1,4 @@
-version: 47
+version: 48
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -83,7 +83,15 @@ percent_tilde_notes:
     and "The syntax of the command is incorrect." (exit 255). Covered rejects
     include unknown letter modifiers (%~q1 / %~q1%), %~*, and %~name% spellings
     that look like env vars. The grammar emits syntax errors for those forms;
-    valid %~1 / %~dp0 / %~$PATH:1 remain clean parses.
+    valid %~1 / %~dp0 / %~$PATH:1 remain clean parses. Parallel FOR metavariable
+    forms such as %%~qf / %%~* / %%~q$PATH:i are NOT syntax errors: live leaves
+    the unresolved %~... text literal and continues (see
+    for_loop_variables.tilde_invalid_modifier_not_syntax).
+  for_metavar_parallel: >-
+    The same letter modifiers (nxfpdstaz) and path-search $ENV: forms apply to
+    active FOR metavariables (%%~fI / %%~$PATH:I). Unlike batch-parameter %~q1,
+    an unknown letter before a FOR metavar is absorbed into the %%~ scan and is
+    not a path-operator syntax abort.
   modifier_order_independent: >-
     Letter modifiers may be combined in any order (%~dpnx0 and %~nxdp0 are
     equivalent).
@@ -294,12 +302,21 @@ delayed_expansion:
 for_loop_variables:
   batch_file_prefix: "%%"
   command_line_prefix: "%"
-  letter_charset: "a-zA-Z0-9?#$@_`[]{}+.-\\!*():/"
+  letter_charset: "a-zA-Z0-9?#$@_`[]{}+.-\\!*():/~"
   letter_charset_notes: >-
     Live cmd.exe accepts letters, digits, and many punctuation characters as the
-    single FOR variable letter. Operators that fail as FOR letters include
-    % | & = ; < >. Tilde after %% starts %%~ modifier forms rather than a bare
-    %%~ variable in the grammar. Prefer letters to avoid clashing with %0-%9.
+    single FOR variable letter, including tilde (for %%~ in (hello) do ...).
+    Bare %%~ is a metavar whose letter is ~; %%~~ is quote-strip of that metavar.
+    When additional letters follow %%~, longest-match %%~ modifier forms
+    (FOR_VAR_TILDE) take precedence (for example %%~fI). Operators that fail as
+    FOR letters include % | & = ; < >. Prefer letters to avoid clashing with
+    %0-%9.
+  tilde_invalid_modifier_not_syntax: >-
+    Unlike batch-parameter %~q1 (a live syntax error), FOR forms with unknown
+    tilde letters such as %%~qf, %%~*, or %%~q$PATH:i are accepted: live cmd
+    leaves the unresolved %~... text as literals and continues the script. The
+    grammar likewise does not report those FOR forms as syntax errors.
+    Confirmed on live Windows 10/11 cmd.
   case_sensitive: >-
     FOR variable letters are case-sensitive (%i and %I are distinct). Up to 52
     active FOR variables may be in use (a-z and A-Z).
@@ -916,6 +933,14 @@ set_a:
     signed/arithmetic behavior; prefer live probes over that help wording.
     Prefer caret-escaping > inside scripts so redirection does not consume
     the operators.
+  quoted_expression_trailer: >-
+    After set /A "expr", further non-separator tokens on the same statement are
+    folded into the arithmetic parse rather than discarded like plain quoted
+    SET trailers. Examples confirmed on live Windows 10/11 cmd:
+    set /A "x=1+1"zzz reports Invalid number and leaves x unset/unchanged for
+    that failure mode; set /A "x=1+1" zzz may assign x=2 then report Missing
+    operator. Use & to start a true second command. The grammar absorbs those
+    trailer tokens into the SET /A statement (not a second top-level command).
   assignment_requires_name: >-
     Assignment operators require an environment variable name on the left
     (SET /?).
@@ -981,9 +1006,17 @@ set_assignment:
     spaces). Use this to terminate a value that would otherwise include the
     rest of a chained line.
   quoted_close_discards_trailer: >-
-    After a quoted assignment set "name=value", any non-separator text glued
-    immediately after the closing quote is discarded and is not part of the
-    value (set "g=ok"zzz stores ok). Confirmed on live Windows 10/11 cmd.
+    After a quoted assignment set "name=value", any non-separator text after the
+    closing quote — glued or spaced — is discarded and is not executed as a
+    second command (set "g=ok"zzz and set "g=ok" echo HI both store ok and do
+    not run the trailer). Trailer absorption stops at & / && / || / | so
+    set "g=ok"& echo HI still runs the chained echo. Confirmed on live
+    Windows 10/11 cmd.
+  quoted_close_allows_redirects: >-
+    Redirects may follow a quoted SET assignment (and any discarded trailer):
+    set "g=ok">file and set "g=ok"zzz>file attach the redirect to the SET
+    statement. SET itself writes no stdout, so the target is often a 0-byte
+    file. Confirmed on live Windows 10/11 cmd.
 
 set_p:
   description: >-

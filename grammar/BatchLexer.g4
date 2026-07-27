@@ -49,8 +49,10 @@ def _wordOk(self) -> bool:
 
 fragment DIGIT : [0-9] ;
 // Live cmd accepts letters, digits, and many punctuation chars as FOR vars.
-// Exclude ~ (%%~ is FOR_VAR_TILDE), and operators that fail live: %|&=;<>|
-fragment FOR_VAR_LETTER : [a-zA-Z0-9?#$@_`[\]{}+.\-\\!*():/] ;
+// Include ~ so bare %%~ is a FOR metavar (live cmd). %%~fI still prefers
+// FOR_VAR_TILDE via longest match when a letter follows. Operators that fail
+// live as FOR letters: % | & = ; < >
+fragment FOR_VAR_LETTER : [a-zA-Z0-9?#$@_`[\]{}+.\-\\!*():/~] ;
 
 LINE_COMMENT   : {self._atLineStart()}? '::' ~[\r\n]* -> skip ;
 

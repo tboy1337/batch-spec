@@ -1,5 +1,5 @@
 {
-  "description": "Text after SET quoted close-quote is discarded (not a second command); remains one setStmt",
+  "description": "Redirect after quoted SET assignment attaches to the SET statement",
   "parse": {
     "should_parse": true,
     "top_level_statements": [
@@ -9,6 +9,7 @@
     ]
   },
   "tags": [
-    "set"
+    "set",
+    "redirection"
   ]
 }

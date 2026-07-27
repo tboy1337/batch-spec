@@ -178,6 +178,9 @@
         },
         "undeclared_metavar_literal": {
           "type": "string"
+        },
+        "tilde_invalid_modifier_not_syntax": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -495,6 +498,9 @@
         },
         "directory_zat_modifiers": {
           "type": "string"
+        },
+        "for_metavar_parallel": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -621,6 +627,9 @@
         },
         "signed_shift": {
           "type": "string"
+        },
+        "quoted_expression_trailer": {
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -676,6 +685,9 @@
           "type": "string"
         },
         "quoted_close_discards_trailer": {
+          "type": "string"
+        },
+        "quoted_close_allows_redirects": {
           "type": "string"
         }
       },

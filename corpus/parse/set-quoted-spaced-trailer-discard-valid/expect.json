@@ -1,5 +1,5 @@
 {
-  "description": "Text after SET quoted close-quote is discarded (not a second command); remains one setStmt",
+  "description": "Spaced text after SET quoted close-quote is discarded and not a second statement",
   "parse": {
     "should_parse": true,
     "top_level_statements": [

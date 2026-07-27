@@ -1,0 +1,14 @@
+{
+  "description": "Bare %%~ is a valid FOR metavar letter (tilde), not only a modifier introducer",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for"
+  ]
+}

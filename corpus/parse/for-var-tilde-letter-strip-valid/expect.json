@@ -1,0 +1,15 @@
+{
+  "description": "%%~~ is quote-strip of FOR metavar letter tilde",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for",
+    "expansion"
+  ]
+}
