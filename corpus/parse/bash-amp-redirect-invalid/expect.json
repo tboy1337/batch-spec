@@ -1,0 +1,10 @@
+{
+  "description": "Bash-like &> redirect is AMP plus bare redirect (syntax error)",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "redirection",
+    "negative"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Bare GOTO with no target (live ends context; parse accepts)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt"
+  },
+  "tags": [
+    "goto"
+  ]
+}

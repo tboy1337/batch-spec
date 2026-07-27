@@ -29,6 +29,55 @@ def _genericCmdStartOk(self) -> bool:
     # remarks through EOL (including after & / && / ||).
     return not (self._laIf() or self._laFor() or self._laElse() or self._laRem())
 
+def _redirectOnlyStatement(self) -> bool:
+    # Live cmd rejects a statement that is only redirects (no command name),
+    # including bash-like &>file (AMP then >file) and a lone >file.
+    # Leading redirects remain valid when a command follows (>file echo hi).
+    from BatchLexer import BatchLexer  # isort: skip
+
+    redir_ops = {
+        BatchLexer.GT,
+        BatchLexer.LT,
+        BatchLexer.APPEND,
+        BatchLexer.DUP_OUT,
+        BatchLexer.DUP_IN,
+    }
+    stop = {
+        BatchLexer.NEWLINE,
+        BatchLexer.AMP,
+        BatchLexer.PIPE,
+        BatchLexer.AMPAMP,
+        BatchLexer.PIPEPIPE,
+        BatchLexer.RPAREN,
+        -1,
+    }
+    i = 1
+    saw_command = False
+    while True:
+        tok = self._input.LA(i)
+        if tok in stop:
+            break
+        if tok == BatchLexer.NUMBER and self._input.LA(i + 1) in redir_ops:
+            i += 1
+            tok = self._input.LA(i)
+        if tok in (BatchLexer.GT, BatchLexer.LT, BatchLexer.APPEND):
+            i += 1
+            nxt = self._input.LA(i)
+            if nxt in stop or nxt in redir_ops:
+                return True
+            i += 1
+            continue
+        if tok in (BatchLexer.DUP_OUT, BatchLexer.DUP_IN):
+            i += 1
+            nxt = self._input.LA(i)
+            if nxt in stop:
+                return True
+            i += 1
+            continue
+        saw_command = True
+        i += 1
+    return not saw_command
+
 def _notLonelyParen(self) -> bool:
     from BatchLexer import BatchLexer  # isort: skip
     la1 = self._input.LA(1)
@@ -200,7 +249,7 @@ exitStmt
     ;
 
 exitTail
-    : SLASH WORD NUMBER?
+    : SLASH WORD token*
     | NUMBER
     | token+
     ;
@@ -447,8 +496,10 @@ callTarget
 
 // GOTO takes the remainder of the statement as the target (spaces allowed).
 // CALL keeps callTarget as the first word/token and commandTail as arguments.
+// Bare GOTO with no target is a live runtime error ("No batch label specified")
+// but still parses as gotoStmt (callTarget optional), matching CALL's bare form.
 gotoStmt
-    : GOTO callTarget commandTail?
+    : GOTO callTarget? commandTail?
     ;
 
 setStmt
@@ -510,7 +561,7 @@ setRest
     ;
 
 genericCmd
-    : {self._notForToken() and self._notLonelyParen() and self._genericCmdStartOk()}? commandTail
+    : {self._notForToken() and self._notLonelyParen() and self._genericCmdStartOk() and not self._redirectOnlyStatement()}? commandTail
     ;
 
 commandTail

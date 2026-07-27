@@ -1,4 +1,4 @@
-version: 2
+version: 3
 
 builtin_commands:
   - arp
@@ -256,3 +256,11 @@ builtin_overlap_deprecated_notes:
     Listed in builtin_commands for detection, but the Telnet client is an
     optional Windows Feature / FoD component and is often absent (where telnet
     fails). Treat like other optional stock tools; do not assume it is installed.
+  curl: >-
+    Listed in builtin_commands for detection as a stock Windows utility since
+    Windows 10 1803+, but availability can still vary on older or stripped
+    images. Treat as optional when targeting down-level hosts.
+  tar: >-
+    Listed in builtin_commands for detection as a stock Windows utility on
+    modern Windows 10/11, but availability can vary on older hosts. Treat as
+    optional when targeting down-level images.

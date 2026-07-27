@@ -1,0 +1,10 @@
+{
+  "description": "Redirect-only statement without a command is a syntax error",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "redirection",
+    "negative"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "EXIT /B with non-numeric code (live sets ERRORLEVEL 1)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "exit",
+    "errorlevel"
+  ]
+}

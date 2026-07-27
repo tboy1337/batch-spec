@@ -1,0 +1,10 @@
+{
+  "description": "AND after IF THEN is a separate unrecognized command, not boolean AND",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "ifStmt"
+  },
+  "tags": [
+    "if"
+  ]
+}

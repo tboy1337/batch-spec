@@ -1,0 +1,12 @@
+{
+  "description": "Paren-block endlocal then set out=%in% parse-time percent survive",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "groupStmt"
+  },
+  "tags": [
+    "setlocal",
+    "endlocal",
+    "expansion"
+  ]
+}

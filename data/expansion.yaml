@@ -1,4 +1,4 @@
-version: 43
+version: 44
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -211,9 +211,11 @@ delayed_expansion:
     for percent expansion.
   exclamation_escaping: >-
     With delayed expansion enabled, a literal ! commonly needs caret escaping
-    such as ^^!. The same ^^ before a non-! character yields a single caret
-    (for example ^^2 becomes ^2). Extra caret pairs continue to interact with
-    bang phases (for example ^^^^! yields a single caret), so bang escaping is
+    such as ^^!. A single ^! is not enough: live cmd typically emits nothing
+    useful for that form (confirmed: echo [^!] prints empty brackets). The same
+    ^^ before a non-! character yields a single caret (for example ^^2 becomes
+    ^2). Extra caret pairs continue to interact with bang phases (for example
+    ^^^^! yields a single caret and ^^^^^^! yields ^!), so bang escaping is
     phase-sensitive and not identical to ordinary caret doubling for other
     characters.
   case_insensitive_search: >-
@@ -246,15 +248,16 @@ delayed_expansion:
     be corrupted at SET time if delayed expansion is already on during the
     assignment. Live cmd commonly stores set "A=hi!there" as hithere (the bang
     and following text are mangled) even before a later read. Prefer disabling
-    delayed expansion while assigning such data, or escape carefully with the
-    phase-sensitive caret rules in exclamation_escaping (for example
-    set "A=hi^!there" then !A!). Separately, once an intact bang-bearing value
-    exists (stored with delayed off), reading it with %var% re-scans the
-    inserted text for !name! under delayed expansion and can mangle it, while
-    direct !var! keeps embedded ! characters (confirmed on live Windows 10/11
-    cmd: store aa!bb!cc with delayed off, then with delayed on %V% yields aacc
-    and !V! yields aa!bb!cc). Prefer !var! (or delayed off) when values may
-    contain !.
+    delayed expansion while assigning such data (setlocal DisableDelayedExpansion
+    / endlocal around the SET), then re-enable before reading with !var!. Do not
+    rely on a single ^! inside the SET value under delayed-on: live probes such
+    as set "B=hi^!there" still corrupt the stored text. Separately, once an
+    intact bang-bearing value exists (stored with delayed off), reading it with
+    %var% re-scans the inserted text for !name! under delayed expansion and can
+    mangle it, while direct !var! keeps embedded ! characters (confirmed on live
+    Windows 10/11 cmd: store aa!bb!cc with delayed off, then with delayed on %V%
+    yields aacc and !V! yields aa!bb!cc). Prefer !var! (or delayed off) when
+    values may contain !.
   call_second_pass: >-
     CALL reparses its command tail after percent expansion, so a second
     percent-expansion pass is available. With delayed expansion enabled,
@@ -309,13 +312,15 @@ for_forms:
     FOR /D matches directory names only when the set contains wildcards.
   slash_r: >-
     FOR /R walks the directory tree rooted at an optional path (default: current
-    directory). A set that is only '.' enumerates each directory visited
-    (including the root of the walk). When the set has no wildcards (* or ?),
-    FOR /R synthesizes a candidate path of root\setname under each directory
-    visited (even when that file does not exist) rather than matching existing
-    files by wildcard (FOR /?). On live Windows 10/11 cmd, FOR /R %%D in (.)
-    visits depth-first: the walk root, then a subdirectory before that
-    subdirectory's siblings that sort later in the filesystem enumeration.
+    directory). A trailing backslash on the root path is accepted and equivalent
+    to the same path without it (for /R C:\dir\ and for /R C:\dir). A set that
+    is only '.' enumerates each directory visited (including the root of the
+    walk). When the set has no wildcards (* or ?), FOR /R synthesizes a
+    candidate path of root\setname under each directory visited (even when that
+    file does not exist) rather than matching existing files by wildcard
+    (FOR /?). On live Windows 10/11 cmd, FOR /R %%D in (.) visits depth-first:
+    the walk root, then a subdirectory before that subdirectory's siblings that
+    sort later in the filesystem enumeration.
   slash_d_r: >-
     FOR /D /R (directories recursively) with a wildcard set such as (*) lists
     matching subdirectory names under the walk and does not emit the walk root
@@ -557,12 +562,14 @@ caret_escape:
     again; quoted carets are doubled even though quotes suppress escaping.
   line_continuation: >-
     A caret as the last character of a physical line continues onto the next
-    line (the CRLF is escaped). A trailing space after ^ escapes the space
-    instead, so the next line is not a continuation. Percent expansion runs
-    on each physical line before continuation joins the next line, so a name
-    cannot span the break: echo %NA^ / ME% does not form %NAME% (live cmd
-    typically leaves incomplete-% stripping such as NAME). Keep %name% on one
-    physical line. Confirmed on live Windows 10/11 cmd.
+    line (the CRLF is escaped). CRLF is two bytes escaped by that single
+    trailing caret (the unusual case where one ^ spans a two-byte sequence). A
+    trailing space after ^ escapes the space instead, so the next line is not a
+    continuation. Percent expansion runs on each physical line before
+    continuation joins the next line, so a name cannot span the break: echo
+    %NA^ / ME% does not form %NAME% (live cmd typically leaves incomplete-%
+    stripping such as NAME). Keep %name% on one physical line. Confirmed on
+    live Windows 10/11 cmd.
   percent_not_escaped: >-
     Caret does not escape percent. Percent expansion runs before caret-escape
     processing, so ^%name% still expands %name% (use %% in scripts for a
@@ -579,8 +586,10 @@ caret_escape:
   writing_batch_files: >-
     When a parent ECHO-redirects into a child .cmd/.bat, one caret-escape pass
     applies while writing: ^> stores >, ^^^> stores ^>, and ^^^^^> stores ^^>
-    in the child (confirmed on live Windows 10/11 cmd). Pair with
-    double_percent.writing_batch_files (%% hops) and
+    in the child (confirmed on live Windows 10/11 cmd). Parentheses written into
+    IF/FOR blocks likewise need caret escaping on the write pass (echo if 1==1
+    ^( / echo ^) ) so the parent does not treat them as grouping while emitting
+    the child. Pair with double_percent.writing_batch_files (%% hops) and
     delayed_expansion.writing_batch_files (! emit) for multigenerational
     generators.
 
@@ -1181,8 +1190,10 @@ setlocal_options:
     scope are undone by ENDLOCAL even though ENDLOCAL /? omits this detail.
   survive_via_paren_block: >-
     The same parse-time percent capture used by endlocal & set "out=%in%" also
-    works in a parenthesized block such as (endlocal & set "out=%in%"), because
-    %in% expands when the block is parsed, before ENDLOCAL runs.
+    works in a parenthesized block, because %in% expands when the block is
+    parsed, before ENDLOCAL runs. Both the chained form (endlocal & set
+    "out=%in%") and a multi-line block with ENDLOCAL on its own line followed by
+    set "out=%in%" export successfully (confirmed on live Windows 10/11 cmd).
   bare_inherits_flags: >-
     Bare SETLOCAL with no Enable/Disable argument still opens a new local
     scope and inherits the current Extensions and DelayedExpansion enablement
@@ -1274,6 +1285,15 @@ errorlevel:
     name -- see env_var_shadowing). Inside a parenthesized block, %ERRORLEVEL%
     still shows the pre-block value; use !ERRORLEVEL! with delayed expansion
     when reading the cleared code in the same block.
+  concatenated_digit_probe: >-
+    Scripts sometimes concatenate successive ERRORLEVEL digits into one string
+    (set "c=%c%%ERRORLEVEL%") and then test if %c% neq 0 / equ 0. When every
+    digit is 0, the joined text such as 0000 still compares equal to 0 under
+    numeric compare-ops (0000 EQU 0 is true). Digits 8 and 9 in an intermediate
+    concatenation can force a string compare fallback under octal rules for
+    compare-ops (see if_forms.compare_ops_notes), so treat multi-digit joins as
+    a probe pattern rather than a portable ERRORLEVEL API. Confirmed on live
+    Windows 10/11 cmd for the all-zero case.
 
 cmdextversion:
   description: >-
@@ -1488,8 +1508,21 @@ if_forms:
   no_and_or_keywords: >-
     IF has no native boolean AND/OR keywords. Tokens such as and / or after a
     completed IF command are parsed as separate commands (often yielding
-    "'and' is not recognized..."). Compose conditions with nested IF, chained
-    && / || on ERRORLEVEL, or other documented patterns -- not IF ... and ....
+    "'and' is not recognized..."). When the failed AND/OR line is followed by a
+    parenthesized group — including the common form if 1==1 and 2==2 ( ... ) —
+    live cmd still executes that orphan (block) after reporting the unrecognized
+    and/or token (ERRORLEVEL is commonly 9009 from the missing command). Compose
+    conditions with nested IF, chained && / || on ERRORLEVEL, or other
+    documented patterns — not IF ... and .... Confirmed on live Windows 10/11
+    cmd.
+  joined_operand_and: >-
+    Without AND keywords, multi-value equality can be composed by joining
+    operands into one compare string (for example if "%a%-%b%" equ "X-Y").
+    Choose a delimiter that cannot appear in either value: if both sides can
+    expand to the same delimiter-only text (set "A=-" & set "B=" and
+    set "X=" & set "Y=-"), if "%A%-%B%" equ "%X%-%Y%" is a false positive
+    (both sides become "--"). Prefer nested IF or a delimiter absent from the
+    data. Confirmed on live Windows 10/11 cmd.
   expanded_predicate: >-
     Percent (or delayed) expansion runs before IF parses its predicate, so the
     entire comparison text may come from a variable. Example confirmed on live
@@ -1541,7 +1574,10 @@ if_block_parentheses:
     A parenthesized THEN/ELSE block requires '(' on the same logical line as
     the predicate (or ELSE); intervening spaces before '(' are allowed. An
     unclosed '(' block is a syntax error at runtime. ELSE must attach to the
-    closing ')' without an intervening newline (IF /?).
+    closing ')' without an intervening newline (IF /?). Parentheses around the
+    ELSE branch are optional when the false-path is a single command on the
+    same line (if 1==0 (echo T) else echo F); use ( ) when the ELSE body needs
+    multiple statements.
 
 command_chaining:
   description: >-
@@ -1810,6 +1846,12 @@ call_goto:
     goto lab does not match a distinct longer label such as :label (that
     folklore is false on live Windows 10/11 cmd); see label_call_vs_goto_spaces
     for the real prefix rule on spaced label lines.
+  goto_empty_target: >-
+    Bare GOTO with no target prints "No batch label specified to GOTO command."
+    and ends the current batch context (top-level scripts stop; inside CALL
+    :label the routine returns to the caller with ERRORLEVEL 1). This differs
+    from a missing named label message ("The system cannot find the batch label
+    specified - name"). Confirmed on live Windows 10/11 cmd.
   label_first_match: >-
     When the same label text appears more than once, GOTO and CALL :label
     resolve to the first matching label in file order; later duplicates are
@@ -1869,6 +1911,10 @@ exit_semantics:
     returned. At top level under cmd /C, bare EXIT /B may still yield process
     exit code 0 even when ERRORLEVEL was non-zero; fall off EOF or use
     EXIT /B n to propagate a non-zero process exit code.
+  exit_b_non_numeric: >-
+    EXIT /B with a non-numeric exitCode (for example EXIT /B abc) returns from
+    the current CALL/script context and sets ERRORLEVEL to 1. Confirmed on live
+    Windows 10/11 cmd.
 
 remarks:
   rem: >-
@@ -1920,6 +1966,11 @@ remarks:
     operators and chained commands on that same REM line do not execute (for
     example rem note >file.txt does not create file.txt). Prefer a separate
     command line for real redirects.
+  rem_slash_help: >-
+    REM /? is an exception: like other builtins, the /? help switch prints REM
+    usage (and may be redirected) rather than treating /? as remark text.
+    Confirmed on live Windows 10/11 cmd (rem /? >file.txt captures the help
+    text). Ordinary rem comment >file.txt still does not create the file.
 
 redirection:
   description: >-
@@ -1969,6 +2020,26 @@ redirection:
     CALLed context, including nested CALL :inner output, until that context
     returns. Statements after the CALL in the caller are not captured by that
     redirect. Confirmed on live Windows 10/11 cmd.
+  pipe_with_redirect: >-
+    When a pipe and a redirect share a command line, ownership matters. On
+    type file.txt | findstr pat >out.txt the redirect belongs to the right-hand
+    stage and captures findstr output. On type file.txt >out.txt | findstr pat
+    the left-hand redirect consumes the type output into out.txt, so the pipe
+    receives an empty stream and the right-hand capture stays empty (confirmed
+    on live Windows 10/11 cmd). Prefer redirecting the stage whose output you
+    intend to keep.
+  bare_redirect_rejected: >-
+    A statement that is only a redirect (no command name) is a live syntax
+    error ("The syntax of the command is incorrect."), including a lone
+    >file.txt and the bash-like &>file spelling (parsed as & then >file with no
+    command). Leading redirects remain valid when a command follows
+    (>file.txt echo hi / echo a & >file.txt echo b). The grammar rejects
+    redirect-only genericCmd statements to match live cmd. Confirmed on live
+    Windows 10/11 cmd.
+  bash_style_redirects_rejected: >-
+    Bash/POSIX spellings such as &>file and >&file (as a single bash operator)
+    are not cmd.exe redirects. &>file is AMP plus a bare >file and fails as in
+    bare_redirect_rejected. Use >file 2>&1 (or 1>file 2>&1) to merge streams.
   special_devices: >-
     NUL and CON are reliable redirect targets/sources on modern Windows (for
     example >nul, >CON, <CON). CON as a redirect target/source is not the same

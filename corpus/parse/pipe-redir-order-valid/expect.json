@@ -1,0 +1,11 @@
+{
+  "description": "Pipe with redirect on right vs left stage ownership",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "redirection",
+    "pipe"
+  ]
+}

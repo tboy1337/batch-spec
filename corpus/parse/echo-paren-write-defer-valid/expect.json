@@ -1,0 +1,12 @@
+{
+  "description": "ECHO-writing child IF block with caret-escaped parentheses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "echo",
+    "caret",
+    "expansion"
+  ]
+}

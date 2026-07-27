@@ -1,0 +1,10 @@
+{
+  "description": "REM /? prints help rather than treating /? as remark text",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "remStmt"
+  },
+  "tags": [
+    "rem"
+  ]
+}
