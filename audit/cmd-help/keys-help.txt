@@ -1,0 +1,4 @@
+Enables or disables command line editing on DOS system
+
+This is present for Compatibility with DOS systems. It has no effect
+under Windows, as command line editing is always enabled.

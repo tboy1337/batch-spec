@@ -1,4 +1,4 @@
-version: 54
+version: 55
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -177,10 +177,14 @@ percent_expansion:
     intervening text (including spaces and ordinary words) becomes a candidate
     variable name. In a script, an undefined name expands to empty. Confirmed
     on live Windows 10/11 cmd: echo Between 60% and 80% of X prints
-    Between 60 of X because % and 80% is treated as an undefined name.
-    Prefer %% for literal percents in scripts (echo Between 60%% and 80%% of X)
-    or break the pair (60%% and 80%%). Distinct from incomplete_unclosed (no
-    closing %).
+    Between 60 of X because % and 80% is treated as an undefined name (the
+    candidate includes the leading space after 60; SET strips leading spaces
+    from names, so that exact name is not creatable via ordinary SET and the
+    pair always collapses to empty). When the intervening name is creatable
+    and defined, its value is substituted (echo 60%foo%80 with set foo=DEFINED
+    prints 60DEFINED80). Prefer %% for literal percents in scripts
+    (echo Between 60%% and 80%% of X) or break the pair. Distinct from
+    incomplete_unclosed (no closing %).
 
 delayed_expansion:
   pattern: "!VAR!"
@@ -442,6 +446,14 @@ for_forms:
     live Windows 10/11 cmd for both FOR %%i IN (...) DO ... & GOTO :label and
     parenthesized DO bodies. FOR /L with step 0 is excluded: GOTO and EXIT /B
     do not escape that infinite loop (see slash_l).
+  in_do_paren_spacing: >-
+    Live cmd requires space or tab between IN and '(' and between DO and a
+    parenthesized DO body. Glued forms are syntax errors: for %%i in(a) do
+    echo x reports "in(a) was unexpected"; for %%i in (a) do(echo x) reports
+    "do( was unexpected". A newline between DO and '(' is also a syntax error
+    ("The syntax of the command is incorrect"). Spaced forms
+    (for %%i in (a) do (echo x) / do echo x) are valid. Confirmed on live
+    Windows 10/11 cmd; the grammar rejects the glued IN(/DO( forms.
 
 for_f:
   description: "FOR /F parsing options and input forms (FOR /?)"
@@ -478,7 +490,11 @@ for_f:
       among FOR /F options so a trailing space delimiter sits immediately
       before the closing quote (for example "tokens=1,2 delims=, "). Delimiter
       characters are case-sensitive (delims=D does not treat lowercase d as a
-      delimiter).
+      delimiter). The grammar accepts any delims= character payload without
+      validating which characters are safe delimiters; metacharacters in the
+      delimiter set (for example | & < > ^) remain catalog/runtime concerns and
+      often need caret-escaping in unquoted option forms (see
+      unquoted_options_caret).
     tokens: >-
       tokens=x,y,m-n selects token indexes; a trailing * assigns the remainder
       of the line to one variable. Selected indexes are sorted ascending before
@@ -1428,6 +1444,14 @@ setlocal_options:
     parsed, before ENDLOCAL runs. Both the chained form (endlocal & set
     "out=%in%") and a multi-line block with ENDLOCAL on its own line followed by
     set "out=%in%" export successfully (confirmed on live Windows 10/11 cmd).
+  endlocal_bang_vs_percent_asymmetry: >-
+    After ENDLOCAL inside a parenthesized block (or on a chained line) with
+    delayed expansion enabled, %var% still sees the pre-ENDLOCAL local value
+    (parse-time capture) while !var! sees the restored outer value. Confirmed
+    on live Windows 10/11 cmd: with outer survive=OUTER, setlocal, set
+    survive=LOCAL, then (endlocal & echo %survive% & echo !survive!) prints
+    LOCAL then OUTER. Prefer percent capture on the ENDLOCAL line when
+    exporting locals; bang forms re-read the post-ENDLOCAL environment.
   bare_inherits_flags: >-
     Bare SETLOCAL with no Enable/Disable argument still opens a new local
     scope and inherits the current Extensions and DelayedExpansion enablement
@@ -1646,6 +1670,16 @@ keyword_boundaries:
     expansion is empty (undefined x), SET%x%=hello becomes SET=hello and yields
     "The syntax of the command is incorrect." Spaced forms (IF %1, SET %x%,
     FOR %%i) are required. Note rem( without space remains REM (see remarks).
+  paren_keyword_spacing: >-
+    Parenthesized FOR and ELSE bodies also reject glued keywords: live cmd
+    requires space or tab between IN and '(', between DO and a parenthesized
+    DO body, and between ELSE and a parenthesized ELSE body. Forms such as
+    in(a), do(echo x), and else(echo F) are syntax errors ("... was unexpected").
+    IF then-bodies still accept glued if(...). Confirmed on live Windows 10/11
+    cmd; the grammar enforces the IN/DO/ELSE spacing rules.
+  rem_open_paren_exception: >-
+    Bare rem( remains the REM keyword (trailer '(' is allowed for REM), unlike
+    rem) which is a non-keyword. See remarks.rem_punctuation_glue.
   reject_glue_after_keyword:
     - "%"
     - "!"
@@ -1837,6 +1871,12 @@ if_block_parentheses:
     ELSE branch are optional when the false-path is a single command on the
     same line (if 1==0 (echo T) else echo F); use ( ) when the ELSE body needs
     multiple statements.
+  else_paren_spacing: >-
+    Unlike IF then-bodies (which accept glued if(...)), a parenthesized ELSE
+    body requires space or tab between ELSE and '('. Live cmd rejects
+    else(echo F) with "else(echo was unexpected at this time" while
+    else (echo F) is valid. Confirmed on live Windows 10/11 cmd; the grammar
+    rejects glued ELSE(.
 
 command_chaining:
   description: >-
@@ -1919,8 +1959,10 @@ command_chaining:
     same as IF %ERRORLEVEL% EQU 0. Many builtins (notably ECHO and REM, and in
     .bat files successful SET / PATH / PROMPT) can succeed for && / || without
     clearing a prior non-zero ERRORLEVEL, so a later IF %ERRORLEVEL% test can
-    still see the stale code. CALL of another .bat/.cmd likewise does not clear
-    ERRORLEVEL to 0 on success (see call_goto.call_script_errorlevel and
+    still see the stale code. Confirmed anti-example on live Windows 10/11 cmd:
+    cmd /c exit 5 & echo x && echo AND still runs AND while ERRORLEVEL remains
+    5. CALL of another .bat/.cmd likewise does not clear ERRORLEVEL to 0 on
+    success (see call_goto.call_script_errorlevel and
     call_script_or_stale_errorlevel). Tools that return non-zero on partial
     success (notably ROBOCOPY bitmasks; see external_tool_notes) can make &&
     skip follow-on commands even when the operation was useful. Prefer explicit
@@ -2387,6 +2429,16 @@ paren_block_expansion:
     execution, a naked parenthesized block can observe both the pre-block and
     in-block values (for example swapping two variables with percent expansion
     inside one block).
+  naked_code_block: >-
+    A standalone parenthesized group that is not the THEN/ELSE/DO body of IF or
+    FOR is a valid command group (a "naked" code block). It runs immediately,
+    shares the current environment/scope (assignments persist like any other
+    block), and is the usual vehicle for dual-value percent swaps and for
+    ENDLOCAL export via parse-time %var% capture (see dual_value_swap and
+    setlocal_options.survive_via_paren_block /
+    endlocal_bang_vs_percent_asymmetry). Confirmed on live Windows 10/11 cmd:
+    (echo hi) prints hi; (set a=%b% & set b=%a%) swaps using pre-block percent
+    snapshots.
 expansion_phases: >-
   Approximate cmd parsing phases for a physical line: (1) percent (%var%, %n,
   %*, %~) expansion across the whole physical line (including all & / && / ||
@@ -2845,6 +2897,12 @@ type_command:
     physical line in the destination. Insert echo.>>file (or otherwise write a
     CRLF) after TYPE when the next append must start a new line. Confirmed on
     live Windows 10/11 cmd.
+  con_stdin_capture: >-
+    TYPE CON reads from the console keyboard until the user signals end-of-file
+    (Ctrl+Z then Enter). Redirecting that stream (type con >file.txt) captures
+    multi-line keyboard input into a file. This is an interactive form, not a
+    substitute for SET /P for single-line prompts. Confirmed behavior matches
+    TYPE /? device-name usage; prefer SET /P for scripted prompts.
   source: "TYPE /? (audit/cmd-help/type-help.txt)"
 
 title_command:
@@ -3034,6 +3092,39 @@ sort_command:
     for && / || chaining than FIND/FINDSTR or ROBOCOPY.
   source: "SORT /? (audit/cmd-help/sort-help.txt)"
 
+dpath_command:
+  description: >-
+    DPATH is a deprecated undocumented cmd internal that mirrors legacy APPEND
+    (DPATH /?; audit/cmd-help/dpath-help.txt). Captured help text still uses
+    the APPEND spelling for syntax. Prefer ordinary PATH / full paths in modern
+    scripts; do not rely on DPATH for new tooling.
+  source: "DPATH /? (audit/cmd-help/dpath-help.txt)"
+
+keys_command:
+  description: >-
+    KEYS is a DOS-compatibility internal that enables or disables command-line
+    editing (KEYS /?; audit/cmd-help/keys-help.txt). Under modern Windows it is
+    a no-op because command-line editing is always enabled. Listed under
+    deprecated_commands.
+  source: "KEYS /? (audit/cmd-help/keys-help.txt)"
+
+mode_command:
+  description: >-
+    MODE configures devices and console properties (MODE /?;
+    audit/cmd-help/mode-help.txt). Common script uses include MODE CON: COLS=n
+    LINES=m for console size. Device availability and accepted switches are
+    host-dependent; treat MODE failures as tool-defined ERRORLEVEL.
+  source: "MODE /? (audit/cmd-help/mode-help.txt)"
+
+label_command:
+  description: >-
+    LABEL.exe sets or displays a volume label (LABEL /?;
+    audit/cmd-help/label-help.txt). It is a stock System32 utility, not a cmd
+    internal, and can be shadowed by a same-named file in the CWD (see
+    command_resolution.cwd_shadows_externals). Interactive LABEL without args
+    prompts; prefer non-interactive forms in scripts.
+  source: "LABEL /? (audit/cmd-help/label-help.txt)"
+
 external_tool_notes:
   description: >-
     Language-impacting notes for common external PATH tools. These are not
@@ -3189,3 +3280,35 @@ external_tool_notes:
     live cmd commonly leaves 0 for a missing named file under an existing
     directory (stderr may still show "No files replaced"). Prefer IF EXIST on
     the source before relying on REPLACE for presence checks.
+  whoami_command: >-
+    WHOAMI.exe prints the current user / group / privilege context
+    (WHOAMI /?; audit/cmd-help/whoami-help.txt). Successful runs typically leave
+    ERRORLEVEL 0; invalid switches leave a non-zero code. Prefer %USERNAME% /
+    %USERDOMAIN% when only the simple name is needed.
+  tasklist_taskkill: >-
+    TASKLIST / TASKKILL enumerate and terminate processes
+    (audit/cmd-help/tasklist-help.txt, taskkill-help.txt). Missing process /
+    access-denied codes are tool-defined; do not assume ERRORLEVEL 0 means a
+    kill succeeded without checking output. Requires appropriate privileges.
+  icacls_command: >-
+    ICACLS displays or modifies NTFS ACLs (ICACLS /?;
+    audit/cmd-help/icacls-help.txt). Prefer ICACLS over deprecated CACLS. Success
+    and failure ERRORLEVEL values are tool-defined; redirect carefully when
+    capturing ACL dumps.
+  clip_command: >-
+    CLIP.exe copies stdin to the Windows clipboard (CLIP /?;
+    audit/cmd-help/clip-help.txt). Common idiom: echo text| clip. Not a cmd
+    internal; availability matches stock System32 on modern Windows 10/11.
+  certutil_command: >-
+    CERTUTIL is a multi-purpose crypto/certificate utility
+    (CERTUTIL /?; audit/cmd-help/certutil-help.txt). Scripts often use
+    certutil -encode / -decode / -hashfile. Switch surface is large; prefer
+    documented subcommands and treat ERRORLEVEL as tool-defined.
+  host_notes: >-
+    Language facts in this catalog were confirmed primarily on live Windows 10
+    cmd (build family 19045) plus Microsoft /? text and secondary references.
+    Windows 11 / Server hosts generally match for core language rules; optional
+    Feature-on-Demand tools (telnet, and some media/legacy utilities) and
+    SORT /UNIQUE help-text omissions can differ by image. When a claim is
+    host-specific, individual keys note the observation rather than asserting
+    universal parity.

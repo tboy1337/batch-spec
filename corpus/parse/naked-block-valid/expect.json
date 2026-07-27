@@ -1,0 +1,8 @@
+{
+  "description": "Standalone naked parenthesized block is a valid command group",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "groupStmt"
+  },
+  "tags": ["paren"]
+}

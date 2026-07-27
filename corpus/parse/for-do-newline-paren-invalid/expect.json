@@ -1,0 +1,7 @@
+{
+  "description": "Newline between DO and parenthesized body is a live syntax error",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": ["for"]
+}

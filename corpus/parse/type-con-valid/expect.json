@@ -1,0 +1,8 @@
+{
+  "description": "TYPE CON stdin form parses as a generic command (interactive keyboard capture)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": ["type"]
+}

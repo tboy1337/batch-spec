@@ -1,0 +1,15 @@
+{
+  "description": "After ENDLOCAL in a block, percent sees local value and bang sees outer (parse vs execution)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "setlocalStmt",
+      "setStmt",
+      "setlocalStmt",
+      "setStmt",
+      "groupStmt"
+    ]
+  },
+  "tags": ["setlocal", "delayed", "paren"]
+}

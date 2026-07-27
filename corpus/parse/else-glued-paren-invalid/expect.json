@@ -1,0 +1,7 @@
+{
+  "description": "Glued ELSE( parenthesized body is a live syntax error (space/tab required)",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": ["if", "else"]
+}

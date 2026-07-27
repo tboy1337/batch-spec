@@ -67,7 +67,9 @@ positive indexes / ranges / `*`; zero indexes rejected), and `usebackq` /
 option text are validated. `delims=` is accepted as an option keyword but its
 delimiter-character semantics are not structurally constrained by the grammar
 (see [`data/expansion.yaml`](../data/expansion.yaml) `for_f.option_details.delims`).
-Catalog notes also cover fileset member delimiters, non-expanding fileset
+The grammar does require space/tab between `IN`/`DO`/`ELSE` and a following
+`(` (live cmd rejects glued `in(` / `do(` / `else(`); IF then-bodies may still
+glue `if(...)`). Catalog notes also cover fileset member delimiters, non-expanding fileset
 wildcards, `skip=` physical-line counting, duplicate `tokens=` indexes, FOR /F
 ERRORLEVEL non-mutation, and input encoding. Expanded IF predicates such as
 `if %b%` / `if not %b%` (when `b` holds `a==a` / `true==true`) are accepted as

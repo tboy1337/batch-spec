@@ -1,0 +1,5 @@
+{
+  "description": "DPATH status/query form parses (deprecated APPEND-equivalent internal)",
+  "parse": { "should_parse": true, "top_level_statement": "genericCmd" },
+  "tags": ["dpath"]
+}

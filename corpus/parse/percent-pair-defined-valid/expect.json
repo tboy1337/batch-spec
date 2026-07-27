@@ -1,0 +1,8 @@
+{
+  "description": "Adjacent percent pairs substitute when the intervening name is defined",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": ["genericCmd", "setStmt", "genericCmd"]
+  },
+  "tags": ["percent", "expansion"]
+}

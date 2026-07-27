@@ -327,6 +327,18 @@ def _gapHasSpaceOrTab(self, after_token, before_token) -> bool:
     gap = self._input.tokenSource.inputStream.getText(start, stop)
     return any(ch in " \t" for ch in gap)
 
+def _requireSpaceOrTabBefore(self) -> bool:
+    # Live cmd rejects glued IN(/DO(/ELSE( (reports "... was unexpected").
+    # IF then-bodies still allow if(...) glued; this helper is for FOR/ELSE only.
+    prev = self._input.LT(-1)
+    cur = self._input.LT(1)
+    if self._gapHasSpaceOrTab(prev, cur):
+        return True
+    self.notifyErrorListeners(
+        "space or tab required between keyword and '('"
+    )
+    return False
+
 def _tokenOf(self, node_or_token):
     # ctx.LPAREN()/RPAREN() yield TerminalNode; compareOperand.start/stop are Tokens.
     symbol = getattr(node_or_token, "symbol", None)
@@ -445,8 +457,8 @@ ifBody
     ;
 
 elseClause
-    : ELSE LPAREN block RPAREN
-    | ELSE statement
+    : ELSE {self._requireSpaceOrTabBefore()}? LPAREN block RPAREN
+    | ELSE {self._notOpenParenThen()}? statement
     ;
 
 // Live cmd: IF ERRORLEVEL accepts a literal (optional leading minus), or a
@@ -571,7 +583,8 @@ compareOperandPart
     ;
 
 forStmt
-    : FOR forSlashMod* forFOptions? forPath? FOR_VAR IN LPAREN forList RPAREN DO forBody
+    : FOR forSlashMod* forFOptions? forPath? FOR_VAR IN
+      {self._requireSpaceOrTabBefore()}? LPAREN forList RPAREN DO forBody
     ;
 
 forPath
@@ -611,8 +624,8 @@ forFOptionExtra
     ;
 
 forBody
-    : LPAREN block RPAREN
-    | statement
+    : {self._requireSpaceOrTabBefore()}? LPAREN block RPAREN
+    | {self._notOpenParenThen()}? statement
     ;
 
 // Classic FOR set members split on space/tab (token gaps) and on comma,

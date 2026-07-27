@@ -248,6 +248,10 @@
         "empty_set_zero_iterations": {
           "type": "string",
           "minLength": 1
+        },
+        "in_do_paren_spacing": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "additionalProperties": false
@@ -1012,6 +1016,9 @@
         "survive_via_paren_block": {
           "type": "string"
         },
+        "endlocal_bang_vs_percent_asymmetry": {
+          "type": "string"
+        },
         "bare_inherits_flags": {
           "type": "string"
         },
@@ -1155,6 +1162,14 @@
           "type": "string",
           "minLength": 1
         },
+        "paren_keyword_spacing": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rem_open_paren_exception": {
+          "type": "string",
+          "minLength": 1
+        },
         "reject_glue_after_keyword": {
           "type": "array",
           "items": {
@@ -1270,6 +1285,10 @@
       ],
       "properties": {
         "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "else_paren_spacing": {
           "type": "string",
           "minLength": 1
         }
@@ -1623,6 +1642,9 @@
           "type": "string"
         },
         "dual_value_swap": {
+          "type": "string"
+        },
+        "naked_code_block": {
           "type": "string"
         }
       },
@@ -2150,6 +2172,9 @@
         "append_after_type_crlf": {
           "type": "string"
         },
+        "con_stdin_capture": {
+          "type": "string"
+        },
         "source": {
           "type": "string"
         }
@@ -2455,6 +2480,70 @@
       },
       "additionalProperties": false
     },
+    "dpath_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "keys_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "mode_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "label_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
     "external_tool_notes": {
       "type": "object",
       "required": [
@@ -2508,6 +2597,24 @@
           "type": "string"
         },
         "replace_command": {
+          "type": "string"
+        },
+        "whoami_command": {
+          "type": "string"
+        },
+        "tasklist_taskkill": {
+          "type": "string"
+        },
+        "icacls_command": {
+          "type": "string"
+        },
+        "clip_command": {
+          "type": "string"
+        },
+        "certutil_command": {
+          "type": "string"
+        },
+        "host_notes": {
           "type": "string"
         }
       },
