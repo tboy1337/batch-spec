@@ -37,13 +37,30 @@ def _grammar_fingerprint() -> str:
     return digest.hexdigest()
 
 
+def _normalize_generated_source(content: bytes) -> bytes:
+    """Normalize generated sources for cross-platform drift checks.
+
+    ANTLR embeds the grammar path from its argv into a leading comment. Absolute
+    paths differ across machines/CI runners, so reduce those to the basename.
+    """
+    text = content.replace(b"\r\n", b"\n").replace(b"\r", b"\n").decode("utf-8")
+    lines = text.split("\n")
+    if lines and lines[0].startswith("# Generated from ") and " by ANTLR " in lines[0]:
+        prefix, _, rest = lines[0].partition("# Generated from ")
+        path_part, sep, suffix = rest.rpartition(" by ANTLR ")
+        if sep:
+            basename = Path(path_part.replace("\\", "/")).name
+            lines[0] = f"{prefix}# Generated from {basename} by ANTLR {suffix}"
+    return "\n".join(lines).encode("utf-8")
+
+
 def _file_fingerprint(path: Path) -> str:
-    content = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
-    return hashlib.sha256(content).hexdigest()
+    return hashlib.sha256(_normalize_generated_source(path.read_bytes())).hexdigest()
 
 
 def _run_antlr(output_dir: Path) -> None:
-    grammar_paths = [str(GRAMMAR_DIR / name) for name in _GRAMMAR_FILES]
+    # Pass grammar basenames with cwd=GRAMMAR_DIR so ANTLR headers are portable
+    # (absolute paths embed machine-specific checkout locations and break --check).
     cmd = [
         "antlr4",
         "-Dlanguage=Python3",
@@ -51,7 +68,8 @@ def _run_antlr(output_dir: Path) -> None:
         "-no-listener",
         "-o",
         str(output_dir),
-    ] + grammar_paths
+        *_GRAMMAR_FILES,
+    ]
     env = os.environ.copy()
     env.setdefault("ANTLR4_TOOLS_ANTLR_VERSION", "4.13.2")
     _ = subprocess.run(cmd, check=True, cwd=GRAMMAR_DIR, env=env)

@@ -359,6 +359,45 @@ def test_grammar_fingerprint_normalizes_crlf(
     assert crlf_fingerprint == lf_fingerprint
 
 
+def test_normalize_generated_source_strips_absolute_paths(tmp_path: Path) -> None:
+    absolute = (
+        b"# Generated from C:/Users/Laptop/repo/grammar/BatchLexer.g4 by ANTLR 4.13.2\n"
+        b"from antlr4 import *\n"
+    )
+    relative = b"# Generated from BatchLexer.g4 by ANTLR 4.13.2\nfrom antlr4 import *\n"
+    win_sep = (
+        b"# Generated from D:\\a\\batch-spec\\grammar\\BatchLexer.g4 by ANTLR 4.13.2\n"
+        b"from antlr4 import *\n"
+    )
+    assert generate_parser._normalize_generated_source(absolute) == relative
+    assert generate_parser._normalize_generated_source(win_sep) == relative
+    assert generate_parser._normalize_generated_source(relative) == relative
+
+    abs_path = tmp_path / "BatchLexer.py"
+    rel_path = tmp_path / "BatchLexerRel.py"
+    abs_path.write_bytes(absolute)
+    rel_path.write_bytes(relative)
+    assert generate_parser._file_fingerprint(
+        abs_path
+    ) == generate_parser._file_fingerprint(rel_path)
+
+
+def test_run_antlr_uses_relative_grammar_names(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    grammar_dir = tmp_path / "grammar"
+    grammar_dir.mkdir()
+    run_mock = MagicMock(return_value=MagicMock(returncode=0))
+    monkeypatch.setattr(generate_parser, "GRAMMAR_DIR", grammar_dir)
+    monkeypatch.setattr(generate_parser.subprocess, "run", run_mock)
+
+    generate_parser._run_antlr(tmp_path / "out")
+
+    cmd = run_mock.call_args.args[0]
+    assert cmd[-2:] == ["BatchLexer.g4", "BatchParser.g4"]
+    assert run_mock.call_args.kwargs["cwd"] == grammar_dir
+
+
 def test_generate_parser_check_reports_missing_files(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

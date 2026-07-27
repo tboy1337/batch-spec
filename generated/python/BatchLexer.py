@@ -1,4 +1,4 @@
-# Generated from C:/Users/Laptop/Documents/Git/batch-spec/grammar/BatchLexer.g4 by ANTLR 4.13.2
+# Generated from BatchLexer.g4 by ANTLR 4.13.2
 from antlr4 import *
 from io import StringIO
 import sys
