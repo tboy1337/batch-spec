@@ -1,0 +1,23 @@
+{
+  "description": "SET /A %~1=!%~1!*!%~1! squares a variable named by the argument",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "setlocalStmt",
+      "setStmt",
+      "callStmt",
+      "genericCmd",
+      "gotoStmt",
+      "setStmt",
+      "genericCmd",
+      "gotoStmt"
+    ]
+  },
+  "tags": [
+    "set",
+    "set-a",
+    "delayed"
+  ]
+}

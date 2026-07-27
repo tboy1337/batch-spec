@@ -1,16 +1,16 @@
 {
-  "description": "CLS with redirected stdout still parses and runs (console clear is noop for a log)",
+  "description": "Bare other.cmd name parses as a command (no CALL); runtime does not return \u2014 see call_script_returns",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
       "genericCmd",
+      "genericCmd",
       "genericCmd"
     ]
   },
   "tags": [
-    "cls",
-    "redirection"
+    "call"
   ]
 }

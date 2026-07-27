@@ -1,19 +1,16 @@
 {
-  "description": "Classic IF ERRORLEVEL cascade (>=) after a non-zero exit (CHOICE-style ordinals)",
+  "description": "EXIST trailing backslash: true for directory, false for file-with-slash",
   "parse": {
     "should_parse": true,
     "top_level_statement": "ifStmt",
     "top_level_statements": [
       "genericCmd",
-      "genericCmd",
-      "ifStmt",
       "ifStmt",
       "ifStmt"
     ]
   },
   "tags": [
-    "choice",
-    "errorlevel",
-    "if"
+    "if",
+    "exist"
   ]
 }

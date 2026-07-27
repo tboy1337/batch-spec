@@ -1,16 +1,16 @@
 {
-  "description": "CLS with redirected stdout still parses and runs (console clear is noop for a log)",
+  "description": "After percent expansion, & in the value re-enters command parsing",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
-      "genericCmd",
+      "setStmt",
       "genericCmd"
     ]
   },
   "tags": [
-    "cls",
-    "redirection"
+    "expansion",
+    "set"
   ]
 }

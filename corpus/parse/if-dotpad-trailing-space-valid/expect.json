@@ -1,19 +1,17 @@
 {
-  "description": "Classic IF ERRORLEVEL cascade (>=) after a non-zero exit (CHOICE-style ordinals)",
+  "description": "Unquoted dot-pad EQU collapses trailing spaces; quoted == does not",
   "parse": {
     "should_parse": true,
     "top_level_statement": "ifStmt",
     "top_level_statements": [
       "genericCmd",
-      "genericCmd",
-      "ifStmt",
+      "setStmt",
       "ifStmt",
       "ifStmt"
     ]
   },
   "tags": [
-    "choice",
-    "errorlevel",
-    "if"
+    "if",
+    "compare"
   ]
 }

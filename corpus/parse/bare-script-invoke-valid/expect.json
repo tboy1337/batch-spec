@@ -1,16 +1,17 @@
 {
-  "description": "CLS with redirected stdout still parses and runs (console clear is noop for a log)",
+  "description": "Bare external (.exe via cmd /c) returns without CALL; contrast call_script_returns for bare .bat/.cmd",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
       "genericCmd",
+      "genericCmd",
       "genericCmd"
     ]
   },
   "tags": [
-    "cls",
-    "redirection"
+    "call",
+    "command-resolution"
   ]
 }

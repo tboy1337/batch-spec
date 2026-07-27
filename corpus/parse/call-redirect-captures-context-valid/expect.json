@@ -1,0 +1,22 @@
+{
+  "description": "CALL redirect captures the whole CALLed context including nested CALL",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "gotoStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "callStmt",
+      "genericCmd",
+      "gotoStmt",
+      "genericCmd",
+      "callStmt",
+      "gotoStmt",
+      "genericCmd",
+      "gotoStmt"
+    ]
+  },
+  "tags": [
+    "call",
+    "redirection"
+  ]
+}

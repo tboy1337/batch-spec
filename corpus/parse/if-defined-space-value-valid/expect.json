@@ -2,7 +2,14 @@
   "description": "IF DEFINED: space value is defined; cleared name is not",
   "parse": {
     "should_parse": true,
-    "top_level_statement": "ifStmt"
+    "top_level_statement": "ifStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "setStmt",
+      "ifStmt",
+      "setStmt",
+      "ifStmt"
+    ]
   },
   "tags": [
     "if",

@@ -1,16 +1,17 @@
 {
-  "description": "CLS with redirected stdout still parses and runs (console clear is noop for a log)",
+  "description": "IF CMDEXTVERSION ignores shadowed %CMDEXTVERSION% env string",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
-      "genericCmd",
+      "setStmt",
+      "ifStmt",
       "genericCmd"
     ]
   },
   "tags": [
-    "cls",
-    "redirection"
+    "if",
+    "cmdextversion"
   ]
 }

@@ -1,16 +1,18 @@
 {
-  "description": "CLS with redirected stdout still parses and runs (console clear is noop for a log)",
+  "description": "IF DEFINED cannot test names with spaces; %a b% still expands",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
-      "genericCmd",
+      "setStmt",
+      "ifStmt",
+      "ifStmt",
       "genericCmd"
     ]
   },
   "tags": [
-    "cls",
-    "redirection"
+    "if",
+    "defined"
   ]
 }

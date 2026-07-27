@@ -1,16 +1,14 @@
 {
-  "description": "CLS with redirected stdout still parses and runs (console clear is noop for a log)",
+  "description": "FINDSTR /S with a bare filename searches that name under the tree",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
-      "genericCmd",
       "genericCmd"
     ]
   },
   "tags": [
-    "cls",
-    "redirection"
+    "findstr"
   ]
 }

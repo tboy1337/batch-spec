@@ -1,5 +1,5 @@
 {
-  "description": "CLS with redirected stdout still parses and runs (console clear is noop for a log)",
+  "description": "REN destination must not include a path (syntax error at runtime)",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
@@ -10,7 +10,6 @@
     ]
   },
   "tags": [
-    "cls",
-    "redirection"
+    "ren"
   ]
 }

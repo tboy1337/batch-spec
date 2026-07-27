@@ -1,4 +1,4 @@
-version: 42
+version: 43
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -838,7 +838,11 @@ set_a:
   parameter_as_lhs: >-
     With extensions, a percent-expanded argument can supply the left-hand
     variable name (for example set /A %~1=%~2+%~3 after CALL :Add out 1 2).
-    The name must expand before SET /A evaluates the expression.
+    The name must expand before SET /A evaluates the expression. With delayed
+    expansion enabled, !%~1! resolves a parameter that holds a variable name
+    so the same slot can be read and written (for example
+    set /A %~1=!%~1!*!%~1! after call :sq n with n=3 yields n=9). Confirmed on
+    live Windows 10/11 cmd.
 
 set_assignment:
   description: >-
@@ -1418,7 +1422,12 @@ if_forms:
     expansion may supply that name first (if defined %nm% / if defined !nm!
     after set nm=VAR). A variable set to spaces (set "S= ") is defined; a
     cleared name (set "E=" / set E=) is undefined. Composition such as
-    if defined %prefix%BAR works when the expanded name exists. Confirmed on
+    if defined %prefix%BAR works when the expanded name exists. Names that
+    contain spaces (set "a b=1") expand via %a b% but cannot be tested with
+    IF DEFINED: the predicate takes only the first token as the name
+    (if defined a b treats a as the name and b as the THEN command), and
+    quoting the spaced name (if defined "a b") does not match the variable.
+    Prefer underscore-alnum names when IF DEFINED is required. Confirmed on
     live Windows 10/11 cmd.
   else_same_line: >-
     ELSE must appear on the same physical line as the end of the IF command
@@ -1456,8 +1465,13 @@ if_forms:
   operand_padding: >-
     Classic unquoted padding such as IF .%var%.==.value. can guard against
     empty expansion for simple values, but breaks when the expanded text
-    contains spaces or IF metacharacters (the line re-tokenizes). Prefer
-    quoted compares or IF DEFINED for robust empty/undefined handling.
+    contains spaces or IF metacharacters (the line re-tokenizes). A trailing
+    space in the expanded value is a special case of that retokenization:
+    after set "v=sad ", unquoted if .%v% equ .sad is true (the trailing space
+    collapses into inter-token whitespace before EQU), while quoted
+    if "%v%"=="sad" is false and if "%v%"=="sad " is true. Prefer quoted
+    compares or IF DEFINED for robust empty/undefined and trailing-space
+    handling. Confirmed on live Windows 10/11 cmd.
   trailing_spaces_significant: >-
     Trailing spaces in an expanded operand are significant and are not
     stripped before == or compare-ops. After set "v=sad ", if "%v%"=="sad" and
@@ -2635,23 +2649,29 @@ external_tool_notes:
     ERRORLEVEL 0 and a no-match leaves ERRORLEVEL 1 (confirmed on live
     Windows 10/11 cmd). Their missing-input and hard-failure codes differ:
     FINDSTR writes "FINDSTR: Cannot open ..." for a missing named file and
-    leaves ERRORLEVEL 1 (same code as no-match). FIND on a missing named
-    file also leaves ERRORLEVEL 1 on live Windows 10/11 cmd (not always the
-    ERRORLEVEL 2 some secondary references document for every open failure).
-    FIND does use ERRORLEVEL 2 for an invalid switch and for a wildcard
-    pathname that matches no files (confirmed on live cmd). Prefer IF EXIST
-    before searching, or redirect stderr (2>nul) when a missing mask is
-    expected. FINDSTR without /C treats a quoted multi-word argument as OR
-    of words; /C:"literal with spaces" searches the literal phrase
-    (FINDSTR /?). Default FINDSTR matching is case-sensitive unless /I is
-    used. FINDSTR defaults to regular-expression mode (/R): metacharacters
-    such as . * ^ $ [ ] \< \> apply unless /L forces literal matching
-    (FINDSTR /?; Microsoft Learn findstr). Positional /B /E /X are
-    line-break oriented; a final line without a trailing newline can fail
-    /E or /X matches that succeed after a CRLF (or blank line) is appended
-    (confirmed on live cmd). FINDSTR /G:file reads search strings from a file
-    (/ for console) and /F:file reads the filename list from a file (/ for
-    console) (FINDSTR /?; audit/cmd-help/findstr-help.txt). Confirmed on live
+    for a wildcard pathname that matches no files, and leaves ERRORLEVEL 1
+    (same code as no-match). FIND on a missing named file also leaves
+    ERRORLEVEL 1 on live Windows 10/11 cmd (not always the ERRORLEVEL 2 some
+    secondary references document for every open failure). FIND does use
+    ERRORLEVEL 2 for an invalid switch and for a wildcard pathname that
+    matches no files (confirmed on live cmd). Prefer IF EXIST before
+    searching, or redirect stderr (2>nul) when a missing mask is expected.
+    When FINDSTR is given two or more input files, each matching line is
+    prefixed with path: (colon-delimited); a single-file search does not add
+    that prefix (so multi-file output can collide with drive letters such as
+    C:). FINDSTR /S with a bare filename searches that name under the
+    directory tree from the current directory (not only a CWD file of that
+    name). FINDSTR without /C treats a quoted multi-word argument as OR of
+    words; /C:"literal with spaces" searches the literal phrase (FINDSTR /?).
+    Default FINDSTR matching is case-sensitive unless /I is used. FINDSTR
+    defaults to regular-expression mode (/R): metacharacters such as
+    . * ^ $ [ ] \< \> apply unless /L forces literal matching (FINDSTR /?;
+    Microsoft Learn findstr). Positional /B /E /X are line-break oriented; a
+    final line without a trailing newline can fail /E or /X matches that
+    succeed after a CRLF (or blank line) is appended (confirmed on live cmd).
+    FINDSTR /G:file reads search strings from a file (/ for console) and
+    /F:file reads the filename list from a file (/ for console)
+    (FINDSTR /?; audit/cmd-help/findstr-help.txt). Confirmed on live
     Windows 10/11 cmd: findstr /G:needles.txt hay.txt and findstr /F:files.txt
     needle leave ERRORLEVEL 0 on a successful match.
   where_command: >-
@@ -2678,9 +2698,13 @@ external_tool_notes:
   comp_command: >-
     COMP compares two files or sets of files (COMP /?;
     audit/cmd-help/comp-help.txt). /M suppresses the "Compare more files"
-    prompt. Live Windows 10/11 ERRORLEVEL: 0 identical; 1 different; 2 cannot
-    open a file or invalid arguments/switch. Without /M, pipe a reply
-    (for example echo n^| COMP ...) to avoid an interactive prompt.
+    prompt. Live Windows 10/11 ERRORLEVEL: 0 identical; 1 different (including
+    unequal sizes reported as "Files are different sizes"); 2 cannot open a
+    file or invalid arguments/switch. Without /N, unequal file sizes stop the
+    compare with that size message; /N=n limits the compare to n lines and can
+    proceed even when sizes differ (trailing extras beyond n may still be
+    missed). Without /M, pipe a reply (for example echo n^| COMP ...) to avoid
+    an interactive prompt. Confirmed on live Windows 10/11 cmd.
   attrib_command: >-
     ATTRIB displays or changes file attributes (ATTRIB /?;
     audit/cmd-help/attrib-help.txt). Common letters include R/A/S/H plus

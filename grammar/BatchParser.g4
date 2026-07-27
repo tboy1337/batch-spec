@@ -273,6 +273,7 @@ ifDefinedOperand
     | FOR_VAR
     | FOR_VAR_TILDE
     | BANG_VAR
+    | DQ_STRING
     ;
 
 ifPredicate

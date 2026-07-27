@@ -1,0 +1,16 @@
+{
+  "description": "FOR /F whitespace-only line kept with empty delims; default delims strip",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for",
+    "for-f"
+  ]
+}

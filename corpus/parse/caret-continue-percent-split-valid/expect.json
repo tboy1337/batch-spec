@@ -2,7 +2,14 @@
   "description": "Percent name cannot span caret line-continuation (percent before join)",
   "parse": {
     "should_parse": true,
-    "top_level_statement": "endlocalStmt"
+    "top_level_statement": "endlocalStmt",
+    "top_level_statements": [
+      "genericCmd",
+      "setlocalStmt",
+      "setStmt",
+      "genericCmd",
+      "endlocalStmt"
+    ]
   },
   "tags": [
     "expansion",

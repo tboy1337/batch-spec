@@ -1,16 +1,14 @@
 {
-  "description": "CLS with redirected stdout still parses and runs (console clear is noop for a log)",
+  "description": "Leading >CON keeps interactive/console output on the console",
   "parse": {
     "should_parse": true,
     "top_level_statement": "genericCmd",
     "top_level_statements": [
       "genericCmd",
-      "genericCmd",
       "genericCmd"
     ]
   },
   "tags": [
-    "cls",
     "redirection"
   ]
 }

@@ -2,7 +2,13 @@
   "description": "Pipe binds tighter than & (a & (b|findstr))",
   "parse": {
     "should_parse": true,
-    "top_level_statement": "genericCmd"
+    "top_level_statement": "genericCmd",
+    "top_level_statements": [
+      "genericCmd",
+      "genericCmd",
+      "genericCmd",
+      "genericCmd"
+    ]
   },
   "tags": [
     "chaining",
