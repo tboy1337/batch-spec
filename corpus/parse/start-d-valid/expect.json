@@ -1,0 +1,10 @@
+{
+  "description": "START /D sets the child working directory",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "start"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Parse NETSTAT -an",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "netstat",
+    "external"
+  ]
+}

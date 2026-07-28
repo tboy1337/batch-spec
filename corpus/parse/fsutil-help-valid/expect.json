@@ -1,0 +1,11 @@
+{
+  "description": "Parse FSUTIL bare form",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "fsutil",
+    "external"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "START /I uses the original cmd.exe environment",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "start"
+  ]
+}

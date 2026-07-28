@@ -1,0 +1,10 @@
+{
+  "description": "START without /WAIT returns immediately while the child continues asynchronously",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "start"
+  ]
+}

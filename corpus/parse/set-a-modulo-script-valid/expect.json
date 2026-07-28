@@ -1,0 +1,13 @@
+{
+  "description": "SET /A modulo uses %% in batch scripts (script-vs-interactive mode)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "set",
+    "set-a",
+    "arithmetic",
+    "expansion"
+  ]
+}

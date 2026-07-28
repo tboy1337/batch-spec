@@ -1,0 +1,11 @@
+{
+  "description": "Parse SYSTEMINFO",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "systeminfo",
+    "external"
+  ]
+}

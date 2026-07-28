@@ -1,0 +1,11 @@
+{
+  "description": "Parse COMPACT help form",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "compact",
+    "external"
+  ]
+}

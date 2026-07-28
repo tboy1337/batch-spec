@@ -1,0 +1,12 @@
+{
+  "description": "SUBST of a missing path is a runtime failure (EL 1) that still parses",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "subst",
+    "errorlevel",
+    "external"
+  ]
+}

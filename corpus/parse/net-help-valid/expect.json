@@ -1,0 +1,11 @@
+{
+  "description": "Parse NET help front-end",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "net",
+    "external"
+  ]
+}

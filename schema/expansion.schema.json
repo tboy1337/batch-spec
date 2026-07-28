@@ -1789,6 +1789,15 @@
         "pushd_popd_stack": {
           "type": "string"
         },
+        "pushd_bare_lists_stack": {
+          "type": "string"
+        },
+        "pushd_local_no_drive_map": {
+          "type": "string"
+        },
+        "popd_no_arguments": {
+          "type": "string"
+        },
         "pushd_unc_temp_drive": {
           "type": "string"
         }
@@ -1950,6 +1959,9 @@
           "type": "string"
         },
         "wait_and_b": {
+          "type": "string"
+        },
+        "async_without_wait": {
           "type": "string"
         },
         "errorlevel": {
@@ -2121,6 +2133,18 @@
           "minLength": 1
         },
         "forms": {
+          "type": "string"
+        },
+        "persistence": {
+          "type": "string"
+        },
+        "failure_errorlevel": {
+          "type": "string"
+        },
+        "nested_mappings": {
+          "type": "string"
+        },
+        "restricted_commands": {
           "type": "string"
         },
         "source": {
@@ -2650,6 +2674,15 @@
           "type": "string"
         },
         "msg_command": {
+          "type": "string"
+        },
+        "ping_command": {
+          "type": "string"
+        },
+        "ipconfig_command": {
+          "type": "string"
+        },
+        "network_admin_tools": {
           "type": "string"
         },
         "host_notes": {

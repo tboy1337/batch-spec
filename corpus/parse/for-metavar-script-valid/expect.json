@@ -1,0 +1,11 @@
+{
+  "description": "FOR metavars use %%letter in batch scripts (single % interactively)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "for",
+    "expansion"
+  ]
+}

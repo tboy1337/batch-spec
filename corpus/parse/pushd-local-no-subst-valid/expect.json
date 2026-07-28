@@ -1,0 +1,11 @@
+{
+  "description": "Local-path PUSHD/POPD changes directory without creating a SUBST mapping",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "pushd",
+    "directory"
+  ]
+}

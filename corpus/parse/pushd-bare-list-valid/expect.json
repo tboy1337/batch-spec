@@ -1,0 +1,11 @@
+{
+  "description": "Bare PUSHD with no path lists the directory stack (runtime); parses cleanly",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "pushd",
+    "directory"
+  ]
+}

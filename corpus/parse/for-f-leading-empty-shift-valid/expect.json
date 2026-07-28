@@ -1,0 +1,12 @@
+{
+  "description": "FOR /F leading delimiters collapse so tokens shift (empty first field not preserved)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "for",
+    "for-f",
+    "expansion"
+  ]
+}

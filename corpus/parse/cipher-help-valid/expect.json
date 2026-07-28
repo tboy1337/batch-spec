@@ -1,0 +1,11 @@
+{
+  "description": "Parse CIPHER help form",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "cipher",
+    "external"
+  ]
+}

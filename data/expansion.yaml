@@ -1,4 +1,4 @@
-version: 58
+version: 59
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -629,8 +629,11 @@ for_f:
     Because consecutive delimiters collapse, a,,b with delims=, and
     tokens=1,2,3 yields token1=a, token2=b, and token3 empty (the middle empty
     field is skipped). A leading delimiter such as ,a,b likewise shifts so
-    token1=a and token2=b. There is no built-in FOR /F mode that preserves
-    empty fields between collapsed delimiters.
+    token1=a and token2=b. Multiple leading delimiters collapse the same way:
+    confirmed on live Windows 10 (build 19045) cmd, for /f "tokens=1-3 delims=,"
+    %%a in (",b,c") yields %%a=b %%b=c %%c=empty, and ",,,d" with tokens=1-4
+    yields %%a=d with the later metavars empty. There is no built-in FOR /F mode
+    that preserves empty fields between collapsed delimiters.
   empty_fields_workarounds: >-
     To honor empty fields, transform the line before FOR /F so consecutive
     delimiters become delimiter-plus-placeholder-plus-delimiter, then parse.
@@ -638,8 +641,9 @@ for_f:
     set "line=!line:,,=,__EMPTY__,!" then for /f "tokens=1-3 delims=," %%a in
     ("!line!") yields %%a=a, %%b=__EMPTY__, %%c=b. Replace the placeholder with
     an empty string after the loop when a true empty field is required. Leading
-    delimiters still need an explicit leading placeholder if an empty first
-    field must be preserved.
+    delimiters still need an explicit leading placeholder (for example prepend
+    a sentinel before the first character, or rewrite a leading "," into
+    "__EMPTY__,") if an empty first field must be preserved.
   default_first_token: >-
     By default, /F passes the first blank-separated token from each line
     (FOR /?).
@@ -2590,9 +2594,25 @@ directory_commands:
     to the pushed directory. With extensions, PUSHD accepts UNC paths and maps
     a temporary drive letter from Z: downward for the network resource; POPD
     can unmap that temporary drive (PUSHD /?, POPD /?).
+  pushd_bare_lists_stack: >-
+    Bare PUSHD with no path argument lists the current PUSHD directory stack
+    (one path per line) without changing directory. Confirmed on live Windows
+    10/11 cmd (PUSHD /?).
+  pushd_local_no_drive_map: >-
+    PUSHD of a local path changes directory and pushes the prior CWD onto the
+    stack but does not create a SUBST-style virtual drive mapping. Only UNC
+    paths trigger the temporary Z:-downward drive letter mapping when
+    extensions are enabled. Confirmed on live Windows 10/11 cmd.
+  popd_no_arguments: >-
+    POPD takes no path arguments (POPD /?). Extra tokens after POPD are ignored
+    on live Windows 10/11 cmd; POPD still pops one stack entry. Prefer bare
+    POPD for portable scripts.
   pushd_unc_temp_drive: >-
     With extensions, PUSHD of a UNC path maps a temporary drive letter starting
-    from Z: downward; POPD can remove that mapping (PUSHD /?, POPD /?).
+    from Z: downward; POPD can remove that mapping (PUSHD /?, POPD /?). An
+    unbalanced PUSHD of a UNC path without a matching POPD can leave that
+    temporary drive letter mapped after the script exits until POPD, SUBST /D,
+    or logoff/reboot clears it.
 
 mkdir_command:
   description: >-
@@ -2726,7 +2746,15 @@ start_command:
     10/11 cmd.
   wait_and_b: >-
     /WAIT waits for the started process to terminate. /B starts without a new
-    window and with default ^C handling ignored for that application.
+    window. With /B, the started application has default ^C handling ignored;
+    unless the application itself enables ^C processing, ^Break is the only way
+    to interrupt it (START /?; audit/cmd-help/start-help.txt). Confirmed against
+    captured START /? on Windows 10/11.
+  async_without_wait: >-
+    Without /WAIT, START returns as soon as the child is launched and the parent
+    continues immediately while the child runs concurrently. Shared CWD, files,
+    and environment mutations can race. Confirmed on live Windows 10/11 cmd
+    (parent prints continue before a delayed child side-effect appears).
   errorlevel: >-
     With /WAIT, START sets ERRORLEVEL to the started process's exit code
     (confirmed on live Windows 10/11 cmd: start "" /wait cmd /c exit 7 leaves
@@ -2752,9 +2780,15 @@ start_command:
   working_directory: >-
     /D path sets the starting directory for the new process (START /?).
   batch_and_internal: >-
-    When command is a batch script or internal cmd command, START typically
-    invokes a new cmd.exe (commonly with /K for batch) rather than replacing
-    the current interpreter. Prefer CALL to run another batch and return.
+    When command is a batch script or internal cmd command, START runs the
+    command processor with the /K switch (START /?; audit/cmd-help/start-help.txt).
+    That keeps the new console open after the batch/internal finishes, so
+    start "" /wait script.cmd can wait indefinitely on a lingering cmd.exe
+    window. Prefer an explicit cmd /c "script.cmd ..." (or /c with a carefully
+    quoted argument list) when the child must exit, and prefer CALL when the
+    callee should run in the current interpreter and return. Confirmed on live
+    Windows 10 (build 19045): start "" /wait of a .cmd that only writes a file
+    and exits still left /WAIT blocked on the /K window.
   vs_call_return: >-
     START does not return to the caller the way CALL script.cmd does: the
     started process runs separately (optionally waited with /WAIT). A bare
@@ -2893,7 +2927,27 @@ subst_command:
   forms: >-
     SUBST drive1: path associates path with drive1:. SUBST drive1: /D deletes
     the virtual drive. SUBST with no parameters lists current substitutions.
-  source: "SUBST /? (audit/cmd-help/subst-help.txt)"
+  persistence: >-
+    SUBST mappings are process-global for the Windows session: they persist
+    after the creating cmd.exe exits and remain visible to later cmd.exe
+    processes until SUBST drive: /D, logoff, or reboot. Confirmed on live
+    Windows 10/11 cmd; Microsoft Learn documents the forms but not this
+    session-persistence detail explicitly.
+  failure_errorlevel: >-
+    Mapping a drive letter that is already SUBSTed prints "Drive already
+    SUBSTed" and leaves ERRORLEVEL 1. Mapping a nonexistent path prints
+    "Path not found - ..." and leaves ERRORLEVEL 1. Confirmed on live
+    Windows 10 (build 19045) cmd.
+  nested_mappings: >-
+    A SUBST target may itself be a SUBST drive (for example subst Y: Z:\subdir
+    after subst Z: C:\Windows). If the parent mapping is deleted first, the
+    nested letter becomes unusable until remapped (directory access fails).
+    Confirmed on live Windows 10/11 cmd.
+  restricted_commands: >-
+    Microsoft Learn lists commands that must not be used on SUBST drives
+    (including chkdsk, diskcomp, diskcopy, format, label, recover). Prefer
+    operating on the underlying path for those tools.
+  source: "SUBST /? (audit/cmd-help/subst-help.txt); Microsoft Learn subst"
 
 copy_command:
   description: >-
@@ -3383,6 +3437,29 @@ external_tool_notes:
     for a response. Message text may be an argument, prompted, or read from
     stdin. Availability and rights vary by session/host policy; treat
     ERRORLEVEL as tool-defined.
+  ping_command: >-
+    PING.exe sends ICMP echo requests (PING /?; audit/cmd-help/ping-help.txt).
+    Not a cmd internal. Confirmed on live Windows 10 (build 19045): ping -n 1
+    127.0.0.1 leaves ERRORLEVEL 0 on success; an unreachably answered probe such
+    as ping -n 1 0.0.0.0 commonly leaves ERRORLEVEL 1. Prefer %ERRORLEVEL% /
+    IF ERRORLEVEL tests when chaining on reachability; do not treat stdout text
+    alone as the control-flow signal.
+  ipconfig_command: >-
+    IPCONFIG.exe displays TCP/IP configuration (IPCONFIG /?;
+    audit/cmd-help/ipconfig-help.txt). Not a cmd internal. Confirmed on live
+    Windows 10/11 cmd: a successful bare ipconfig leaves ERRORLEVEL 0; an
+    invalid switch leaves ERRORLEVEL 1. Prefer documented switches from the
+    captured help (/all, /release, /renew, ...) rather than inventing flags.
+  network_admin_tools: >-
+    Stock System32 utilities commonly driven from batch for network and admin
+    tasks include net.exe, sc.exe, schtasks.exe, systeminfo.exe, takeown.exe,
+    fsutil.exe, compact.exe, cipher.exe, arp.exe, route.exe, and netstat.exe.
+    Captured help lives under audit/cmd-help/*-help.txt for those names.
+    Language-relevant guidance: treat ERRORLEVEL as tool-defined unless a
+    specific code is confirmed on the host; net.exe is a multi-subcommand front
+    end (net help / net help <command>); sc.exe and schtasks.exe require
+    appropriate privileges; takeown.exe changes file ownership before ICACLS
+    work. These notes are control-flow oriented, not full switch encyclopedias.
   host_notes: >-
     Language facts in this catalog were confirmed primarily on live Windows 10
     cmd (build family 19045) plus Microsoft /? text and secondary references.
@@ -3390,4 +3467,7 @@ external_tool_notes:
     Feature-on-Demand tools (telnet, and some media/legacy utilities) and
     SORT /UNIQUE help-text omissions can differ by image. When a claim is
     host-specific, individual keys note the observation rather than asserting
-    universal parity.
+    universal parity. When Microsoft Learn prose conflicts with live Win10/11
+    cmd behavior, this catalog records the live observation and notes the
+    documentation variance (see also set_a.signed_shift and COLOR ERRORLEVEL
+    notes).

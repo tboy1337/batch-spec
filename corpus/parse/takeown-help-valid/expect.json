@@ -1,0 +1,11 @@
+{
+  "description": "Parse TAKEOWN help form",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "takeown",
+    "external"
+  ]
+}

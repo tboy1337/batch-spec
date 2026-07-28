@@ -1,0 +1,11 @@
+{
+  "description": "With ECHO ON, REM is echoed while :: label-remarks typically are not",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "exitStmt"
+  },
+  "tags": [
+    "remarks",
+    "echo"
+  ]
+}
