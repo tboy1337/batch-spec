@@ -329,7 +329,10 @@ def _gapHasSpaceOrTab(self, after_token, before_token) -> bool:
 
 def _requireSpaceOrTabBefore(self) -> bool:
     # Live cmd rejects glued IN(/DO(/ELSE( (reports "... was unexpected").
-    # IF then-bodies still allow if(...) glued; this helper is for FOR/ELSE only.
+    # IF may still glue '(' immediately after the IF keyword (paren-wrapped
+    # predicate; usually silent-false). A true then-body after a complete
+    # predicate still needs space/tab before '(' (if 1==1 (echo ...)).
+    # This helper is for FOR/ELSE only.
     prev = self._input.LT(-1)
     cur = self._input.LT(1)
     if self._gapHasSpaceOrTab(prev, cur):

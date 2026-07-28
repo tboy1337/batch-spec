@@ -1291,6 +1291,10 @@
         "else_paren_spacing": {
           "type": "string",
           "minLength": 1
+        },
+        "then_body_paren_spacing": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "additionalProperties": false
@@ -2537,6 +2541,28 @@
         "description": {
           "type": "string",
           "minLength": 1
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "print_command": {
+      "type": "object",
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forms": {
+          "type": "string"
+        },
+        "bare_invocation": {
+          "type": "string"
         },
         "source": {
           "type": "string"

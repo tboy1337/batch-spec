@@ -68,8 +68,11 @@ option text are validated. `delims=` is accepted as an option keyword but its
 delimiter-character semantics are not structurally constrained by the grammar
 (see [`data/expansion.yaml`](../data/expansion.yaml) `for_f.option_details.delims`).
 The grammar does require space/tab between `IN`/`DO`/`ELSE` and a following
-`(` (live cmd rejects glued `in(` / `do(` / `else(`); IF then-bodies may still
-glue `if(...)`). Catalog notes also cover fileset member delimiters, non-expanding fileset
+`(` (live cmd rejects glued `in(` / `do(` / `else(`). IF may glue `(`
+immediately after the IF keyword as a paren-wrapped predicate (`if(1==1)`,
+usually silent-false); a true parenthesized then-body after a complete
+predicate still needs space/tab before `(` (`if 1==1 (echo T)`, not
+`if 1==1(echo T)`). Catalog notes also cover fileset member delimiters, non-expanding fileset
 wildcards, `skip=` physical-line counting, duplicate `tokens=` indexes, FOR /F
 ERRORLEVEL non-mutation, and input encoding. Expanded IF predicates such as
 `if %b%` / `if not %b%` (when `b` holds `a==a` / `true==true`) are accepted as

@@ -1,4 +1,4 @@
-version: 55
+version: 56
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -1675,8 +1675,13 @@ keyword_boundaries:
     requires space or tab between IN and '(', between DO and a parenthesized
     DO body, and between ELSE and a parenthesized ELSE body. Forms such as
     in(a), do(echo x), and else(echo F) are syntax errors ("... was unexpected").
-    IF then-bodies still accept glued if(...). Confirmed on live Windows 10/11
-    cmd; the grammar enforces the IN/DO/ELSE spacing rules.
+    IF is different: '(' may glue immediately after the IF keyword
+    (if(1==1) ...) as a paren-wrapped predicate that is usually silent-false
+    (see if_forms.paren_wrapped_predicate). That is not a true then-body; a
+    parenthesized then-body after a complete predicate still needs space or
+    tab before '(' (if 1==1 (echo T) works; if 1==1(echo T) does not run the
+    block — see if_block_parentheses.then_body_paren_spacing). Confirmed on
+    live Windows 10/11 cmd; the grammar enforces the IN/DO/ELSE spacing rules.
   rem_open_paren_exception: >-
     Bare rem( remains the REM keyword (trailer '(' is allowed for REM), unlike
     rem) which is a non-keyword. See remarks.rem_punctuation_glue.
@@ -1871,12 +1876,22 @@ if_block_parentheses:
     ELSE branch are optional when the false-path is a single command on the
     same line (if 1==0 (echo T) else echo F); use ( ) when the ELSE body needs
     multiple statements.
+  then_body_paren_spacing: >-
+    A parenthesized THEN body after a complete predicate requires space or tab
+    before '('. Live cmd runs if 1==1 (echo T) / if exist nul (echo T) but does
+    not treat if 1==1(echo T) / if exist nul(echo T) as a true then-body block
+    (typically silent-false or otherwise non-executing for the intended body;
+    classic == forms absorb the glued paren into the operand text). Prefer an
+    explicit space before '('. Confirmed on live Windows 10/11 cmd. Distinct
+    from if(1==1) keyword-glued paren-wrapped predicates
+    (if_forms.paren_wrapped_predicate).
   else_paren_spacing: >-
-    Unlike IF then-bodies (which accept glued if(...)), a parenthesized ELSE
-    body requires space or tab between ELSE and '('. Live cmd rejects
-    else(echo F) with "else(echo was unexpected at this time" while
-    else (echo F) is valid. Confirmed on live Windows 10/11 cmd; the grammar
-    rejects glued ELSE(.
+    A parenthesized ELSE body requires space or tab between ELSE and '('. Live
+    cmd rejects else(echo F) with "else(echo was unexpected at this time" while
+    else (echo F) is valid. Unlike IF, ELSE does not accept a keyword-glued
+    else( form as a silent-false predicate — glued ELSE( is a hard syntax
+    error. Confirmed on live Windows 10/11 cmd; the grammar rejects glued
+    ELSE(.
 
 command_chaining:
   description: >-
@@ -3124,6 +3139,21 @@ label_command:
     command_resolution.cwd_shadows_externals). Interactive LABEL without args
     prompts; prefer non-interactive forms in scripts.
   source: "LABEL /? (audit/cmd-help/label-help.txt)"
+
+print_command:
+  description: >-
+    PRINT.exe queues a text file to a print device (PRINT /?;
+    audit/cmd-help/print-help.txt). It is a stock System32 utility, not a cmd
+    internal, and can be shadowed by a same-named file in the CWD (see
+    command_resolution.cwd_shadows_externals).
+  forms: >-
+    PRINT [/D:device] [[drive:][path]filename[...]]. /D:device selects the
+    print device. Multiple filenames may be listed.
+  bare_invocation: >-
+    Bare PRINT with no filename prints "No file to print" and leaves
+    ERRORLEVEL 0 on live Windows 10/11 cmd (confirmed). Prefer an explicit
+    path when printing is intentional.
+  source: "PRINT /? (audit/cmd-help/print-help.txt)"
 
 external_tool_notes:
   description: >-

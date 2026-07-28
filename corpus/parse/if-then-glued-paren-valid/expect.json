@@ -1,0 +1,15 @@
+{
+  "description": "Glued then-body paren after == predicate parses as ifStmt but is not a true then-body (silent-false runtime; prefer space before '(')",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "ifStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "if",
+    "parentheses"
+  ]
+}
