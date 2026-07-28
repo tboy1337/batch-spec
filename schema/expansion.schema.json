@@ -661,6 +661,9 @@
         "failed_leaves_prior": {
           "type": "string"
         },
+        "comma_expression_partial_success": {
+          "type": "string"
+        },
         "signed_shift": {
           "type": "string"
         },
@@ -764,6 +767,9 @@
           "type": "string"
         },
         "interactive_undefined_literal": {
+          "type": "string"
+        },
+        "script_vs_interactive_modes": {
           "type": "string"
         },
         "incomplete_unclosed": {
@@ -1594,6 +1600,9 @@
           "type": "string"
         },
         "handle_order": {
+          "type": "string"
+        },
+        "ampersand_in_handle_dup": {
           "type": "string"
         },
         "create_before_execute": {

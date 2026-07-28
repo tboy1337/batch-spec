@@ -1,0 +1,11 @@
+{
+  "description": "Parse WHOAMI",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "whoami",
+    "external"
+  ]
+}

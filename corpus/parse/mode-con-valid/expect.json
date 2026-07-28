@@ -1,0 +1,11 @@
+{
+  "description": "Parse MODE CON status",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "mode",
+    "external"
+  ]
+}

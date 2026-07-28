@@ -1,0 +1,11 @@
+{
+  "description": "Parse HOSTNAME",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "hostname",
+    "external"
+  ]
+}

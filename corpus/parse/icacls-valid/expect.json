@@ -1,0 +1,11 @@
+{
+  "description": "Parse ICACLS",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "icacls",
+    "external"
+  ]
+}

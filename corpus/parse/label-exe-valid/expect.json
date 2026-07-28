@@ -1,0 +1,11 @@
+{
+  "description": "Parse LABEL.exe volume label command",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": [
+    "label-exe",
+    "external"
+  ]
+}

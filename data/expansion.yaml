@@ -1,4 +1,4 @@
-version: 57
+version: 58
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -153,7 +153,17 @@ percent_expansion:
     without a closing % are not treated as successful expansions.
   interactive_undefined_literal: >-
     On the interactive command line, an undefined %name% often remains as the
-    literal text %name% rather than expanding to empty (script behavior differs).
+    literal text %name% rather than expanding to empty (script behavior differs;
+    see undefined_is_empty). Confirmed on live Windows 10/11 cmd as a common
+    interactive-vs-script mode difference; portable scripts must not assume
+    prompt behavior.
+  script_vs_interactive_modes: >-
+    Several expansion spellings differ between .bat/.cmd scripts and the
+    interactive prompt: undefined %name% (empty in scripts; often literal at
+    the prompt); FOR metavars (%%i in scripts; %i interactively); SET /A modulo
+    (%% in scripts; % interactively). Prefer always testing scripted forms when
+    authoring SoT fixtures or consumer tooling. Cross-ref
+    interactive_undefined_literal, double_percent, and set_a.modulo_in_batch.
   incomplete_unclosed: >-
     An unclosed %name form (no matching closing %) is not a successful expansion.
     In scripts, cmd typically strips the leading % and leaves the following text
@@ -984,12 +994,12 @@ set_a:
     -2147483648) rather than failing the expression.
   divide_by_zero_errorlevel: >-
     Division by zero and other failed SET /A expressions leave a non-zero
-    ERRORLEVEL (exact codes are implementation-defined). Live Windows 10/11 cmd
-    often uses 1073750993 for divide-by-zero, 1073750991 for invalid numeric
-    literals such as 08 or 0b10, 1073750990 for decimal-point / Missing operator
-    forms such as 1.5, and other nearby codes for malformed expressions (for
-    example a trailing operator). Treat the numeric constants as host-observed
-    hints, not portable API.
+    ERRORLEVEL (exact codes are implementation-defined / host-specific). On
+    live Windows 10 (build 19045) cmd, probes observed 1073750993 for
+    divide-by-zero (set /A x=1/0), 1073750991 for invalid numeric literals such
+    as 08 or 0b10, and nearby codes such as 1073750990 for decimal-point /
+    Missing operator forms such as 1.5. Treat these constants as host-observed
+    hints, not a portable API.
   integer_division_truncates: >-
     The / operator performs signed integer division toward zero (for example
     7/2 yields 3 and -7/2 yields -3). There is no floating-point result.
@@ -1026,14 +1036,21 @@ set_a:
     example literal 08, 0b10, or 1/0), the target variable is left unchanged
     (prior value or still unset). Decimal-point / Missing operator failures can
     still partial-assign a truncated integer (see decimal_literal_partial_assign).
+  comma_expression_partial_success: >-
+    SET /A comma separates multiple expressions left-to-right. When an earlier
+    assignment succeeds and a later expression fails, the earlier targets keep
+    their new values and ERRORLEVEL reflects the failure. Confirmed on live
+    Windows 10/11 cmd: set /A "x=1, y=1/0" leaves x=1 with divide-by-zero
+    ERRORLEVEL (see divide_by_zero_errorlevel) while y is unchanged / unset.
   signed_shift: >-
     The << and >> operators are signed 32-bit arithmetic shifts on live
     Windows 10/11 cmd. Arithmetic right shift preserves the sign bit:
-    set /A s=-8^>^>1 yields -4; left shift of -1 by 1 yields -2. Captured
-    SET /? labels << >> as "logical shift", which understates the live
+    set /A s=-8^>^>1 yields -4; set /A s=-1^>^>1 yields -1 (not a logical
+    shift to a large unsigned value); left shift of -1 by 1 yields -2.
+    Captured SET /? labels << >> as "logical shift", which understates the live
     signed/arithmetic behavior; prefer live probes over that help wording.
     Prefer caret-escaping > inside scripts so redirection does not consume
-    the operators.
+    the operators. Confirmed on live Windows 10/11 cmd.
   quoted_expression_trailer: >-
     After set /A "expr", further non-separator tokens on the same statement are
     folded into the arithmetic parse rather than discarded like plain quoted
@@ -2298,9 +2315,10 @@ remarks:
     later in the label text are allowed (for example :ok:extra is a valid jump
     target). Inside parenthesized blocks, prefer REM: a :: line that contains
     ')' has historically been able to close the block early because ')' remains
-    significant on label lines on some hosts/versions (modern Windows 10 hosts
-    often do not reproduce the early close, but REM remains the portable
-    choice). Prefer REM inside ( ) blocks for portable scripts.
+    significant on label lines on some hosts/versions. On modern Windows 10
+    (build 19045) live probes, a :: remark containing ')' inside ( ) did not
+    early-close the block (following statements in the group still ran), but
+    REM remains the portable choice across hosts/versions.
   rem_vs_label: >-
     Prefer REM for portable remarks. :: is a label form and can break or
     misparse inside parenthesized IF/FOR blocks.
@@ -2369,6 +2387,13 @@ redirection:
     stderr to file. command 2>&1 >file first duplicates stderr to the current
     stdout (often the console), then redirects stdout alone to file, so stderr
     may remain on the console.
+  ampersand_in_handle_dup: >-
+    In 2>&1 / 1>&2 / <&0 the ampersand is redirect handle-duplication syntax,
+    not the & command separator. The digit after & is the source handle being
+    duplicated onto the left-hand handle. Do not insert spaces that would split
+    the operator (prefer 2>&1). This is distinct from statement chaining with a
+    lone & between commands (see command_chaining and
+    per_statement_amp_redirect). Confirmed on live Windows 10/11 cmd.
   create_before_execute: >-
     An output redirect opens/creates (or truncates with >) the target before
     the command runs. A failing or missing command can still leave a zero-byte
