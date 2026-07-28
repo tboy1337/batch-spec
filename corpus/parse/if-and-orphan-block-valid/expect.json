@@ -1,0 +1,8 @@
+{
+  "description": "IF and/or as THEN command with trailing multi-line (block) still parses; orphan group runs at runtime",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": ["genericCmd", "ifStmt"]
+  },
+  "tags": ["if", "expansion"]
+}

@@ -1,0 +1,8 @@
+{
+  "description": "Parse MSG session message with /TIME (stock external)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": ["msg", "external"]
+}

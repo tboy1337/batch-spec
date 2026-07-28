@@ -1,0 +1,8 @@
+{
+  "description": "Parse WAITFOR /T timeout signal (stock external)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": ["waitfor", "external"]
+}

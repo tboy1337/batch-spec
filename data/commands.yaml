@@ -1,5 +1,144 @@
-version: 3
+version: 4
 
+# True cmd.exe internals (no separate where.exe hit for the verb as an external).
+# Detection consumers that only need "Windows/cmd command?" should prefer
+# builtin_commands (union of internals + stock utilities) below.
+cmd_internal_commands:
+  - assoc
+  - break
+  - call
+  - cd
+  - chdir
+  - cls
+  - color
+  - copy
+  - date
+  - del
+  - dir
+  - dpath
+  - echo
+  - endlocal
+  - erase
+  - exit
+  - for
+  - ftype
+  - goto
+  - if
+  - keys
+  - md
+  - mkdir
+  - mklink
+  - move
+  - path
+  - pause
+  - popd
+  - prompt
+  - pushd
+  - rd
+  - rem
+  - ren
+  - rename
+  - rmdir
+  - set
+  - setlocal
+  - shift
+  - start
+  - time
+  - title
+  - type
+  - ver
+  - verify
+  - vol
+
+# Stock Windows PATH/System32 utilities commonly used from batch (not cmd
+# internals). These can be shadowed by a same-named file in the CWD per PATHEXT.
+stock_windows_utilities:
+  - arp
+  - attrib
+  - bcdedit
+  - certutil
+  - chcp
+  - chkdsk
+  - chkntfs
+  - choice
+  - cipher
+  - clip
+  - cmd
+  - cmdkey
+  - compact
+  - comp
+  - convert
+  - cscript
+  - curl
+  - diskpart
+  - doskey
+  - driverquery
+  - expand
+  - explorer
+  - fc
+  - find
+  - findstr
+  - forfiles
+  - format
+  - fsutil
+  - ftp
+  - getmac
+  - gpresult
+  - help
+  - hostname
+  - icacls
+  - ipconfig
+  - label
+  - logoff
+  - mode
+  - more
+  - mountvol
+  - msiexec
+  - msg
+  - nbtstat
+  - net
+  - netsh
+  - netstat
+  - notepad
+  - nslookup
+  - openfiles
+  - ping
+  - powercfg
+  - powershell
+  - print
+  - quser
+  - qwinsta
+  - recover
+  - reg
+  - replace
+  - robocopy
+  - route
+  - runas
+  - sc
+  - schtasks
+  - setx
+  - shutdown
+  - sort
+  - subst
+  - systeminfo
+  - takeown
+  - tar
+  - taskkill
+  - tasklist
+  - telnet
+  - timeout
+  - tracert
+  - tree
+  - waitfor
+  - where
+  - whoami
+  - wmic
+  - wscript
+  - xcopy
+
+# Union of cmd_internal_commands + stock_windows_utilities for "is this a
+# Windows/cmd command?" detection. Prefer the split lists when distinguishing
+# internals (never CWD-shadowed) from stock externals (shadowable).
 builtin_commands:
   - arp
   - assoc
@@ -129,6 +268,14 @@ builtin_commands:
   - wscript
   - xcopy
 
+# Alias verb -> canonical catalog name (same implementation / shared /? text).
+command_aliases:
+  chdir: cd
+  erase: del
+  mkdir: md
+  rename: ren
+  rmdir: rd
+
 common_external_tools:
   - 7z
   - aria2c
@@ -243,25 +390,28 @@ common_command_typos:
 
 builtin_overlap_deprecated_notes:
   wmic: >-
-    Listed in both builtin_commands and deprecated_commands: still present for
-    detection on modern Windows, but deprecated in favor of CIM/PowerShell.
+    Listed in stock_windows_utilities / builtin_commands and
+    deprecated_commands: still present for detection on modern Windows, but
+    deprecated in favor of CIM/PowerShell.
   dpath: >-
-    Listed in both builtin_commands and deprecated_commands: still a recognized
-    cmd internal (legacy APPEND equivalent) but deprecated/undocumented for new
-    scripts.
+    Listed in cmd_internal_commands / builtin_commands and deprecated_commands:
+    still a recognized cmd internal (legacy APPEND equivalent) but
+    deprecated/undocumented for new scripts.
   keys: >-
-    Listed in both builtin_commands and deprecated_commands: still recognized as
-    a DOS-compatibility internal but has no effect under modern Windows command-
-    line editing.
+    Listed in cmd_internal_commands / builtin_commands and deprecated_commands:
+    still recognized as a DOS-compatibility internal but has no effect under
+    modern Windows command-line editing.
   telnet: >-
-    Listed in builtin_commands for detection, but the Telnet client is an
-    optional Windows Feature / FoD component and is often absent (where telnet
-    fails). Treat like other optional stock tools; do not assume it is installed.
+    Listed in stock_windows_utilities / builtin_commands for detection, but the
+    Telnet client is an optional Windows Feature / FoD component and is often
+    absent (where telnet fails). Treat like other optional stock tools; do not
+    assume it is installed.
   curl: >-
-    Listed in builtin_commands for detection as a stock Windows utility since
-    Windows 10 1803+, but availability can still vary on older or stripped
-    images. Treat as optional when targeting down-level hosts.
+    Listed in stock_windows_utilities / builtin_commands for detection as a
+    stock Windows utility since Windows 10 1803+, but availability can still
+    vary on older or stripped images. Treat as optional when targeting
+    down-level hosts.
   tar: >-
-    Listed in builtin_commands for detection as a stock Windows utility on
-    modern Windows 10/11, but availability can vary on older hosts. Treat as
-    optional when targeting down-level images.
+    Listed in stock_windows_utilities / builtin_commands for detection as a
+    stock Windows utility on modern Windows 10/11, but availability can vary on
+    older hosts. Treat as optional when targeting down-level images.

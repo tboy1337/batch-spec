@@ -81,6 +81,10 @@ empty-field collapse, bare-name truncation, and similar batveats) remain in
 [`data/expansion.yaml`](../data/expansion.yaml). Unquoted `<<` and malformed
 `FOR /F` option values that live cmd rejects are marked with
 `expect_syntax_errors: true`. Other tool tails such as `START` remain largely
-opaque token sequences unless live cmd reports a syntax error.
+opaque token sequences unless live cmd reports a syntax error. A command line
+that ends with `(` (other than the `echo(` blank-line idiom) may be followed by
+a multi-line `(...)` group that still parses and runs after the preceding
+command — including the IF `and`/`or` orphan-block pattern documented in
+[`data/expansion.yaml`](../data/expansion.yaml) `if_command.no_and_or_keywords`.
 
 Authoritative command syntax snippets for authors live under `audit/cmd-help/`.

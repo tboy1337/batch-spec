@@ -7,19 +7,24 @@ Machine-readable catalog: [`data/commands.yaml`](../data/commands.yaml)
 
 | Key | Purpose |
 |-----|---------|
-| `builtin_commands` | cmd.exe internals and stock Windows utilities |
+| `cmd_internal_commands` | True cmd.exe internals (verbs not resolved as separate PATH executables) |
+| `stock_windows_utilities` | Stock Windows PATH/`System32` utilities commonly used from batch |
+| `builtin_commands` | Union of the two lists above for "is this a Windows/cmd command?" detection |
+| `command_aliases` | Alias verb → canonical name (`chdir`→`cd`, `erase`→`del`, …) |
 | `common_external_tools` | Third-party / language / package-manager CLIs commonly recognized by tooling |
 | `deprecated_commands` | Still present or optionally available, but deprecated for new use |
 | `removed_commands` | Historical commands no longer part of modern Windows cmd |
 | `older_windows_commands` | DOS-era / legacy names retained for detection |
 | `common_command_typos` | Frequent misspellings mapped to intended commands |
-| `builtin_overlap_deprecated_notes` | Notes when a name is both detected as builtin and flagged deprecated |
+| `builtin_overlap_deprecated_notes` | Notes when a name is both detected and flagged deprecated |
 
 ## Guidance
 
-- `builtin_commands` includes both cmd.exe internals (for example `set`, `call`, `break`) and stock Windows utilities resolved via PATH/`System32` (for example `curl`, `robocopy`, `choice`, `hostname`, `explorer`, `label`, `where`). For the machine name in scripts prefer `%COMPUTERNAME%`; `hostname` is the external `hostname.exe` printer, not a cmd internal. True internals are never overridden by a same-named file in the current directory, but external catalog entries can be shadowed by a CWD `.bat`/`.cmd`/`.exe` according to PATHEXT (see `command_resolution.cwd_shadows_externals` in [`data/expansion.yaml`](../data/expansion.yaml)).
-- Prefer `builtin_commands` for "is this a Windows/cmd command?" checks
-- Use `common_external_tools` for optional recognition of developer tooling without implying cmd builtins
-- Stock utilities such as `curl`, `tar`, `telnet`, and `wmic` remain in `builtin_commands` for detection, but may be absent on older or Feature-on-Demand-stripped hosts (`builtin_overlap_deprecated_notes`)
+- Prefer `cmd_internal_commands` when the distinction matters: true internals are never overridden by a same-named file in the current directory. Prefer `stock_windows_utilities` for PATH/`System32` tools that **can** be shadowed by a CWD `.bat`/`.cmd`/`.exe` according to PATHEXT (see `command_resolution.cwd_shadows_externals` in [`data/expansion.yaml`](../data/expansion.yaml)).
+- Prefer `builtin_commands` for broad "is this a Windows/cmd command?" checks (it is the union of internals and stock utilities).
+- Use `command_aliases` to canonicalize alias peers (`chdir`/`mkdir`/`erase`/`rename`/`rmdir`) to their primary names; both spellings remain in the detection lists.
+- Use `common_external_tools` for optional recognition of developer tooling without implying Windows stock commands.
+- Stock utilities such as `curl`, `tar`, `telnet`, and `wmic` remain in `stock_windows_utilities` / `builtin_commands` for detection, but may be absent on older or Feature-on-Demand-stripped hosts (`builtin_overlap_deprecated_notes`).
+- For the machine name in scripts prefer `%COMPUTERNAME%`; `hostname` is the external `hostname.exe` printer, not a cmd internal.
 - Read deprecation/removal strings carefully: some `removed_commands` entries are add-on Resource Kit / Sysinternals tools, or HELP-listed names whose binaries are no longer present on modern Windows (for example `graftabl`, or `edlin` on 64-bit hosts). Some `deprecated_commands` remain as cmd internals with no useful effect (for example `keys`).
-- Captured help under [`audit/cmd-help/`](../audit/cmd-help/) is a language-relevant subset (internals and high-impact stock tools such as `find` / `findstr` / `robocopy` / `fc` / `comp` / `attrib` / `tree` / `reg` / `replace` / `dpath` / `keys` / `mode` / `label` / `print` / `hostname` / `whoami` / `tasklist` / `taskkill` / `icacls` / `certutil` / `clip`), not a full dump of every `builtin_commands` name. Alias pairs share one help file (`cd`/`chdir`, `md`/`mkdir`, `rd`/`rmdir`, `del`/`erase`, `ren`/`rename`)
+- Captured help under [`audit/cmd-help/`](../audit/cmd-help/) is a language-relevant subset (internals and high-impact stock tools such as `find` / `findstr` / `robocopy` / `fc` / `comp` / `attrib` / `tree` / `reg` / `replace` / `dpath` / `keys` / `mode` / `label` / `print` / `hostname` / `whoami` / `tasklist` / `taskkill` / `icacls` / `certutil` / `clip` / `waitfor` / `msg`), not a full dump of every detection name. Alias pairs share one help file (`cd`/`chdir`, `md`/`mkdir`, `rd`/`rmdir`, `del`/`erase`, `ren`/`rename`).

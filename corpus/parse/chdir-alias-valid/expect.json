@@ -1,0 +1,8 @@
+{
+  "description": "Parse CHDIR alias of CD",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "genericCmd"
+  },
+  "tags": ["directory", "alias"]
+}

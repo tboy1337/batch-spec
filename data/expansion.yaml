@@ -1,4 +1,4 @@
-version: 56
+version: 57
 
 # Percent-tilde (%~) expansion rules
 # Authoritative syntax: audit/cmd-help/call-help.txt (CALL /?)
@@ -1587,18 +1587,23 @@ dynamic_environment_variables:
     HIGHESTNUMANODENUMBER: highest NUMA node number on this machine
     "=ExitCode": >-
       Undocumented; 8-digit zero-padded hexadecimal of the most recent exit code
-      from an external program or EXIT /B (for example cmd /c exit 65 yields
-      00000041). Hidden from SET listings because the name begins with '='.
+      from an external program (for example cmd /c exit 65 yields 00000041).
+      Hidden from SET listings because the name begins with '='. EXIT /B updates
+      ERRORLEVEL for the caller but does not refresh %=ExitCode% on live
+      Windows 10/11 cmd (a prior external value remains until another external
+      runs).
     "=ExitCodeAscii": >-
       Undocumented peer of =ExitCode; expands to the ASCII character for the
       least-significant byte when that byte is printable (for example 65 -> A).
-      Non-printable codes such as 0 or 1 expand to empty on live Windows 10/11
-      cmd.
+      Non-printable codes such as 0, 1, or 10 (newline) expand to empty on live
+      Windows 10/11 cmd.
   undocumented_equals_exitcode: >-
-    %=ExitCode% and %=ExitCodeAscii% are not listed in SET /?. They become
-    available after an external command or EXIT /B runs. Ordinary SET cannot
+    %=ExitCode% and %=ExitCodeAscii% are not listed in SET /?. They update after
+    an external program returns an exit code (confirmed: cmd /c exit 65 ->
+    00000041 / A). EXIT /B sets ERRORLEVEL but does not update these expansions
+    (confirmed: after cmd /c exit 11 then CALL :label with EXIT /B 22, the caller
+    sees ERRORLEVEL 22 while %=ExitCode% remains 0000000B). Ordinary SET cannot
     define names containing '=', so these values cannot be shadowed via SET.
-    Confirmed on live Windows 10/11 cmd after cmd /c exit 65 / exit 0 / exit 1.
   time_leading_space: >-
     %TIME% uses the same format as the TIME command. For hours 0-9 the hour
     field is commonly space-padded (a leading space before the digit), so the
@@ -1803,15 +1808,19 @@ if_forms:
     console I/O redirect and does not use the EXIST path probe. Prefer IF EXIST
     for ordinary files and directories; see also redirection.special_devices.
   no_and_or_keywords: >-
-    IF has no native boolean AND/OR keywords. Tokens such as and / or after a
-    completed IF command are parsed as separate commands (often yielding
-    "'and' is not recognized..."). When the failed AND/OR line is followed by a
-    parenthesized group — including the common form if 1==1 and 2==2 ( ... ) —
-    live cmd still executes that orphan (block) after reporting the unrecognized
-    and/or token (ERRORLEVEL is commonly 9009 from the missing command). Compose
-    conditions with nested IF, chained && / || on ERRORLEVEL, or other
-    documented patterns — not IF ... and .... Confirmed on live Windows 10/11
-    cmd.
+    IF has no native boolean AND/OR keywords. Two common parse shapes: (1) after
+    a complete predicate with no then-command yet, and / or becomes the THEN
+    command (if 1==1 and echo X runs command "and", not a boolean join —
+    typically "'and' is not recognized..." with ERRORLEVEL 9009); (2) after a
+    completed IF statement, a following and / or line is likewise a separate
+    unknown command. When that failed AND/OR token is followed by a
+    parenthesized group — including if 1==1 and 2==2 ( ... ) with '(' at the
+    end of the IF line, or a newline before '(' — live cmd still executes that
+    orphan (block) after reporting the unrecognized token (ERRORLEVEL commonly
+    9009). Same-line if 1==1 and 2==2 (echo X) keeps the paren text on the
+    failed "and" command and does not run an orphan group. Compose conditions
+    with nested IF, chained && / || on ERRORLEVEL, or other documented patterns
+    — not IF ... and .... Confirmed on live Windows 10/11 cmd.
   joined_operand_and: >-
     Without AND keywords, multi-value equality can be composed by joining
     operands into one compare string (for example if "%a%-%b%" equ "X-Y").
@@ -2672,11 +2681,6 @@ path_command:
   append_via_percent: >-
     Appending commonly uses PATH %PATH%;C:\more. Clearing with PATH ; removes
     all search directories until PATH is set again.
-  dircmd_env: >-
-    DIRCMD is an ordinary environment variable (not a SET-list dynamic name).
-    When set, its value supplies default switches for DIR (for example
-    SET DIRCMD=/B). A later DIR invocation can still pass overriding switches
-    (DIR /?; audit/cmd-help/dir-help.txt).
   session_only: >-
     PATH changes apply to the current cmd.exe session (and child processes that
     inherit the environment). Persistent PATH changes require SETX or other
@@ -3001,8 +3005,10 @@ dir_command:
     streams (lists alternate data streams when present; DIR /?). Full switch
     matrix is in DIR /?.
   dircmd_env: >-
-    DIRCMD supplies default switches (for example SET DIRCMD=/B). Override a
-    preset by prefixing the switch with - (for example DIR /-W) (DIR /?).
+    DIRCMD is an ordinary environment variable (not a SET-list dynamic name
+    from SET /?). When set, its value supplies default switches for DIR (for
+    example SET DIRCMD=/B). Override a preset by prefixing the switch with -
+    (for example DIR /-W) (DIR /?; audit/cmd-help/dir-help.txt).
   no_match_errorlevel: >-
     DIR with a mask that matches nothing leaves ERRORLEVEL 1 (confirmed on live
     Windows 10/11 cmd for dir /b nosuch_zzz*.qqq). A successful listing leaves
@@ -3161,7 +3167,8 @@ external_tool_notes:
     full switch encyclopedias; they document ERRORLEVEL and parsing facts that
     affect Batch control flow (&& / || / IF ERRORLEVEL).
   hostname_command: >-
-    hostname.exe is a stock System32 utility listed under builtin_commands. It
+    hostname.exe is a stock System32 utility listed under
+    stock_windows_utilities / builtin_commands. It
     prints the computer's host name to stdout; for scripts that need the machine
     name as data, prefer the ordinary environment variable %COMPUTERNAME%
     (distinct from the dynamic SET /? names). hostname is not a cmd internal.
@@ -3334,6 +3341,23 @@ external_tool_notes:
     (CERTUTIL /?; audit/cmd-help/certutil-help.txt). Scripts often use
     certutil -encode / -decode / -hashfile. Switch surface is large; prefer
     documented subcommands and treat ERRORLEVEL as tool-defined.
+  waitfor_command: >-
+    WAITFOR.exe sends or waits for a named signal across systems
+    (WAITFOR /?; audit/cmd-help/waitfor-help.txt). Not a cmd internal. Forms:
+    WAITFOR [/T timeout] signal waits (default forever; /T range 1-99999
+    seconds), and WAITFOR [/S system [/U user [/P [password]]]] /SI signal
+    sends. Signal names are limited to 225 characters of a-z A-Z 0-9 and
+    ASCII 128-255. Treat ERRORLEVEL as tool-defined; do not assume success
+    clears a prior code without checking. Prefer TIMEOUT for local
+    second-based waits that do not need cross-machine signaling.
+  msg_command: >-
+    MSG.exe sends a message to a user or session
+    (MSG /?; audit/cmd-help/msg-help.txt). Not a cmd internal. Targets include
+    username, sessionname, sessionid, @filename, or * for all sessions on the
+    server (/SERVER). /TIME sets acknowledge wait seconds; /V verbose; /W waits
+    for a response. Message text may be an argument, prompted, or read from
+    stdin. Availability and rights vary by session/host policy; treat
+    ERRORLEVEL as tool-defined.
   host_notes: >-
     Language facts in this catalog were confirmed primarily on live Windows 10
     cmd (build family 19045) plus Microsoft /? text and secondary references.

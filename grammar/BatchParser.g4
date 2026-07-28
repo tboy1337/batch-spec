@@ -96,6 +96,40 @@ def _notLonelyParen(self) -> bool:
         -1,
     )
 
+def _inlineLparenOk(self) -> bool:
+    # Same-line '(' ... ')' stays in command text (echo a (echo b) prints
+    # literally). A '(' immediately before NEWLINE starts a multi-line group
+    # that still runs after the preceding command (live: unknowncmd ( / and (
+    # followed by a block), except the ECHO blank-line idiom echo( which is
+    # WORD echo plus a glued LPAREN with no following group (expansion.yaml
+    # echo_forms.blank_line_examples).
+    from BatchLexer import BatchLexer  # isort: skip
+
+    if self._input.LA(1) != BatchLexer.LPAREN:
+        return True
+    if self._input.LA(2) != BatchLexer.NEWLINE:
+        return True
+    prev = self._input.LT(-1)
+    cur = self._input.LT(1)
+    if prev is None or cur is None:
+        return False
+    glued = not self._gapHasSpaceOrTab(prev, cur)
+    if glued and (prev.text or "").lower() == "echo":
+        return True
+    return False
+
+def _remTokenOk(self) -> bool:
+    # REM remarks through EOL, but leave a trailing multi-line '(' for
+    # statement-level groupStmt (live still runs the following block).
+    from BatchLexer import BatchLexer  # isort: skip
+
+    la1 = self._input.LA(1)
+    if la1 in (BatchLexer.NEWLINE, -1):
+        return False
+    if la1 == BatchLexer.LPAREN and not self._inlineLparenOk():
+        return False
+    return True
+
 def _setDiscardedTokenOk(self) -> bool:
     # Trailer after set "name=value" stops at chain separators, newline/EOF,
     # and redirect operators (those attach via setRedirects instead).
@@ -389,7 +423,7 @@ label
     ;
 
 commandLine
-    : statement ( (AMP | PIPE | AMPAMP | PIPEPIPE) statement )* NEWLINE?
+    : statement groupStmt? ( (AMP | PIPE | AMPAMP | PIPEPIPE) statement groupStmt? )* NEWLINE?
     ;
 
 statement
@@ -418,8 +452,9 @@ statement
     ;
 
 // REM as command verb: remainder of the physical line is remark text (REM /?).
+// A trailing multi-line '(' is left for commandLine's optional groupStmt.
 remStmt
-    : REM (~NEWLINE)*
+    : REM ( {self._remTokenOk()}? ~NEWLINE )*
     ;
 
 // Detached ELSE (not same-line elseClause). Matches `else echo`, `else if ...`,
@@ -999,7 +1034,7 @@ token
     | CARET
     | ASTERISK
     | QUESTION
-    | LPAREN
+    | {self._inlineLparenOk()}? LPAREN
     | {self._notLonelyParen()}? RPAREN
     | APPEND
     | DUP_OUT

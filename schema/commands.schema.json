@@ -11,11 +11,33 @@
       "type": "integer",
       "minimum": 1
     },
+    "cmd_internal_commands": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "True cmd.exe internals (not resolved as separate PATH executables for the verb)"
+    },
+    "stock_windows_utilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Stock Windows PATH/System32 utilities commonly invoked from batch; shadowable via CWD/PATHEXT"
+    },
     "builtin_commands": {
       "type": "array",
       "items": {
         "type": "string"
-      }
+      },
+      "description": "Union of cmd_internal_commands and stock_windows_utilities for detection"
+    },
+    "command_aliases": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Alias verb mapped to canonical catalog name (shared implementation / help)"
     },
     "common_external_tools": {
       "type": "array",

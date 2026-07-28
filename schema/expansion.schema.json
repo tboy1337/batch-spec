@@ -1921,9 +1921,6 @@
         "append_via_percent": {
           "type": "string"
         },
-        "dircmd_env": {
-          "type": "string"
-        },
         "session_only": {
           "type": "string"
         }
@@ -2638,6 +2635,12 @@
           "type": "string"
         },
         "certutil_command": {
+          "type": "string"
+        },
+        "waitfor_command": {
+          "type": "string"
+        },
+        "msg_command": {
           "type": "string"
         },
         "host_notes": {
