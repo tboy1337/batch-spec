@@ -2616,6 +2616,12 @@
         "find_and_findstr": {
           "type": "string"
         },
+        "find_errorlevel": {
+          "type": "string"
+        },
+        "findstr_errorlevel": {
+          "type": "string"
+        },
         "where_command": {
           "type": "string"
         },
@@ -2646,6 +2652,9 @@
         "xcopy_notes": {
           "type": "string"
         },
+        "xcopy_errorlevel": {
+          "type": "string"
+        },
         "timeout_command": {
           "type": "string"
         },
@@ -2661,6 +2670,12 @@
         "tasklist_taskkill": {
           "type": "string"
         },
+        "tasklist_errorlevel": {
+          "type": "string"
+        },
+        "taskkill_errorlevel": {
+          "type": "string"
+        },
         "icacls_command": {
           "type": "string"
         },
@@ -2668,6 +2683,9 @@
           "type": "string"
         },
         "certutil_command": {
+          "type": "string"
+        },
+        "certutil_errorlevel": {
           "type": "string"
         },
         "waitfor_command": {

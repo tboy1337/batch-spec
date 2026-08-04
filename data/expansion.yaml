@@ -3252,17 +3252,10 @@ external_tool_notes:
     name as data, prefer the ordinary environment variable %COMPUTERNAME%
     (distinct from the dynamic SET /? names). hostname is not a cmd internal.
   find_and_findstr: >-
-    FIND and FINDSTR search text. On both tools, a successful match leaves
-    ERRORLEVEL 0 and a no-match leaves ERRORLEVEL 1 (confirmed on live
-    Windows 10/11 cmd). Their missing-input and hard-failure codes differ:
-    FINDSTR writes "FINDSTR: Cannot open ..." for a missing named file and
-    for a wildcard pathname that matches no files, and leaves ERRORLEVEL 1
-    (same code as no-match). FIND on a missing named file also leaves
-    ERRORLEVEL 1 on live Windows 10/11 cmd (not always the ERRORLEVEL 2 some
-    secondary references document for every open failure). FIND does use
-    ERRORLEVEL 2 for an invalid switch and for a wildcard pathname that
-    matches no files (confirmed on live cmd). Prefer IF EXIST before
-    searching, or redirect stderr (2>nul) when a missing mask is expected.
+    FIND and FINDSTR search text (FIND /?, FINDSTR /?;
+    audit/cmd-help/find-help.txt, findstr-help.txt). ERRORLEVEL tables:
+    find_errorlevel and findstr_errorlevel. Prefer IF EXIST before searching
+    expected paths, or redirect stderr (2>nul) when a missing mask is expected.
     When FINDSTR is given two or more input files, each matching line is
     prefixed with path: (colon-delimited); a single-file search does not add
     that prefix (so multi-file output can collide with drive letters such as
@@ -3281,6 +3274,24 @@ external_tool_notes:
     (FINDSTR /?; audit/cmd-help/findstr-help.txt). Confirmed on live
     Windows 10/11 cmd: findstr /G:needles.txt hay.txt and findstr /F:files.txt
     needle leave ERRORLEVEL 0 on a successful match.
+  find_errorlevel: >-
+    FIND ERRORLEVEL on live Windows 10 (build 19045) cmd (FIND /?;
+    audit/cmd-help/find-help.txt — captured help has no Return Code section):
+    0 string found in the searched file(s); 1 string not found or missing
+    named file (stderr may still report a cannot-open message); 2 invalid
+    switch or wildcard pathname matching zero files. Some secondary references
+    document ERRORLEVEL 2 for every open failure; live named missing files
+    commonly use 1. Because no-match and missing-file share code 1, prefer
+    IF EXIST on the path before chaining on FIND alone.
+  findstr_errorlevel: >-
+    FINDSTR ERRORLEVEL on live Windows 10 (build 19045) cmd (FINDSTR /?;
+    audit/cmd-help/findstr-help.txt — no Return Code section): 0 match found
+    or /? help display; 1 no match, missing named file, or wildcard pathname
+    with zero matching files (stderr "FINDSTR: Cannot open ..." — same code as
+    no-match); 2 invalid switch (confirmed with a nonexistent switch such as
+    /NOTREAL). Do not treat ERRORLEVEL 1 alone as proof the input path
+    existed. Prefer IF EXIST or stderr inspection when open failures must be
+    distinguished from no-match.
   where_command: >-
     WHERE locates files matching a pattern via PATH/PATHEXT-style search
     (WHERE /?; audit/cmd-help/where-help.txt). Useful to resolve which
@@ -3331,12 +3342,19 @@ external_tool_notes:
     Windows 10/11 cmd while writing an invalid-path message to stderr - prefer
     IF EXIST before relying on TREE for presence checks.
   robocopy_errorlevel: >-
-    ROBOCOPY returns a bitmask ERRORLEVEL: 0 synced/nothing copied; bit 1
-    (1) files copied; bit 2 (2) extras; bit 4 (4) mismatches; bit 8 (8) copy
-    failures; bit 16 (16) serious/fatal. Values 0-7 are commonly treated as
-    success; >=8 indicates failure (Microsoft Learn KB on Robocopy return
-    codes). Because successful copies often return 1, ROBOCOPY ... && next
-    skips next unless scripts mask/test ERRORLEVEL explicitly.
+    ROBOCOPY returns a bitmask ERRORLEVEL (ROBOCOPY /?;
+    audit/cmd-help/robocopy-help.txt; Microsoft Learn Robocopy return codes):
+    bit 0 (value 0) — no copies, no failures, no mismatches; bit 1 (1) —
+    files copied and/or extra files/dirs detected (successful copies often
+    leave 1, so ROBOCOPY ... && next commonly skips next); bit 2 (2) — extra
+    files or directories in destination; bit 4 (4) — mismatched files/dirs;
+    bit 8 (8) — copy failures; bit 16 (16) — serious/fatal error (bad or
+    inaccessible source path). Values 0–7 are commonly treated as success;
+    >=8 indicates failure. Live Win10 19045: missing named file under an
+    existing source directory often EL 0; missing source directory often EL
+    16; /L list-only over an existing file often EL 1; copying one new file
+    often EL 1; repeat copy with no changes often EL 0. Test with set /a or
+    IF ERRORLEVEL when masking bits.
   robocopy_mov_vs_move: >-
     /MOV moves files only (delete from source after copy; source directories
     remain). /MOVE moves files and directories (delete from source after copy,
@@ -3351,21 +3369,33 @@ external_tool_notes:
     file with XCOPY typically returns a non-zero code such as 4 (see
     xcopy_notes). Prefer IF EXIST or wildcard sets when absence must be treated
     as failure.
+  xcopy_errorlevel: >-
+    XCOPY return codes (not listed in captured XCOPY /?;
+    audit/cmd-help/xcopy-help.txt): 0 files copied without error; 1 no files
+    found to copy; 2 user pressed Ctrl+C or, on live Win10 19045, a
+    non-interactive F/D file-vs-directory prompt received no valid answer
+    (destination path ambiguous without /I); 4 initialization error (invalid
+    switch, missing named source, insufficient memory or invalid drive); 5
+    disk write error during copy. Live Win10 19045: missing named source EL 4;
+    copy into an existing directory (trailing backslash) EL 0; wildcard over
+    an empty directory EL 0; invalid switch EL 4. See xcopy_notes for ROBOCOPY
+    contrast, /I, and F/D prompt handling with redirects.
   xcopy_notes: >-
-    XCOPY is an external recursive copy tool (XCOPY /?). /C continues after
-    errors. Return codes are tool-defined; do not assume identical semantics
-    to COPY or ROBOCOPY when chaining with && / ||. Confirmed on live Windows
-    10/11 cmd: a successful copy leaves ERRORLEVEL 0; a missing named source
-    file leaves ERRORLEVEL 4 ("File not found"), unlike ROBOCOPY's typical 0
-    for the same single missing name (see robocopy_missing_named_file). An empty
-    source directory with a wildcard (xcopy src\*.* dst\) left ERRORLEVEL 0 on
-    this host even when no files were copied -- do not assume every "no files"
-    condition is non-zero without probing the host. When the destination does
-    not exist, XCOPY may prompt whether the target is a file or directory
-    (F/D). With stdout redirected away from the console that prompt can hang
-    or land in the redirect file; answer via a pipe such as echo F| xcopy ...
-    or keep prompts on the console with >CON (see
-    redirection.con_for_interactive_prompts).
+    XCOPY is an external recursive copy tool (XCOPY /?). See xcopy_errorlevel
+    for the return-code table. /C continues after errors. Return codes are
+    tool-defined; do not assume identical semantics to COPY or ROBOCOPY when
+    chaining with && / ||. Confirmed on live Windows 10/11 cmd: a successful
+    copy to a directory destination leaves ERRORLEVEL 0; a missing named
+    source file leaves ERRORLEVEL 4 ("File not found"), unlike ROBOCOPY's
+    typical 0 for the same single missing name (see robocopy_missing_named_file).
+    An empty source directory with a wildcard (xcopy src\*.* dst\) left
+    ERRORLEVEL 0 on this host even when no files were copied -- do not assume
+    every "no files" condition is non-zero without probing the host. When the
+    destination does not exist, XCOPY may prompt whether the target is a file
+    or directory (F/D). With stdout redirected away from the console that
+    prompt can hang or land in the redirect file and leave ERRORLEVEL 2;
+    answer via a pipe such as echo F| xcopy ... or keep prompts on the
+    console with >CON (see redirection.con_for_interactive_prompts).
   timeout_command: >-
     TIMEOUT [/T] seconds [/NOBREAK] waits for a key or a timeout
     (TIMEOUT /?; audit/cmd-help/timeout-help.txt). Valid range includes -1
@@ -3403,9 +3433,23 @@ external_tool_notes:
     %USERDOMAIN% when only the simple name is needed.
   tasklist_taskkill: >-
     TASKLIST / TASKKILL enumerate and terminate processes
-    (audit/cmd-help/tasklist-help.txt, taskkill-help.txt). Missing process /
-    access-denied codes are tool-defined; do not assume ERRORLEVEL 0 means a
-    kill succeeded without checking output. Requires appropriate privileges.
+    (audit/cmd-help/tasklist-help.txt, taskkill-help.txt). ERRORLEVEL tables:
+    tasklist_errorlevel and taskkill_errorlevel. Requires appropriate
+    privileges; access-denied failures may use codes other than those listed.
+  tasklist_errorlevel: >-
+    TASKLIST ERRORLEVEL on live Windows 10 (build 19045) cmd (TASKLIST /?;
+    audit/cmd-help/tasklist-help.txt — no Return Code section): 0 command
+    completed successfully, including zero output rows (a /FI filter matching
+    no processes still leaves EL 0 — use stdout inspection or a follow-up
+    FINDSTR/TASKLIST parse to detect hits); 1 invalid /FI filter syntax or
+    invalid switch.
+  taskkill_errorlevel: >-
+    TASKKILL ERRORLEVEL on live Windows 10 (build 19045) cmd (TASKKILL /?;
+    audit/cmd-help/taskkill-help.txt — no Return Code section): 0 one or more
+    target processes terminated; 128 process not found (/IM image not running,
+    with or without /F); 1 invalid switch. Privilege or access-denied failures
+    can yield other non-zero codes — inspect stderr and test on the host. Do
+    not assume ERRORLEVEL 0 means a kill succeeded without checking output.
   icacls_command: >-
     ICACLS displays or modifies NTFS ACLs (ICACLS /?;
     audit/cmd-help/icacls-help.txt). Prefer ICACLS over deprecated CACLS. Success
@@ -3416,10 +3460,20 @@ external_tool_notes:
     audit/cmd-help/clip-help.txt). Common idiom: echo text| clip. Not a cmd
     internal; availability matches stock System32 on modern Windows 10/11.
   certutil_command: >-
-    CERTUTIL is a multi-purpose crypto/certificate utility
-    (CERTUTIL /?; audit/cmd-help/certutil-help.txt). Scripts often use
-    certutil -encode / -decode / -hashfile. Switch surface is large; prefer
-    documented subcommands and treat ERRORLEVEL as tool-defined.
+    CERTUTIL is a multi-purpose crypto/certificate utility (CERTUTIL /?;
+    audit/cmd-help/certutil-help.txt). Scripts often use certutil -encode /
+    -decode / -hashfile. Switch surface is large; prefer documented
+    subcommands from captured help. ERRORLEVEL: certutil_errorlevel.
+  certutil_errorlevel: >-
+    CERTUTIL ERRORLEVEL on live Windows 10 (build 19045) cmd (CERTUTIL /?;
+    audit/cmd-help/certutil-help.txt — no unified Return Code section):
+    -hashfile on an existing file EL 0; -hashfile on a missing path EL
+    -2147024894 (0x80070002 FILE_NOT_FOUND when interpreted as unsigned);
+    -encode / -decode success EL 0; unknown top-level verb EL 1; invalid hash
+    algorithm EL -805305819 (host-specific CRYPT HRESULT). %ERRORLEVEL% and
+    IF ERRORLEVEL display the signed 32-bit value — use set /a or unsigned
+    comparison when matching HRESULT constants. Many PKI/ADCS subcommands return
+    other HRESULT-style codes; probe the specific verb on the deployment host.
   waitfor_command: >-
     WAITFOR.exe sends or waits for a named signal across systems
     (WAITFOR /?; audit/cmd-help/waitfor-help.txt). Not a cmd internal. Forms:
