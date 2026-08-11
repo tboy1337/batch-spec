@@ -1,0 +1,15 @@
+{
+  "description": "FOR loop %%~zA file-size tilde expansion (parse acceptance)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt"
+    ]
+  },
+  "tags": [
+    "for",
+    "expansion",
+    "percent-tilde"
+  ]
+}

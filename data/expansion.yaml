@@ -89,7 +89,8 @@ percent_tilde_notes:
     for_loop_variables.tilde_invalid_modifier_not_syntax).
   for_metavar_parallel: >-
     The same letter modifiers (nxfpdstaz) and path-search $ENV: forms apply to
-    active FOR metavariables (%%~fI / %%~$PATH:I). Unlike batch-parameter %~q1,
+    active FOR metavariables (%%~fI / %%~$PATH:I / %%~zA for file size on
+    metavar A). Unlike batch-parameter %~q1,
     an unknown letter before a FOR metavar is absorbed into the %%~ scan and is
     not a path-operator syntax abort.
   modifier_order_independent: >-

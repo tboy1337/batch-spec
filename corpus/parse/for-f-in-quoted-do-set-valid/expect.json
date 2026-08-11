@@ -1,0 +1,15 @@
+{
+  "description": "FOR /F IN (quoted file) DO set without parenthesized DO body (parse acceptance)",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "ifStmt"
+    ]
+  },
+  "tags": [
+    "for",
+    "for-f",
+    "if"
+  ]
+}
