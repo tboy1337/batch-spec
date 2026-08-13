@@ -2,7 +2,7 @@
   "description": "Percent-tilde dp0 with adjacent literal suffix",
   "parse": {
     "should_parse": true,
-    "top_level_statement": "genericCmd"
+    "top_level_statement": "setStmt"
   },
   "tags": [
     "expansion"
