@@ -502,6 +502,9 @@
         "multi_digit_parameter": {
           "type": "string"
         },
+        "adjacent_literal_after_digit_param": {
+          "type": "string"
+        },
         "syntax_rejects": {
           "type": "string"
         },

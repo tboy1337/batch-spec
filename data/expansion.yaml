@@ -78,6 +78,11 @@ percent_tilde_notes:
     %~10 is %~1 followed by literal 0; a single digit or a path-search $ENV:
     form terminates %~ (CALL /?). %~* is not a valid terminator (CALL /?
     forbids percent-tilde with %*) and is a live / grammar syntax error.
+  adjacent_literal_after_digit_param: >-
+    After a single-digit %~ parameter (%~dp0, %~1, and peers), immediately
+    adjacent alphanumeric text is literal (for example %~dp0log.txt expands as
+    %~dp0 followed by log.txt, and %~10 is %~1 plus literal 0). Cross-ref
+    batch_parameters.multi_digit_percent and percent_tilde_notes.multi_digit_parameter.
   syntax_rejects: >-
     Live cmd rejects invalid percent-tilde forms with a path-operator message
     and "The syntax of the command is incorrect." (exit 255). Covered rejects

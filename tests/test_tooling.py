@@ -70,6 +70,7 @@ def test_expansion_invalid_tilde_patterns_match_bad_forms() -> None:
         "%~$PATH:1",
         "%~ftza1",
         "%~dp0",
+        "%~dp0log",
     ):
         assert not any_match(
             spared_by_letter_regex
