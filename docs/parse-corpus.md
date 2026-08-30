@@ -31,7 +31,10 @@ for new fixtures.
 `should_parse: true` must not be combined with `expect_syntax_errors: true`.
 `should_parse: false` must not be combined with `expect_syntax_errors: true`.
 Prefer `expect_syntax_errors` for constructs that live `cmd.exe` rejects with a
-syntax / "was unexpected at this time" style failure. Keep `should_parse: false`
+syntax / "was unexpected at this time" style failure (including leftover text
+after an unquoted `)` that closes a parenthesized IF/FOR/naked group — see
+[`data/expansion.yaml`](../data/expansion.yaml)
+`command_chaining.close_paren_leftover_in_block`). Keep `should_parse: false`
 available for implementations that fail without a clean tree.
 
 

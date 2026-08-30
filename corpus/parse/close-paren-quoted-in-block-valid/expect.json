@@ -1,0 +1,16 @@
+{
+  "description": "Quoted parentheses inside a FOR block stay command text",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "for",
+    "group",
+    "quoting"
+  ]
+}

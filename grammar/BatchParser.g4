@@ -78,6 +78,12 @@ def _redirectOnlyStatement(self) -> bool:
         i += 1
     return not saw_command
 
+def _enterGroup(self) -> None:
+    self._groupDepth = getattr(self, "_groupDepth", 0) + 1
+
+def _exitGroup(self) -> None:
+    self._groupDepth = max(getattr(self, "_groupDepth", 0) - 1, 0)
+
 def _notLonelyParen(self) -> bool:
     from BatchLexer import BatchLexer  # isort: skip
     la1 = self._input.LA(1)
@@ -96,13 +102,26 @@ def _notLonelyParen(self) -> bool:
         -1,
     )
 
+def _rparenAsTokenOk(self) -> bool:
+    # Inside a parenthesized command group, unquoted ')' closes the group
+    # (live cmd: leftover text after that closer is a syntax error). At
+    # script level, same-line ')' can still be command text.
+    from BatchLexer import BatchLexer  # isort: skip
+
+    if self._input.LA(1) != BatchLexer.RPAREN:
+        return True
+    if getattr(self, "_groupDepth", 0) > 0:
+        return False
+    return self._notLonelyParen()
+
 def _inlineLparenOk(self) -> bool:
-    # Same-line '(' ... ')' stays in command text (echo a (echo b) prints
-    # literally). A '(' immediately before NEWLINE starts a multi-line group
-    # that still runs after the preceding command (live: unknowncmd ( / and (
-    # followed by a block), except the ECHO blank-line idiom echo( which is
-    # WORD echo plus a glued LPAREN with no following group (expansion.yaml
-    # echo_forms.blank_line_examples).
+    # Same-line '(' stays in command text (echo a (echo b) prints literally
+    # at script level). Inside a group, unquoted ')' still closes the group
+    # (see _rparenAsTokenOk). A '(' immediately before NEWLINE starts a
+    # multi-line group that still runs after the preceding command (live:
+    # unknowncmd ( / and ( followed by a block), except the ECHO blank-line
+    # idiom echo( which is WORD echo plus a glued LPAREN with no following
+    # group (expansion.yaml echo_forms.blank_line_examples).
     from BatchLexer import BatchLexer  # isort: skip
 
     if self._input.LA(1) != BatchLexer.LPAREN:
@@ -474,7 +493,7 @@ exitTail
     ;
 
 groupStmt
-    : LPAREN block RPAREN commandTail?
+    : LPAREN {self._enterGroup()} block RPAREN {self._exitGroup()} commandTail?
     ;
 
 shiftStmt
@@ -490,12 +509,12 @@ ifIOpt
     ;
 
 ifBody
-    : ifPredicate LPAREN block RPAREN elseClause?
+    : ifPredicate LPAREN {self._enterGroup()} block RPAREN {self._exitGroup()} elseClause?
     | ifPredicate {self._notOpenParenThen()}? {self._enterThenStmt()} statement {self._exitThenStmt()} elseClause?
     ;
 
 elseClause
-    : ELSE {self._requireSpaceOrTabBefore()}? LPAREN block RPAREN
+    : ELSE {self._requireSpaceOrTabBefore()}? LPAREN {self._enterGroup()} block RPAREN {self._exitGroup()}
     | ELSE {self._notOpenParenThen()}? statement
     ;
 
@@ -662,7 +681,7 @@ forFOptionExtra
     ;
 
 forBody
-    : {self._requireSpaceOrTabBefore()}? LPAREN block RPAREN
+    : {self._requireSpaceOrTabBefore()}? LPAREN {self._enterGroup()} block RPAREN {self._exitGroup()}
     | {self._notOpenParenThen()}? statement
     ;
 
@@ -967,7 +986,7 @@ setNamePart
     | ASTERISK
     | QUESTION
     | LPAREN
-    | RPAREN
+    | {self._rparenAsTokenOk()}? RPAREN
     ;
 
 setRest
@@ -975,7 +994,7 @@ setRest
     ;
 
 genericCmd
-    : {self._notForToken() and self._notLonelyParen() and self._genericCmdStartOk() and not self._redirectOnlyStatement()}? commandTail
+    : {self._notForToken() and self._rparenAsTokenOk() and self._genericCmdStartOk() and not self._redirectOnlyStatement()}? commandTail
     ;
 
 commandTail
@@ -1035,7 +1054,7 @@ token
     | ASTERISK
     | QUESTION
     | {self._inlineLparenOk()}? LPAREN
-    | {self._notLonelyParen()}? RPAREN
+    | {self._rparenAsTokenOk()}? RPAREN
     | APPEND
     | DUP_OUT
     | DUP_IN

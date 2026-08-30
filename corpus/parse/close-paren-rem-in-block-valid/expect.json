@@ -1,0 +1,12 @@
+{
+  "description": "REM remarks out leftover parentheses inside a FOR block",
+  "parse": {
+    "should_parse": true,
+    "top_level_statement": "forStmt"
+  },
+  "tags": [
+    "for",
+    "group",
+    "remarks"
+  ]
+}

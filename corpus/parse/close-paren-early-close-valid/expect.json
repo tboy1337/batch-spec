@@ -1,0 +1,15 @@
+{
+  "description": "Unquoted ) in FOR body echo closes the group; following line is script-level",
+  "parse": {
+    "should_parse": true,
+    "top_level_statements": [
+      "genericCmd",
+      "forStmt",
+      "genericCmd"
+    ]
+  },
+  "tags": [
+    "for",
+    "group"
+  ]
+}

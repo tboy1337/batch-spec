@@ -1,0 +1,10 @@
+{
+  "description": "Leftover text after unquoted ) inside a naked paren group is a syntax error",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "group",
+    "negative"
+  ]
+}

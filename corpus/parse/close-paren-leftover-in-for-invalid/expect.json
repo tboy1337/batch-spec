@@ -1,0 +1,11 @@
+{
+  "description": "Leftover text after unquoted ) inside a FOR block is a syntax error",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "for",
+    "group",
+    "negative"
+  ]
+}

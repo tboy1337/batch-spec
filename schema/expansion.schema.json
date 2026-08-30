@@ -1330,6 +1330,9 @@
         "grouping": {
           "type": "string"
         },
+        "close_paren_leftover_in_block": {
+          "type": "string"
+        },
         "and_or_precedence": {
           "type": "string"
         },

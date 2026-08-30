@@ -1,0 +1,11 @@
+{
+  "description": "Leftover text after unquoted ) inside an IF block is a syntax error",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "if",
+    "group",
+    "negative"
+  ]
+}

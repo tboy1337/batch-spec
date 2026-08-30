@@ -1,0 +1,11 @@
+{
+  "description": "Same-line FOR DO body leftover text after unquoted ) is a syntax error",
+  "parse": {
+    "expect_syntax_errors": true
+  },
+  "tags": [
+    "for",
+    "group",
+    "negative"
+  ]
+}
